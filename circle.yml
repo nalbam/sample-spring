@@ -1,0 +1,40 @@
+machine:
+  timezone: Asia/Seoul
+  java:
+    version: oraclejdk8
+  services:
+    - redis
+    - docker
+  environment:
+    CONFIG_SERVER: http://localhost:8888
+
+dependencies:
+  pre:
+    - curl -s toast.sh/install-v3 | bash
+
+compile:
+  pre:
+    - ~/toaster/toast.sh build version
+  override:
+    - mvn package -DskipTests
+  post:
+    - ls -alh target
+
+test:
+  pre:
+    - python -m SimpleHTTPServer 8888:
+        background: true
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - ~/toaster/toast.sh release beanstalk
+      - ~/toaster/toast.sh release toast
+
+general:
+  artifacts:
+    - target
