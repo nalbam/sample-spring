@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+management:
+  security:
+    enabled: false
