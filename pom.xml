@@ -71,6 +71,27 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>com.spotify</groupId>-->
+                <!--<artifactId>dockerfile-maven</artifactId>-->
+                <!--<version>1.3.7</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>default</id>-->
+                        <!--<goals>-->
+                            <!--<goal>build</goal>-->
+                            <!--<goal>push</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<repository>spotify/foobar</repository>-->
+                    <!--<tag>${project.version}</tag>-->
+                    <!--<buildArgs>-->
+                        <!--<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>-->
+                    <!--</buildArgs>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 
