@@ -37,11 +37,11 @@
         </dependency>
 
         <!-- nalbam-common -->
-        <dependency>
-            <groupId>com.nalbam</groupId>
-            <artifactId>nalbam-common</artifactId>
-            <version>${nalbam.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.nalbam</groupId>-->
+            <!--<artifactId>nalbam-common</artifactId>-->
+            <!--<version>${nalbam.version}</version>-->
+        <!--</dependency>-->
 
         <!-- lombok -->
         <dependency>
@@ -98,14 +98,14 @@
     <repositories>
         <repository>
             <id>nexus-ci-svc</id>
-            <url>http://172.30.21.73:8081/repository/maven-public/</url>
+            <url>http://nexus.ci.svc:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>nexus-ci-nip</id>
-            <url>http://nexus-ci.192.168.42.144.nip.io/repository/maven-public/</url>
+            <url>http://nexus-ci.192.168.42.60.nip.io/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -133,24 +133,24 @@
                 <!--<enabled>true</enabled>-->
             <!--</snapshots>-->
         <!--</repository>-->
-        <repository>
-            <id>${repository-id}</id>
-            <name>${repository-name}</name>
-            <url>${repository-url}</url>
-        </repository>
+        <!--<repository>-->
+            <!--<id>${repository-id}</id>-->
+            <!--<name>${repository-name}</name>-->
+            <!--<url>${repository-url}</url>-->
+        <!--</repository>-->
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>nexus-ci-svc</id>
-            <url>http://172.30.21.73:8081/repository/maven-public/</url>
+            <url>http://nexus.ci.svc:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
         <pluginRepository>
             <id>nexus-ci-nip</id>
-            <url>http://nexus-ci.192.168.42.144.nip.io/repository/maven-public/</url>
+            <url>http://nexus-ci.192.168.42.60.nip.io/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
