@@ -97,6 +97,13 @@
 
     <repositories>
         <repository>
+            <id>nexus-ci-ip</id>
+            <url>http://172.30.107.3:8081/repository/maven-public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>nexus-ci-svc</id>
             <url>http://nexus.ci.svc:8081/repository/maven-public/</url>
             <snapshots>
@@ -141,6 +148,13 @@
     </repositories>
 
     <pluginRepositories>
+        <pluginRepository>
+            <id>nexus-ci-ip</id>
+            <url>http://172.30.107.3:8081/repository/maven-public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
         <pluginRepository>
             <id>nexus-ci-svc</id>
             <url>http://nexus.ci.svc:8081/repository/maven-public/</url>
