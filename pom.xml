@@ -112,7 +112,7 @@
         </repository>
         <repository>
             <id>nexus-ci-nip</id>
-            <url>http://nexus-ci.192.168.42.60.nip.io/repository/maven-public/</url>
+            <url>http://nexus.ci.svc.cluster.local:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -164,7 +164,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>nexus-ci-nip</id>
-            <url>http://nexus-ci.192.168.42.60.nip.io/repository/maven-public/</url>
+            <url>http://nexus.ci.svc.cluster.local:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
