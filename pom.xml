@@ -95,6 +95,18 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://pipeline-sonatype-nexus:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>nexus-snapshots</id>
+            <url>http://pipeline-sonatype-nexus:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>nexus-local</id>
