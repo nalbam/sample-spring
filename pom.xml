@@ -62,11 +62,11 @@
     <distributionManagement>
         <repository>
             <id>nexus-releases</id>
-            <url>http://pp-sonatype-nexus:8081/repository/maven-releases/</url>
+            <url>http://demo-sonatype-nexus:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>nexus-snapshots</id>
-            <url>http://pp-sonatype-nexus:8081/repository/maven-snapshots/</url>
+            <url>http://demo-sonatype-nexus:8081/repository/maven-snapshots/</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
@@ -74,7 +74,7 @@
     <repositories>
         <repository>
             <id>nexus-local</id>
-            <url>http://pp-sonatype-nexus:8081/repository/maven-public/</url>
+            <url>http://demo-sonatype-nexus:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -84,7 +84,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>nexus-local</id>
-            <url>http://pp-sonatype-nexus:8081/repository/maven-public/</url>
+            <url>http://demo-sonatype-nexus:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
