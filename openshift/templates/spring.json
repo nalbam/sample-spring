@@ -25,7 +25,7 @@
       "name": "APPLICATION_NAME",
       "displayName": "Name",
       "description": "Identifies the resources created for this application.",
-      "value": "config-server",
+      "value": "sample-spring",
       "required": true
     },
     {
@@ -39,7 +39,7 @@
       "name": "SOURCE_REPOSITORY_URL",
       "displayName": "Git Repository URL",
       "description": "Git source URI for application",
-      "value": "https://github.com/nalbam/spring-config-server",
+      "value": "https://github.com/nalbam/sample-spring",
       "required": true
     },
     {
@@ -73,9 +73,9 @@
       "required": true
     },
     {
-      "name": "IMAGE_STREAM_NAMESPACE",
-      "displayName": "ImageStream Namespace",
-      "description": "Namespace in which the ImageStreams for Red Hat Middleware images are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
+      "name": "NAMESPACE",
+      "displayName": "Namespace",
+      "description": "The OpenShift Namespace where the ImageStream resides.",
       "value": "openshift",
       "required": true
     },
@@ -187,7 +187,7 @@
             "forcePull": true,
             "from": {
               "kind": "ImageStreamTag",
-              "namespace": "${IMAGE_STREAM_NAMESPACE}",
+              "namespace": "${NAMESPACE}",
               "name": "redhat-openjdk-18:1.3"
             }
           }
