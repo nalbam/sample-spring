@@ -13,10 +13,10 @@
       "template.openshift.io/documentation-url": "https://access.redhat.com/documentation/en/",
       "template.openshift.io/support-url": "https://access.redhat.com/"
     },
-    "name": "openjdk18-basic-s2i"
+    "name": "sample-spring"
   },
   "labels": {
-    "template": "openjdk18-basic-s2i",
+    "template": "sample-spring",
     "xpaas": "1.0.0"
   },
   "message": "A new java application has been created in your project.",
