@@ -1,0 +1,15 @@
+kind: BuildConfig
+apiVersion: v1
+metadata:
+  name: service-demo-pipeline
+spec:
+  type: JenkinsPipeline
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        node('maven') {
+          stage 'build'
+          openshiftBuild(buildConfig: 'service-demo', showBuildLogs: 'true')
+          stage 'deploy'
+          openshiftDeploy(deploymentConfig: 'service-demo')
+        }

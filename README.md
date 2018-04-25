@@ -18,3 +18,8 @@ oc project sample
 ```
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/spring.json
 ```
+
+### Creating new pipeline
+```
+oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.yaml
+```
