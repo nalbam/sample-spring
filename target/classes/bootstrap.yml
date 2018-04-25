@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: nalbam-sample
-  profiles:
-    active: ${PROFILE:default}
