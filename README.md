@@ -19,5 +19,5 @@ oc project sample
 
 ### Creating new apps
 ```
-oc new-app https://github.com/nalbam/sample-spring -l name=sample-spring
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/spring.json
 ```

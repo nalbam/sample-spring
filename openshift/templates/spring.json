@@ -101,7 +101,7 @@
       "value": "config-server"
     },
     {
-      "name": "CONFIG_SERVER_Port",
+      "name": "CONFIG_SERVER_PORT",
       "displayName": "Cloud Config Port",
       "required": true,
       "description": "Spring Boot Cloud Config Server Port.",
