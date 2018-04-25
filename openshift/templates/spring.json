@@ -22,90 +22,90 @@
   "message": "A new java application has been created in your project.",
   "parameters": [
     {
-      "description": "Identifies the resources created for this application.",
-      "displayName": "Name",
       "name": "APPLICATION_NAME",
-      "value": "sample-spring",
+      "displayName": "Name",
+      "description": "Identifies the resources created for this application.",
+      "value": "config-server",
       "required": true
     },
     {
-      "description": "Public hostname for the route. If not specified, a hostname is generated.",
-      "displayName": "Hostname",
       "name": "HOSTNAME",
+      "displayName": "Hostname",
+      "description": "Public hostname for the route. If not specified, a hostname is generated.",
       "value": "",
       "required": false
     },
     {
-      "description": "Git source URI for application",
-      "displayName": "Git Repository URL",
       "name": "SOURCE_REPOSITORY_URL",
-      "value": "https://github.com/nalbam/sample-spring",
+      "displayName": "Git Repository URL",
+      "description": "Git source URI for application",
+      "value": "https://github.com/nalbam/spring-config-server",
       "required": true
     },
     {
-      "description": "Optional branch, tag, or commit.",
-      "displayName": "Git Reference",
       "name": "SOURCE_REPOSITORY_REF",
+      "displayName": "Git Reference",
+      "description": "Optional branch, tag, or commit.",
       "value": "master",
       "required": false
     },
     {
-      "description": "Path within Git project to build; empty for root project directory.",
-      "displayName": "Context Directory",
       "name": "CONTEXT_DIR",
+      "displayName": "Context Directory",
+      "description": "Path within Git project to build; empty for root project directory.",
       "value": "",
       "required": false
     },
     {
-      "description": "GitHub trigger secret",
-      "displayName": "Github Webhook Secret",
       "name": "GITHUB_WEBHOOK_SECRET",
+      "displayName": "Github Webhook Secret",
+      "description": "GitHub trigger secret",
       "from": "[a-zA-Z0-9]{8}",
       "generate": "expression",
       "required": true
     },
     {
-      "description": "Generic build trigger secret",
-      "displayName": "Generic Webhook Secret",
       "name": "GENERIC_WEBHOOK_SECRET",
+      "displayName": "Generic Webhook Secret",
+      "description": "Generic build trigger secret",
       "from": "[a-zA-Z0-9]{8}",
       "generate": "expression",
       "required": true
     },
     {
-      "description": "Namespace in which the ImageStreams for Red Hat Middleware images are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
-      "displayName": "ImageStream Namespace",
       "name": "IMAGE_STREAM_NAMESPACE",
+      "displayName": "ImageStream Namespace",
+      "description": "Namespace in which the ImageStreams for Red Hat Middleware images are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
       "value": "openshift",
       "required": true
     },
     {
       "name": "MEMORY_LIMIT",
       "displayName": "Memory Limit",
-      "required": true,
       "description": "Maximum amount of memory the container can use.",
-      "value": "512Mi"
+      "value": "512Mi",
+      "required": true
     },
     {
       "name": "PROFILE",
-      "displayName": "Application Profile",
-      "required": true,
+      "displayName": "Profile",
       "description": "Spring Boot Application Profile.",
-      "value": "dev"
+      "value": "dev",
+      "required": true
     },
     {
       "name": "CONFIG_SERVER_HOST",
       "displayName": "Cloud Config Host",
-      "required": true,
       "description": "Spring Boot Cloud Config Server Host.",
-      "value": "config-server"
+      "value": "config-server",
+      "required": true
     },
     {
       "name": "CONFIG_SERVER_PORT",
       "displayName": "Cloud Config Port",
-      "required": true,
       "description": "Spring Boot Cloud Config Server Port.",
-      "value": "8888"
+      "value": "8888",
+      "required": true
     }
   ],
   "objects": [
