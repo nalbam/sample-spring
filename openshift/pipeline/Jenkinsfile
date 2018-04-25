@@ -1,0 +1,6 @@
+node('maven') {
+  stage 'build'
+  openshiftBuild(buildConfig: 'sample-spring', showBuildLogs: 'true')
+  stage 'deploy'
+  openshiftDeploy(deploymentConfig: 'sample-spring')
+}
