@@ -8,18 +8,36 @@ docker pull nalbam/sample-spring:slim   (107MB)
 ```
 
 ## Openshift
+### Prepare openjdk
+```
+oc project openshift
+oc import-image -n openshift openshift/redhat-openjdk-18:1.3 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest --confirm
+```
+
 ### Creating a project
 ```
 oc new-project sample --display-name="Sample" --description="Sample Project"
-oc project sample
+oc policy add-role-to-user admin developer -n sample
 ```
 
-### Creating new apps
+### Creating new app
 ```
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/spring.json
+```
+
+### Build the app
+```
+oc start-build sample-spring --follow
 ```
 
 ### Creating new pipeline
 ```
 oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.yaml
+```
+
+### Github Webhook url
+```
+Payload URL: https://<host:port>/oapi/v1/namespaces/<namespace>/buildconfigs/<name>/webhooks/<secret>/github
+Content Type: application/json
+Secret: (leave blank)
 ```
