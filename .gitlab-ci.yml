@@ -49,7 +49,7 @@ deploy-dev:
   only:
     - dev
   script:
-    - ~/toaster/toast.sh deploy beanstalk sample-spring-dev
+    # ~/toaster/toast.sh deploy beanstalk sample-spring-dev
 
 deploy-prod:
   stage: deploy
@@ -58,7 +58,7 @@ deploy-prod:
   only:
     - master
   script:
-    - ~/toaster/toast.sh deploy beanstalk sample-spring-prod
+    # ~/toaster/toast.sh deploy beanstalk sample-spring-prod
 
 deploy-docker:
   stage: deploy
