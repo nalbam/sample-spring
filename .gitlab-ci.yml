@@ -1,5 +1,7 @@
 # gitlab-ci
 
+image: docker:stable
+
 services:
   - docker:dind
 
