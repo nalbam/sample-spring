@@ -8,11 +8,19 @@ services:
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 
+stages:
+  - build
+  - release
+
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 build:
   stage: build
   script:
-    - docker build -t $IMAGE_TAG .
+    - docker build -f Dockerfile-alpine -t $IMAGE_TAG .
+
+build:
+  stage: build
+  script:
     - docker push $IMAGE_TAG
