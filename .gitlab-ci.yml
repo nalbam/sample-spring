@@ -19,8 +19,4 @@ build:
   stage: build
   script:
     - docker build -f Dockerfile-alpine -t $IMAGE_TAG .
-
-release:
-  stage: release
-  script:
     - docker push $IMAGE_TAG
