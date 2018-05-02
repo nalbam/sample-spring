@@ -1,12 +1,15 @@
 # gitlab-ci
 
 variables:
-  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
+#  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
   IMAGE: registry.gitlab.com/nalbam/sample-spring:latest
 
-cache:
-  paths:
-    - ./.m2/repository
+#cache:
+#  paths:
+#    - ./.m2/repository
+
+before_script:
+  - docker info
 
 stages:
   - build
@@ -14,7 +17,7 @@ stages:
 
 build:
   stage: build
-  image: nalbam/builder:alpine
+  image: docker:dind
   only:
     - master
   script:
@@ -23,7 +26,7 @@ build:
 
 release:
   stage: release
-  image: nalbam/builder:alpine
+  image: docker:dind
   only:
     - master
   script:
