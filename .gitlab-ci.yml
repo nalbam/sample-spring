@@ -9,65 +9,24 @@ cache:
     - ./.m2/repository
 
 stages:
-  - test
   - build
   - release
-  - deploy
-
-before_script:
-  - curl -s toast.sh/install-v3 | bash
-
-test:
-  stage: test
-  image: maven:latest
-  script:
-    - mvn test
 
 build:
   stage: build
-  image: maven:latest
-  script:
-    - ~/toaster/toast.sh build version
-    - mvn package -DskipTests
-  artifacts:
-    paths:
-      - target/
-
-release:
-  stage: release
-  image: nalbam/builder:latest
-  script:
-    - ~/toaster/toast.sh release beanstalk
-    - ~/toaster/toast.sh release toast
-  artifacts:
-    paths:
-      - target/
-
-deploy-dev:
-  stage: deploy
-  image: nalbam/builder:latest
-  only:
-    - dev
-  script:
-    # ~/toaster/toast.sh deploy beanstalk sample-spring-dev
-
-deploy-prod:
-  stage: deploy
-  image: nalbam/builder:latest
-  when: manual
-  only:
-    - master
-  script:
-    # ~/toaster/toast.sh deploy beanstalk sample-spring-prod
-
-deploy-docker:
-  stage: deploy
-  image: nalbam/builder:latest
+  image: nalbam/builder:alpine
   only:
     - master
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
     - docker build -t $IMAGE .
+
+release:
+  stage: release
+  image: nalbam/builder:alpine
+  only:
+    - master
+  script:
     - docker push $IMAGE
 
 after_script:
