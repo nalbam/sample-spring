@@ -1,36 +1,16 @@
 # gitlab-ci
 
-variables:
-#  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
-  IMAGE: registry.gitlab.com/nalbam/sample-spring:latest
+services:
+  - docker:dind
 
-#cache:
-#  paths:
-#    - ./.m2/repository
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 
 before_script:
-  - docker info
-
-stages:
-  - build
-  - release
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 build:
   stage: build
-  image: docker:dind
-  only:
-    - master
   script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
-    - docker build -t $IMAGE .
-
-release:
-  stage: release
-  image: docker:dind
-  only:
-    - master
-  script:
-    - docker push $IMAGE
-
-after_script:
-  - ls -alh target
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
