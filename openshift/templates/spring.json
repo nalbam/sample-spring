@@ -89,23 +89,20 @@
     {
       "name": "PROFILE",
       "displayName": "Profile",
-      "description": "Spring Boot Application Profile.",
-      "value": "dev",
-      "required": true
+      "value": "",
+      "required": false
     },
     {
-      "name": "CONFIG_SERVER_HOST",
-      "displayName": "Cloud Config Host",
-      "description": "Spring Boot Cloud Config Server Host.",
-      "value": "config-server",
-      "required": true
+      "name": "SLACK_WEBHOOK",
+      "displayName": "Slack WebHook Url",
+      "value": "",
+      "required": false
     },
     {
-      "name": "CONFIG_SERVER_PORT",
-      "displayName": "Cloud Config Port",
-      "description": "Spring Boot Cloud Config Server Port.",
-      "value": "8888",
-      "required": true
+      "name": "SLACK_CHANNEL",
+      "displayName": "Slack Notification Channel",
+      "value": "",
+      "required": false
     }
   ],
   "objects": [
