@@ -6,3 +6,10 @@ spring:
     time-zone: Asia/Seoul
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+
+app:
+  profile: ${PROFILE:default}
+
+slack:
+  webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
+  channel: ${SLACK_CHANNEL:sandbox}
