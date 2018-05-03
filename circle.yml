@@ -16,8 +16,6 @@ dependencies:
     - ~/toaster/toast.sh config BUCKET repo-me01-seoul
 
 compile:
-#  pre:
-#    - ~/toaster/toast.sh version $CIRCLE_BRANCH $CIRCLE_BUILD_NUM
   override:
     - mvn package -DskipTests
   post:
@@ -35,12 +33,10 @@ deployment:
   development:
     branch: /^(?!master$).*$/
     commands:
-      - ~/toaster/toast.sh release beanstalk
       - ~/toaster/toast.sh deploy beanstalk sample-spring-dev
   production:
     branch: master
     commands:
-      - ~/toaster/toast.sh release beanstalk
       - ~/toaster/toast.sh deploy beanstalk sample-spring-prod
 
 general:
