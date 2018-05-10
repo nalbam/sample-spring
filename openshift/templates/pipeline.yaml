@@ -16,7 +16,7 @@ spec:
             openshiftScale(namespace: 'dev', deploymentConfig: 'sample-spring', replicaCount: '2')
           stage 'deploy QA'
             input 'Proceeed ?'
-            openshiftTag(namespace: 'dev', sourceStream: 'sample-spring', sourceTag: 'latest', destinationStream: 'sample-spring', destinationTag: 'qa')
+            openshiftTag(namespace: 'dev', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: 'sample-spring', destinationTag: 'latest')
             openshiftDeploy(namespace: 'qa', deploymentConfig: 'sample-spring')
             openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '3')
         }
