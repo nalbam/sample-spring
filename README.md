@@ -20,8 +20,6 @@ oc new-project dev
 oc new-project qa
 oc new-project ops
 
-oc new-app jenkins-ephemeral -n ops
-
 oc policy add-role-to-user admin admin -n dev
 oc policy add-role-to-user admin admin -n qa
 oc policy add-role-to-user admin admin -n ops
@@ -35,6 +33,18 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
 ### Create pipeline
 ```
 oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.yaml -n ops
+
+oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
+oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
+
+oc policy add-role-to-group system:image-puller system:serviceaccounts:ops -n dev
+oc policy add-role-to-group system:image-puller system:serviceaccounts:ops -n qa
+oc policy add-role-to-group system:image-puller system:serviceaccounts:qa -n dev
+```
+
+### Start Build
+```
+oc start-build sample-spring-pipeline -n ops
 ```
 
 ### Github Webhook url
