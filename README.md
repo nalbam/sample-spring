@@ -14,23 +14,23 @@ oc project openshift
 oc import-image -n openshift openshift/redhat-openjdk-18:1.3 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest --confirm
 ```
 
-### Creating a project
+### Create project
 ```
 oc new-project demo --display-name="Demo" --description="Demo Project"
 oc policy add-role-to-user admin admin -n demo
 ```
 
-### Creating new app
+### Create app
 ```
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/spring.json
 ```
 
-### Build the app
+### Build app
 ```
 oc start-build sample-spring --follow
 ```
 
-### Creating new pipeline
+### Create pipeline
 ```
 oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.yaml
 ```
