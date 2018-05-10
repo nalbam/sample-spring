@@ -176,7 +176,6 @@
         "strategy": {
           "type": "Source",
           "sourceStrategy": {
-            "forcePull": true,
             "from": {
               "kind": "ImageStreamTag",
               "namespace": "${NAMESPACE}",
