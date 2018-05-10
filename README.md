@@ -16,18 +16,20 @@ oc import-image -n openshift openshift/redhat-openjdk-18:1.3 --from=registry.acc
 
 ### Create project
 ```
+oc new-project ops
 oc new-project dev
 oc new-project qa
-oc new-project ops
 
+oc policy add-role-to-user admin admin -n ops
 oc policy add-role-to-user admin admin -n dev
 oc policy add-role-to-user admin admin -n qa
-oc policy add-role-to-user admin admin -n ops
 ```
 
 ### Create app
 ```
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/spring.json -n dev
+oc new-app jenkins -n ops
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/dev.json -n dev
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/qa.json -n qa
 ```
 
 ### Create pipeline
@@ -51,7 +53,7 @@ oc start-build sample-spring-pipeline -n ops
 
 ### Github Webhook url
 ```
-Payload URL: https://<host:port>/oapi/v1/namespaces/<namespace>/buildconfigs/<name>/webhooks/<secret>/github
+Payload URL: https://<host>:8443/oapi/v1/namespaces/dev/buildconfigs/sample-spring/webhooks/<secret>/github
 Content Type: application/json
 Secret: (leave blank)
 ```
