@@ -94,7 +94,7 @@
 
     <repositories>
         <repository>
-            <id>nexus-local</id>
+            <id>nexus-public</id>
             <url>http://nexus.ops.svc:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
@@ -104,7 +104,7 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>nexus-local</id>
+            <id>nexus-public</id>
             <url>http://nexus.ops.svc:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
