@@ -18,5 +18,5 @@ spec:
             input 'Proceeed ?'
             openshiftTag(namespace: 'dev', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: 'sample-spring', destinationTag: 'latest')
             openshiftDeploy(namespace: 'qa', deploymentConfig: 'sample-spring')
-            openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '3')
+            openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '2')
         }
