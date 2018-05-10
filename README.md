@@ -17,7 +17,7 @@ oc import-image -n openshift openshift/redhat-openjdk-18:1.3 --from=registry.acc
 ### Creating a project
 ```
 oc new-project demo --display-name="Demo" --description="Demo Project"
-oc policy add-role-to-user admin developer -n demo
+oc policy add-role-to-user admin admin -n demo
 ```
 
 ### Creating new app

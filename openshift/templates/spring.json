@@ -274,12 +274,12 @@
                     "value": "${PROFILE}"
                   },
                   {
-                    "name": "CONFIG_SERVER_HOST",
-                    "value": "${CONFIG_SERVER_HOST}"
+                    "name": "SLACK_WEBHOOK",
+                    "value": "${SLACK_WEBHOOK}"
                   },
                   {
-                    "name": "CONFIG_SERVER_PORT",
-                    "value": "${CONFIG_SERVER_PORT}"
+                    "name": "SLACK_CHANNEL",
+                    "value": "${SLACK_CHANNEL}"
                   }
                 ],
                 "ports": [
