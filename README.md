@@ -52,10 +52,3 @@ oc start-build sample-spring-pipeline -n ops
 ```
 oc delete project ops dev qa
 ```
-
-### Github Webhook url
-```
-Payload URL: https://<host>:8443/oapi/v1/namespaces/dev/buildconfigs/sample-spring/webhooks/<secret>/github
-Content Type: application/json
-Secret: (leave blank)
-```
