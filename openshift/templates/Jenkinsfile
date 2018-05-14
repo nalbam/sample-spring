@@ -3,9 +3,9 @@
 echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 
-options {
-  timeout(time: 20, unit: 'MINUTES')
-}
+//options {
+//  timeout(time: 20, unit: 'MINUTES')
+//}
 
 properties([
   buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '10'))
