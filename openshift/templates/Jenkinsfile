@@ -3,7 +3,11 @@
 echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 
-timeout(time: 20, unit: 'MINUTES')
+//timeout(time: 20, unit: 'MINUTES')
+
+//properties([
+//  buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '10'))
+//])
 
 node('maven') {
   stage('Build') {
