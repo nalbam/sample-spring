@@ -34,7 +34,9 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
 ```
 oc new-app jenkins-ephemeral -n ops
 
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json \
+           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring
+           -n ops
 
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
