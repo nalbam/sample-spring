@@ -86,10 +86,18 @@
         }
       },
       "spec": {
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${SOURCE_REPOSITORY_URL}",
+            "ref": "${SOURCE_REPOSITORY_REF}"
+          },
+          "contextDir": "${CONTEXT_DIR}"
+        },
         "strategy": {
           "type": "JenkinsPipeline",
           "jenkinsPipelineStrategy": {
-            "jenkinsfilePath": "Jenkinsfile"
+            "jenkinsfilePath": "openshift/templates/Jenkinsfile"
           }
         },
         "triggers": [
