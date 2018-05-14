@@ -1,6 +1,12 @@
+#!groovy
+
+echo "JOB_NAME     ${env.JOB_NAME}"
+echo "BRANCH_NAME  ${env.BRANCH_NAME}"
+echo "BUILD_URL    ${env.BUILD_URL}"
+echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
+
 node('maven') {
   stage('Build') {
-    sh "cat /tmp/artifacts/configuration/settings.xml"
     git branch: 'master', url: 'https://github.com/nalbam/sample-spring'
     sh "mvn clean package -DskipTests=true"
   }
@@ -27,4 +33,7 @@ node('maven') {
     openshiftDeploy(namespace: 'qa', deploymentConfig: 'sample-spring')
     openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '2')
   }
+}
+def notify(status, color) {
+    slackSend(color: color, message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
 }
