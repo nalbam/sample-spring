@@ -1,17 +1,25 @@
 #!groovy
 
 echo "JOB_NAME     ${env.JOB_NAME}"
-echo "BRANCH_NAME  ${env.BRANCH_NAME}"
-echo "BUILD_URL    ${env.BUILD_URL}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 
 node('maven') {
   stage('Build') {
-    git branch: 'master', url: 'https://github.com/nalbam/sample-spring'
-    sh "mvn clean package -DskipTests=true"
+    git url: 'https://github.com/nalbam/sample-spring', branch: 'master'
+    try {
+      sh "mvn clean package -DskipTests=true"
+    } catch (e) {
+      notify('danger', 'Build Failed')
+      throw e
+    }
   }
-  stage('Unit Tests') {
-    sh "mvn test"
+  stage('Tests') {
+    try {
+      sh "mvn test"
+    } catch (e) {
+      notify('danger', 'Tests Failed')
+      throw e
+    }
     step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
   }
   stage('Code Analysis') {
@@ -34,6 +42,7 @@ node('maven') {
     openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '2')
   }
 }
-def notify(status, color) {
-    slackSend(color: color, message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+
+def notify(color, status) {
+  slackSend(color: color, message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
 }

@@ -32,7 +32,10 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
 
 ### Create pipeline
 ```
-oc new-app jenkins-ephemeral -n ops
+oc new-app jenkins-ephemeral \
+           -p JENKINS_IMAGE_STREAM_TAG=jenkins:latest \
+           -p INSTALL_PLUGINS=slack:latest \
+           -n ops
 
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json \
            -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring \
