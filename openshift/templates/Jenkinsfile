@@ -5,24 +5,24 @@ node('maven') {
   stage('Build') {
     sh "mvn clean package -DskipTests=true"
   }
-  stage ('Code Analysis') {
+  stage('Code Analysis') {
     //sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
   }
   stage('Unit Tests') {
     sh "mvn test"
   }
-  stage ('Build Image') {
+  stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
   }
-  stage ('Deploy DEV') {
+  stage('Deploy DEV') {
     openshiftTag(namespace: 'ops', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: 'sample-spring', destinationTag: 'latest')
     openshiftDeploy(namespace: 'dev', deploymentConfig: 'sample-spring')
     openshiftScale(namespace: 'dev', deploymentConfig: 'sample-spring', replicaCount: '2')
   }
-  stage ('Proceeed QA') {
+  stage('Proceeed QA') {
     input 'Proceeed ?'
   }
-  stage ('Deploy QA') {
+  stage('Deploy QA') {
     openshiftTag(namespace: 'ops', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: 'sample-spring', destinationTag: 'latest')
     openshiftDeploy(namespace: 'qa', deploymentConfig: 'sample-spring')
     openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '2')
