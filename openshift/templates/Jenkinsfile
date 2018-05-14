@@ -1,23 +1,26 @@
 node('maven') {
   stage('Build Image') {
-    openshiftBuild(namespace: 'ops', buildConfig: '${env.APPLICATION_NAME}', showBuildLogs: 'true')
+    openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
   }
   stage('Code Analysis') {
-    git branch: '${env.SOURCE_REPOSITORY_REF}', url: '${env.SOURCE_REPOSITORY_URL}'
+    git branch: 'master', url: 'https://github.com/nalbam/sample-spring'
     sh "pwd && ls -al"
+    sh "mvn clean package -DskipTests=true"
+    sh "mcn test"
+    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
     sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
   }
   stage('Deploy DEV') {
-    openshiftTag(namespace: 'ops', sourceStream: '${env.APPLICATION_NAME}', sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: '${env.APPLICATION_NAME}', destinationTag: 'latest')
-    openshiftDeploy(namespace: 'dev', deploymentConfig: '${env.APPLICATION_NAME}')
-    openshiftScale(namespace: 'dev', deploymentConfig: '${env.APPLICATION_NAME}', replicaCount: '2')
+    openshiftTag(namespace: 'ops', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: 'sample-spring', destinationTag: 'latest')
+    openshiftDeploy(namespace: 'dev', deploymentConfig: 'sample-spring')
+    openshiftScale(namespace: 'dev', deploymentConfig: 'sample-spring', replicaCount: '2')
   }
   stage('Proceeed QA') {
     input 'Proceeed ?'
   }
   stage('Deploy QA') {
-    openshiftTag(namespace: 'ops', sourceStream: '${env.APPLICATION_NAME}', sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: '${env.APPLICATION_NAME}', destinationTag: 'latest')
-    openshiftDeploy(namespace: 'qa', deploymentConfig: '${env.APPLICATION_NAME}')
-    openshiftScale(namespace: 'qa', deploymentConfig: '${env.APPLICATION_NAME}', replicaCount: '2')
+    openshiftTag(namespace: 'ops', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: 'sample-spring', destinationTag: 'latest')
+    openshiftDeploy(namespace: 'qa', deploymentConfig: 'sample-spring')
+    openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '2')
   }
 }
