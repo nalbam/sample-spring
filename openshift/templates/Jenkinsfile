@@ -1,14 +1,17 @@
 node('maven') {
-  stage('Build Image') {
-    openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
+  stage('Build') {
+    git branch: 'master', url: 'https://github.com/nalbam/sample-spring'
+    sh "mvn clean package -DskipTests=true"
+  }
+  stage('Unit Tests') {
+    sh "mvn test"
+    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
   }
   stage('Code Analysis') {
-    git branch: 'master', url: 'https://github.com/nalbam/sample-spring'
-    sh "pwd && ls -al"
-    sh "mvn clean package -DskipTests=true"
-    sh "mcn test"
-    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
     sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
+  }
+  stage('Build Image') {
+    openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
   }
   stage('Deploy DEV') {
     openshiftTag(namespace: 'ops', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: 'sample-spring', destinationTag: 'latest')
