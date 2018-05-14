@@ -3,14 +3,6 @@
 echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 
-//options {
-//  timeout(time: 20, unit: 'MINUTES')
-//}
-
-//properties([
-//  buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '10'))
-//])
-
 node('maven') {
   stage('Build') {
     git url: 'https://github.com/nalbam/sample-spring', branch: 'master'
@@ -53,5 +45,5 @@ node('maven') {
 }
 
 def notify(color, status) {
-  slackSend(message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>", color: color, token: "T03FUG4UB/B8RQJGNR0/jsqJF1FPtGFbAfMLvibsnX6l")
+  slackSend(message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>", color: color, token: 'T03FUG4UB/B8RQJGNR0/jsqJF1FPtGFbAfMLvibsnX6l')
 }
