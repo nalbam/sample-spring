@@ -53,5 +53,5 @@ node('maven') {
 }
 
 def notify(color, status) {
-  slackSend(color: color, message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>", token: "T03FUG4UB/B8RQJGNR0/jsqJF1FPtGFbAfMLvibsnX6l")
+  slackSend(message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>", color: color, token: "T03FUG4UB/B8RQJGNR0/jsqJF1FPtGFbAfMLvibsnX6l")
 }
