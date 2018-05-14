@@ -52,17 +52,17 @@
       "required": false
     },
     {
-      "name": "GITHUB_WEBHOOK_SECRET",
-      "displayName": "Github Webhook Secret",
-      "description": "GitHub trigger secret",
+      "name": "GENERIC_WEBHOOK_SECRET",
+      "displayName": "Generic Webhook Secret",
+      "description": "Generic build trigger secret",
       "from": "[a-zA-Z0-9]{8}",
       "generate": "expression",
       "required": true
     },
     {
-      "name": "GENERIC_WEBHOOK_SECRET",
-      "displayName": "Generic Webhook Secret",
-      "description": "Generic build trigger secret",
+      "name": "GITHUB_WEBHOOK_SECRET",
+      "displayName": "Github Webhook Secret",
+      "description": "GitHub trigger secret",
       "from": "[a-zA-Z0-9]{8}",
       "generate": "expression",
       "required": true
@@ -153,15 +153,15 @@
         },
         "triggers": [
           {
-            "type": "GitHub",
-            "github": {
-              "secret": "${GITHUB_WEBHOOK_SECRET}"
-            }
-          },
-          {
             "type": "Generic",
             "generic": {
               "secret": "${GENERIC_WEBHOOK_SECRET}"
+            }
+          },
+          {
+            "type": "GitHub",
+            "github": {
+              "secret": "${GITHUB_WEBHOOK_SECRET}"
             }
           },
           {
