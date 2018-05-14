@@ -1,5 +1,6 @@
 node('maven') {
   stage('Build') {
+    sh "cat /tmp/artifacts/configuration/settings.xml"
     git branch: 'master', url: 'https://github.com/nalbam/sample-spring'
     sh "mvn clean package -DskipTests=true"
   }
