@@ -1,18 +1,9 @@
 node('maven') {
-  stage('Checkout Source') {
-    checkout scm
-  }
-  stage('Build') {
-    sh "mvn clean package -DskipTests=true"
-  }
-  stage('Code Analysis') {
-    //sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
-  }
-  stage('Unit Tests') {
-    sh "mvn test"
-  }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
+  }
+  stage('Code Analysis') {
+    sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
   }
   stage('Deploy DEV') {
     openshiftTag(namespace: 'ops', sourceStream: 'sample-spring', sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: 'sample-spring', destinationTag: 'latest')
