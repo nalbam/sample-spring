@@ -3,6 +3,8 @@
 echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 
+timeout(time: 20, unit: 'MINUTES')
+
 node('maven') {
   stage('Build') {
     git url: 'https://github.com/nalbam/sample-spring', branch: 'master'
