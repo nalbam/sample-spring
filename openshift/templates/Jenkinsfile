@@ -3,6 +3,7 @@ node('maven') {
     openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
   }
   stage('Code Analysis') {
+    sh "pwd && ls -al"
     sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
   }
   stage('Deploy DEV') {
