@@ -148,7 +148,21 @@
         "strategy": {
           "type": "JenkinsPipeline",
           "jenkinsPipelineStrategy": {
-            "jenkinsfilePath": "openshift/templates/Jenkinsfile"
+            "jenkinsfilePath": "openshift/templates/Jenkinsfile",
+            "env": [
+              {
+                "name": "APPLICATION_NAME",
+                "value": "${APPLICATION_NAME}"
+              },
+              {
+                "name": "SOURCE_REPOSITORY_URL",
+                "value": "${SOURCE_REPOSITORY_URL}"
+              },
+              {
+                "name": "SOURCE_REPOSITORY_REF",
+                "value": "${SOURCE_REPOSITORY_REF}"
+              }
+            ]
           }
         },
         "triggers": [
