@@ -19,20 +19,26 @@ oc new-project ops
 oc new-project dev
 oc new-project qa
 
-oc policy add-role-to-user admin admin -n ops
-oc policy add-role-to-user admin admin -n dev
-oc policy add-role-to-user admin admin -n qa
+oc policy add-role-to-user admin developer -n ops
+oc policy add-role-to-user admin developer -n dev
+oc policy add-role-to-user admin developer -n qa
 ```
 
 ### Create app
 ```
 oc new-app jenkins-ephemeral -n ops
+
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa
+
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/dev.json -n dev
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/qa.json -n qa
 ```
 
 ### Create pipeline
 ```
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops
+
 oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.yaml -n ops
 
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
