@@ -12,15 +12,13 @@ public class PackageUtilTests {
 
     @Test
     public void testPackageData() {
-        log.debug("## PackageUtilTests ##");
-
         final Map<String, String> data = PackageUtil.getData(this.getClass());
 
         assertNotNull(data);
         assertNotNull(data.get("artifactId"));
         assertNotNull(data.get("version"));
 
-        log.info("testPackageData : [{}] [{}]", data.get("artifactId"), data.get("version"));
+        log.info("# [{}] [{}]", data.get("artifactId"), data.get("version"));
     }
 
 }
