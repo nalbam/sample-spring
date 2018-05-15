@@ -16,14 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PackageUtilTests {
 
     @Test
-    public void testPackageDate() {
+    public void testPackageData() {
         log.debug("## PackageUtilTests ##");
 
         final Map<String, String> data = PackageUtil.getData(this.getClass());
 
         assertThat(data).isNotNull();
 
-        log.info("testPackageDate : [{}] [{}]", data.get("artifactId"), data.get("version"));
+        log.info("testPackageData : [{}] [{}]", data.get("artifactId"), data.get("version"));
     }
 
 }
