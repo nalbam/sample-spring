@@ -16,7 +16,7 @@ node('maven') {
     step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
   }
   stage('Code Analysis') {
-    sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
+    sh "mvn sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
   }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: '${env.APPLICATION_NAME}', showBuildLogs: 'true')

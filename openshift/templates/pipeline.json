@@ -73,6 +73,13 @@
       "description": "The custom Maven mirror URL",
       "value": "http://nexus.ops.svc:8081/repository/maven-public/",
       "required": false
+    },
+    {
+      "name": "SONAR_HOST_URL",
+      "displayName": "Sonar Host URL",
+      "description": "The Sonar Host URL",
+      "value": "http://sonarqube.ops.svc:9000",
+      "required": false
     }
   ],
   "objects": [
