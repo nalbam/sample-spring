@@ -26,8 +26,10 @@ oc policy add-role-to-user admin developer -n qa
 
 ### Create app
 ```
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev \
+           -p PROFILE=dev
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa \
+           -p PROFILE=qa
 ```
 
 ### Create pipeline
