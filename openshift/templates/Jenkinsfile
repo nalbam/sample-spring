@@ -9,9 +9,9 @@ echo "BUILD_URL    ${env.BUILD_URL}"
 echo "JENKINS_URL  ${env.JENKINS_URL}"
 
 node('maven') {
-  def app = "${env.APPLICATION_NAME}"
-  def git_url = "${env.SOURCE_REPOSITORY_URL}"
-  def git_ref = "${env.SOURCE_REPOSITORY_REF}"
+  def app = "${env.APPLICATION_NAME}" as java.lang.Object
+  def git_url = "${env.SOURCE_REPOSITORY_URL}" as java.lang.Object
+  def git_ref = "${env.SOURCE_REPOSITORY_REF}" as java.lang.Object
 
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
 
@@ -23,7 +23,7 @@ node('maven') {
   }
   stage('Unit Tests') {
     sh "mvn test"
-    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+    //step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
   }
   stage('Code Analysis') {
     sh "mvn sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
