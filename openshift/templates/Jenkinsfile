@@ -34,9 +34,9 @@ node('maven') {
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
   }
-  stage('Approve QA') {
+  stage('Proceed QA') {
     timeout(time: 15, unit: 'MINUTES') {
-      input(message: 'Approve QA?')
+      input(message: 'Proceed QA?')
     }
   }
   stage('Deploy QA') {
