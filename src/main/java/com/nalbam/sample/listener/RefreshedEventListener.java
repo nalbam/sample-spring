@@ -26,7 +26,7 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
     public void onApplicationEvent(ContextRefreshedEvent event) {
         final Map<String, String> data = PackageUtil.getData(this.getClass());
 
-        log.info("Context refreshed : [{}] [{}] [{}] [{}]", data.get("artifactId"), this.profile, data.get("version"), event.getTimestamp());
+        log.info("Context refreshed : [{}] [{}] [{}] [{}]", this.profile, data.get("artifactId"), data.get("version"), event.getTimestamp());
 
         final SlackMessage message = new SlackMessage("Context refreshed ")
                 .code(data.get("artifactId")).text(" ").code(this.profile).text(" ").code(data.get("version"));
