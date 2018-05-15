@@ -168,6 +168,14 @@
               {
                 "name": "SOURCE_REPOSITORY_REF",
                 "value": "${SOURCE_REPOSITORY_REF}"
+              },
+              {
+                "name": "MAVEN_MIRROR_URL",
+                "value": "${MAVEN_MIRROR_URL}"
+              },
+              {
+                "name": "SONAR_HOST_URL",
+                "value": "${SONAR_HOST_URL}"
               }
             ]
           }

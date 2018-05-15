@@ -4,11 +4,15 @@ echo "APPLICATION  ${env.APPLICATION_NAME}"
 echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
-echo "GIT_BRANCH   ${env.SOURCE_REPOSITORY_REF}"
+echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
 
 node('maven') {
+  def app = "${env.APPLICATION_NAME}"
+  def git_url = "${env.SOURCE_REPOSITORY_URL}"
+  def git_ref = "${env.SOURCE_REPOSITORY_REF}"
+
   stage('Build') {
-    git url: "${env.SOURCE_REPOSITORY_URL}", branch: "${env.SOURCE_REPOSITORY_REF}"
+    git url: git_url, branch: git_ref
     sh "mvn clean package -DskipTests=true"
   }
   stage('Tests') {
@@ -19,19 +23,19 @@ node('maven') {
     sh "mvn sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
   }
   stage('Build Image') {
-    openshiftBuild(namespace: 'ops', buildConfig: '${env.APPLICATION_NAME}', showBuildLogs: 'true')
+    openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
   }
   stage('Deploy DEV') {
-    openshiftTag(namespace: 'ops', sourceStream: '${env.APPLICATION_NAME}', sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: '${env.APPLICATION_NAME}', destinationTag: 'latest')
-    openshiftDeploy(namespace: 'dev', deploymentConfig: '${env.APPLICATION_NAME}')
-    openshiftScale(namespace: 'dev', deploymentConfig: '${env.APPLICATION_NAME}', replicaCount: '2')
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
+    openshiftDeploy(namespace: 'dev', deploymentConfig: app)
+    openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
   }
   stage('Proceeed QA') {
     input 'Proceeed ?'
   }
   stage('Deploy QA') {
-    openshiftTag(namespace: 'ops', sourceStream: '${env.APPLICATION_NAME}', sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: '${env.APPLICATION_NAME}', destinationTag: 'latest')
-    openshiftDeploy(namespace: 'qa', deploymentConfig: '${env.APPLICATION_NAME}')
-    openshiftScale(namespace: 'qa', deploymentConfig: '${env.APPLICATION_NAME}', replicaCount: '2')
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
+    openshiftDeploy(namespace: 'qa', deploymentConfig: app)
+    openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '2')
   }
 }
