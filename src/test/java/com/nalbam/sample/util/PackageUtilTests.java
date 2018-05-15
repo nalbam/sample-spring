@@ -22,6 +22,8 @@ public class PackageUtilTests {
         final Map<String, String> data = PackageUtil.getData(this.getClass());
 
         assertThat(data).isNotNull();
+        assertThat(data.get("artifactId")).isNotNull();
+        assertThat(data.get("version")).isNotNull();
 
         log.info("testPackageData : [{}] [{}]", data.get("artifactId"), data.get("version"));
     }

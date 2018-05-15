@@ -13,11 +13,15 @@ public class PackageUtil {
                 data.put("artifactId", p.getImplementationTitle());
             } else if (p.getSpecificationTitle() != null) {
                 data.put("artifactId", p.getSpecificationTitle());
+            } else {
+                data.put("artifactId", "");
             }
             if (p.getImplementationVersion() != null) {
                 data.put("version", p.getImplementationVersion());
             } else if (p.getSpecificationVersion() != null) {
                 data.put("version", p.getSpecificationVersion());
+            } else {
+                data.put("version", "");
             }
         }
         return data;
