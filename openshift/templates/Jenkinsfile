@@ -11,11 +11,18 @@ node('maven') {
   def git_url = "${env.SOURCE_REPOSITORY_URL}"
   def git_ref = "${env.SOURCE_REPOSITORY_REF}"
 
-  stage('Build') {
+  stage('Checkout') {
     git url: git_url, branch: git_ref
+  }
+  stage('Update Mirror') {
+    sh "cat ~/.m2/settings.xml"
+    sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
+    sh "cat ~/.m2/settings.xml"
+  }
+  stage('Build') {
     sh "mvn clean package -DskipTests=true"
   }
-  stage('Tests') {
+  stage('Unit Tests') {
     sh "mvn test"
     step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
   }
@@ -23,7 +30,6 @@ node('maven') {
     sh "mvn sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
   }
   stage('Build Image') {
-    sh "cat ~/.m2/settings.xml"
     openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
   }
   stage('Deploy DEV') {
@@ -31,9 +37,9 @@ node('maven') {
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
   }
-  stage('Proceeed QA') {
+  stage('Approve QA') {
     timeout(time: 15, unit: 'MINUTES') {
-      input(message: 'Proceeed ?')
+      input(message: 'Approve ?')
     }
   }
   stage('Deploy QA') {
