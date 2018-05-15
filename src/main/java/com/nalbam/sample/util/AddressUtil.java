@@ -24,7 +24,7 @@ public class AddressUtil {
             return ip.getHostAddress();
         } catch (final Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return "";
     }
