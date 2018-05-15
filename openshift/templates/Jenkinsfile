@@ -8,7 +8,7 @@ echo "GIT_BRANCH   ${env.SOURCE_REPOSITORY_REF}"
 
 node('maven') {
   stage('Build') {
-    git url: '${env.SOURCE_REPOSITORY_URL}', branch: '${env.SOURCE_REPOSITORY_REF}'
+    git url: "${env.SOURCE_REPOSITORY_URL}", branch: "${env.SOURCE_REPOSITORY_REF}"
     sh "mvn clean package -DskipTests=true"
   }
   stage('Tests') {
