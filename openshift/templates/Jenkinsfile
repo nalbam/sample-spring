@@ -5,6 +5,8 @@ echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
 echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
+echo "BUILD_URL    ${env.BUILD_URL}"
+echo "JENKINS_URL  ${env.JENKINS_URL}"
 
 node('maven') {
   def app = "${env.APPLICATION_NAME}"
@@ -35,6 +37,7 @@ node('maven') {
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
   }
   stage('Proceed QA') {
+    // slack: https://<jenkins-url>/job/ops/job/<pipeline-name>/${env.BUILD_NUMBER}/input/
     timeout(time: 15, unit: 'MINUTES') {
       input(message: 'Proceed QA?')
     }
