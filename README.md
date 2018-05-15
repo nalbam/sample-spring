@@ -42,7 +42,6 @@ oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
 oc policy add-role-to-group system:image-puller system:serviceaccounts:ops -n dev
 oc policy add-role-to-group system:image-puller system:serviceaccounts:ops -n qa
-oc policy add-role-to-group system:image-puller system:serviceaccounts:qa -n dev
 ```
 
 ### Start Build
