@@ -1,30 +1,20 @@
 #!groovy
 
 echo "JOB_NAME     ${env.JOB_NAME}"
+echo "PROJECT_NAME ${env.PROJECT_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 
 node('maven') {
   stage('Build') {
     git url: 'https://github.com/nalbam/sample-spring', branch: 'master'
-    try {
-      sh "mvn clean package -DskipTests=true"
-    } catch (e) {
-      notify('danger', 'Build Failed')
-      throw e
-    }
+    sh "mvn clean package -DskipTests=true"
   }
   stage('Tests') {
-    try {
-      sh "mvn test"
-    } catch (e) {
-      notify('danger', 'Tests Failed')
-      throw e
-    }
+    sh "mvn test"
     step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
   }
   stage('Code Analysis') {
     sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube.ops.svc:9000 -DskipTests=true"
-    notify('good', 'Build Passed')
   }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: 'sample-spring', showBuildLogs: 'true')
@@ -42,8 +32,4 @@ node('maven') {
     openshiftDeploy(namespace: 'qa', deploymentConfig: 'sample-spring')
     openshiftScale(namespace: 'qa', deploymentConfig: 'sample-spring', replicaCount: '2')
   }
-}
-
-def notify(color, status) {
-  slackSend(message: "${status}: ${env.JOB_NAME} <${env.BUILD_URL}|#${env.BUILD_NUMBER}>", color: color, token: 'T03FUG4UB/B8RQJGNR0/jsqJF1FPtGFbAfMLvibsnX6l')
 }
