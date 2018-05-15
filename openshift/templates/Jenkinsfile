@@ -11,11 +11,10 @@ node('maven') {
   def git_url = "${env.SOURCE_REPOSITORY_URL}"
   def git_ref = "${env.SOURCE_REPOSITORY_REF}"
 
+  sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
+
   stage('Checkout') {
     git url: git_url, branch: git_ref
-  }
-  stage('Update Mirror') {
-    sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
   }
   stage('Build') {
     sh "mvn clean package -DskipTests=true"
