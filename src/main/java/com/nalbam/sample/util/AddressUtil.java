@@ -1,9 +1,12 @@
 package com.nalbam.sample.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
+@Slf4j
 public class AddressUtil {
 
     public static String getAddress() {
@@ -20,6 +23,7 @@ public class AddressUtil {
             ip = InetAddress.getLocalHost();
             return ip.getHostAddress();
         } catch (final Exception e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
         return "";
