@@ -15,9 +15,7 @@ node('maven') {
     git url: git_url, branch: git_ref
   }
   stage('Update Mirror') {
-    sh "cat ~/.m2/settings.xml"
     sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
-    sh "cat ~/.m2/settings.xml"
   }
   stage('Build') {
     sh "mvn clean package -DskipTests=true"
