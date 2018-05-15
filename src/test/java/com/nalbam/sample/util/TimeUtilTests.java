@@ -16,7 +16,19 @@ public class TimeUtilTests {
     private final SimpleDateFormat f = new SimpleDateFormat("yyyy년 MM월 dd일");
 
     @Test
-    public void testDate() {
+    public void testSpent() {
+        final Date d = new Date();
+        d.setTime(d.getTime() - 100000);
+
+        final long spent = TimeUtil.spent(d);
+
+        log.info("# spent : {} 초 지났습니다.", spent);
+
+        assertEquals(spent, 100L);
+    }
+
+    @Test
+    public void testAgoDate() {
         final Date d = new Date();
         d.setTime(d.getTime() - 100000);
 
@@ -29,7 +41,7 @@ public class TimeUtilTests {
     }
 
     @Test
-    public void testCalendar() {
+    public void testAgoCalendar() {
         final Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR) - 1, Calendar.JANUARY, 1);
 
