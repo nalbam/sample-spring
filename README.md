@@ -33,6 +33,7 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
 ### Create pipeline
 ```
 oc new-app jenkins-ephemeral \
+           -p JENKINS_IMAGE_STREAM_TAG=jenkins:alpine \
            -p INSTALL_PLUGINS=slack:latest \
            -n ops
 
