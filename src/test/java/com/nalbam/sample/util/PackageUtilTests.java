@@ -2,17 +2,12 @@ package com.nalbam.sample.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 @Slf4j
-@ActiveProfiles("test")
-@RunWith(SpringRunner.class)
 public class PackageUtilTests {
 
     @Test
@@ -21,9 +16,9 @@ public class PackageUtilTests {
 
         final Map<String, String> data = PackageUtil.getData(this.getClass());
 
-        assertThat(data).isNotNull();
-        assertThat(data.get("artifactId")).isNotNull();
-        assertThat(data.get("version")).isNotNull();
+        assertNotNull(data);
+        assertNotNull(data.get("artifactId"));
+        assertNotNull(data.get("version"));
 
         log.info("testPackageData : [{}] [{}]", data.get("artifactId"), data.get("version"));
     }
