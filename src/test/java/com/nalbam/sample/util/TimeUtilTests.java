@@ -18,7 +18,7 @@ public class TimeUtilTests {
     @Test
     public void testSpent() {
         final Date d = new Date();
-        d.setTime(d.getTime() - 100000);
+        d.setTime(d.getTime() - (100 * 1000));
 
         final long spent = TimeUtil.spent(d);
 
@@ -28,20 +28,46 @@ public class TimeUtilTests {
     }
 
     @Test
-    public void testAgoDate() {
+    public void testAgoDateMinutes() {
         final Date d = new Date();
-        d.setTime(d.getTime() - 100000);
+        d.setTime(d.getTime() - (3 * 60 * 1000));
 
         final String ago = TimeUtil.ago(d);
 
         log.info("# ago : {} 은 {} 입니다.", f.format(d.getTime()), ago);
 
         assertNotNull(ago);
-        assertEquals(ago, "1분 전");
+        assertEquals(ago, "3분 전");
     }
 
     @Test
-    public void testAgoCalendar() {
+    public void testAgoDateHours() {
+        final Date d = new Date();
+        d.setTime(d.getTime() - (9 * 60 * 60 * 1000));
+
+        final String ago = TimeUtil.ago(d);
+
+        log.info("# ago : {} 은 {} 입니다.", f.format(d.getTime()), ago);
+
+        assertNotNull(ago);
+        assertEquals(ago, "9시간 전");
+    }
+
+    @Test
+    public void testAgoDateDays() {
+        final Date d = new Date();
+        d.setTime(d.getTime() - (15 * 24 * 60 * 60 * 1000));
+
+        final String ago = TimeUtil.ago(d);
+
+        log.info("# ago : {} 은 {} 입니다.", f.format(d.getTime()), ago);
+
+        assertNotNull(ago);
+        assertEquals(ago, "15일 전");
+    }
+
+    @Test
+    public void testAgoCalendarYear() {
         final Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR) - 1, Calendar.JANUARY, 1);
 

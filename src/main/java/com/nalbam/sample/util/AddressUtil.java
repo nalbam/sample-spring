@@ -9,7 +9,7 @@ public class AddressUtil {
     public static String getAddress() {
         try {
             InetAddress ip;
-            for (final Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces(); ((Enumeration) e).hasMoreElements(); ) {
+            for (final Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
                 for (final Enumeration<InetAddress> a = e.nextElement().getInetAddresses(); a.hasMoreElements(); ) {
                     ip = a.nextElement();
                     if (!ip.isLoopbackAddress() && !ip.isLinkLocalAddress() && ip.isSiteLocalAddress()) {
