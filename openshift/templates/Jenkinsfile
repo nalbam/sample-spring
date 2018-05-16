@@ -1,17 +1,21 @@
 #!groovy
 
 echo "APPLICATION  ${env.APPLICATION_NAME}"
+echo "NAMESPACE    ${env.NAMESPACE}"
 echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
 echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
 echo "BUILD_URL    ${env.BUILD_URL}"
-echo "JENKINS_URL  ${env.JENKINS_URL}"
 
 node('maven') {
   def app = "${env.APPLICATION_NAME}" as java.lang.Object
   def git_url = "${env.SOURCE_REPOSITORY_URL}" as java.lang.Object
   def git_ref = "${env.SOURCE_REPOSITORY_REF}" as java.lang.Object
+  def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
+
+  // https://jenkins-ops.52.79.165.150.xip.io/blue/organizations/jenkins/ops%2Fops-sample-node-pipeline/detail/ops-sample-node-pipeline/4/pipeline
+  def url = "https://jenkins-ops.52.79.165.150.xip.io/blue/organizations/jenkins/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
 
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
 
@@ -36,7 +40,10 @@ node('maven') {
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
   }
   stage('Proceed QA') {
-    // slack: https://<jenkins-url>/job/ops/job/<pipeline-name>/${env.BUILD_NUMBER}/input/
+    mail (
+      to: 'me@nalbam.com',
+      subject: "${env.JOB_NAME} (${env.BUILD_NUMBER}) is awaiting proceed.",
+      body: "Please go to ${url}.");
     timeout(time: 15, unit: 'MINUTES') {
       input(message: 'Proceed QA?')
     }
