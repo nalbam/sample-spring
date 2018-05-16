@@ -24,7 +24,7 @@ oc policy add-role-to-user admin developer -n dev
 oc policy add-role-to-user admin developer -n qa
 ```
 
-### Create app
+### Create application
 ```
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev \
            -p PROFILE=dev
@@ -36,14 +36,11 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
 ```
 oc new-app jenkins-ephemeral -n ops
 
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
-           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring
-
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
-oc policy add-role-to-group system:image-puller system:serviceaccounts:ops -n dev
-oc policy add-role-to-group system:image-puller system:serviceaccounts:ops -n qa
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
+           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring
 ```
 
 ### Start Build
