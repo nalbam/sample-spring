@@ -40,10 +40,6 @@ node('maven') {
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
   }
   stage('Proceed QA') {
-    mail (
-      to: 'me@nalbam.com',
-      subject: "${env.JOB_NAME} (${env.BUILD_NUMBER}) is awaiting proceed.",
-      body: "Please go to ${url}.");
     timeout(time: 15, unit: 'MINUTES') {
       input(message: 'Proceed QA?')
     }
