@@ -36,7 +36,7 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
         log.info("{} : [{}] [{}] [{}] [{}]", this.message, this.profile, data.get("artifactId"), data.get("version"), event.getTimestamp());
 
         this.slackRepository.send(
-                new SlackMessage(this.message)
+                new SlackMessage(this.message).text(" ")
                         .code(this.profile).text(" ")
                         .code(data.get("artifactId")).text(" ")
                         .code(data.get("version"))
