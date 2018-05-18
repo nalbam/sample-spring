@@ -37,7 +37,7 @@ node('maven') {
   stage('Deploy DEV') {
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
-    openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '2')
+    openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
   }
   stage('Proceed QA') {
     timeout(time: 15, unit: 'MINUTES') {
@@ -47,6 +47,6 @@ node('maven') {
   stage('Deploy QA') {
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'qa', deploymentConfig: app)
-    openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '2')
+    openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
   }
 }
