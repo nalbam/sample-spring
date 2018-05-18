@@ -5,6 +5,7 @@ echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
 echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
+echo "JENKINS_URL  ${env.JENKINS_URL}"
 
 node('maven') {
   def app = "${env.APPLICATION_NAME}"
@@ -67,5 +68,10 @@ node('maven') {
 }
 
 def notify(color, message) {
-  sh "curl -s http://repo.toast.sh/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
+  try {
+    if (env.SLACK_WEBHOOK_URL) {
+      sh "curl -s http://repo.toast.sh/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
+    }
+  } catch (e) {
+  }
 }
