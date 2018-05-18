@@ -53,5 +53,5 @@ node('maven') {
 }
 
 def notify(color, message) {
-  curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} "${message}"
+  curl -s "https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh" | bash -s -- -u=${env.SLACK_WEBHOOK_URL} "${message}"
 }
