@@ -8,7 +8,7 @@ echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
 echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
 echo "BUILD_URL    ${env.BUILD_URL}"
 
-node() {
+node('maven') {
   def app = "${env.APPLICATION_NAME}"
   def git_url = "${env.SOURCE_REPOSITORY_URL}"
   def git_ref = "${env.SOURCE_REPOSITORY_REF}"
@@ -54,5 +54,5 @@ node() {
 }
 
 def notify(color, message) {
-  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} ${message}"
+  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
 }
