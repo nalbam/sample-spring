@@ -14,8 +14,7 @@ node('maven') {
   def git_ref = "${env.SOURCE_REPOSITORY_REF}" as java.lang.Object
   def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
 
-  // https://jenkins-ops.52.79.165.150.xip.io/blue/organizations/jenkins/ops%2Fops-sample-node-pipeline/detail/ops-sample-node-pipeline/4/pipeline
-  def url = "https://jenkins-ops.52.79.165.150.xip.io/blue/organizations/jenkins/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
+  def url = "https://jenkins-ops.13.125.121.161.xip.io/blue/organizations/jenkins/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
   echo "Blue Ocean: ${url}"
 
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
