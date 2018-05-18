@@ -80,6 +80,13 @@
       "description": "The Sonar Host URL",
       "value": "http://sonarqube.ops.svc:9000",
       "required": false
+    },
+    {
+      "name": "SLACK_WEBHOOK_URL",
+      "displayName": "Slack Webhook URL",
+      "description": "Send your notification",
+      "value": "",
+      "required": false
     }
   ],
   "objects": [
@@ -176,6 +183,10 @@
               {
                 "name": "SONAR_HOST_URL",
                 "value": "${SONAR_HOST_URL}"
+              },
+              {
+                "name": "SLACK_WEBHOOK_URL",
+                "value": "${SLACK_WEBHOOK_URL}"
               }
             ]
           }
