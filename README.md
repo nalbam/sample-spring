@@ -10,7 +10,8 @@ docker pull nalbam/sample-spring:slim   (107MB)
 ## Openshift
 ### Prepare openjdk (s2i)
 ```
-oc import-image -n openshift openshift/redhat-openjdk-18:1.3 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest --confirm
+oc import-image openshift/redhat-openjdk-18:1.3 -n openshift \
+                --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest --confirm
 ```
 
 ### Create project
