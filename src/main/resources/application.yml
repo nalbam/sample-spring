@@ -13,3 +13,5 @@ app:
 slack:
   webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
   channel: ${SLACK_CHANNEL:sandbox}
+
+message: ${MESSAGE:Refreshed}
