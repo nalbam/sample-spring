@@ -12,7 +12,7 @@ node('maven') {
   def app = "${env.APPLICATION_NAME}" as java.lang.Object
   def git_url = "${env.SOURCE_REPOSITORY_URL}" as java.lang.Object
   def git_ref = "${env.SOURCE_REPOSITORY_REF}" as java.lang.Object
-  def job = "${env.JOB_NAME}".replaceAll(/\//, '\\%2F')
+  def job = "${env.JOB_NAME}".replaceAll(/\//, '\\\\%2F')
 
   def url = "https://jenkins-ops.13.125.121.161.xip.io/blue/organizations/jenkins/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
   echo "Blue Ocean: ${url}"
