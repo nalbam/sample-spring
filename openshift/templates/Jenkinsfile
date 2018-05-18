@@ -15,7 +15,7 @@ node() {
 
   def jenkins = "https://jenkins-ops.13.125.121.161.xip.io/blue/organizations/jenkins"
   def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
-  def url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
+  def url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
   echo "Pipeline: ${url}"
 
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
@@ -54,5 +54,5 @@ node() {
 }
 
 def notify(color, message) {
-  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} \"${message}\""
+  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
 }
