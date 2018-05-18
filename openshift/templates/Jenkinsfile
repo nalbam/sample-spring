@@ -54,5 +54,5 @@ node() {
 }
 
 def notify(color, message) {
-  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
+  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} ${message}"
 }
