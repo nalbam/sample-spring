@@ -19,8 +19,12 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
     @Value("${app.profile}")
     private String profile;
 
-    @Autowired
     private SlackRepository slackRepository;
+
+    @Autowired
+    public RefreshedEventListener(SlackRepository slackRepository) {
+        this.slackRepository = slackRepository;
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -29,7 +33,7 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
         log.info("Context refreshed : [{}] [{}] [{}] [{}]", this.profile, data.get("artifactId"), data.get("version"), event.getTimestamp());
 
         final SlackMessage message = new SlackMessage("Context refreshed ")
-                .code(data.get("artifactId")).text(" ").code(this.profile).text(" ").code(data.get("version"));
+                .code(this.profile).text(" ").code(data.get("artifactId")).text(" ").code(data.get("version"));
         this.slackRepository.send(message);
     }
 
