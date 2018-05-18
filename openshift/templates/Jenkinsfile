@@ -8,14 +8,15 @@ echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
 echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
 echo "BUILD_URL    ${env.BUILD_URL}"
 
-node('maven') {
-  def app = "${env.APPLICATION_NAME}" as java.lang.Object
-  def git_url = "${env.SOURCE_REPOSITORY_URL}" as java.lang.Object
-  def git_ref = "${env.SOURCE_REPOSITORY_REF}" as java.lang.Object
-  def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
+node() {
+  def app = "${env.APPLICATION_NAME}"
+  def git_url = "${env.SOURCE_REPOSITORY_URL}"
+  def git_ref = "${env.SOURCE_REPOSITORY_REF}"
 
-  def url = "https://jenkins-ops.13.125.121.161.xip.io/blue/organizations/jenkins/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
-  echo "Blue Ocean: ${url}"
+  def jenkins = "https://jenkins-ops.13.125.121.161.xip.io/blue/organizations/jenkins"
+  def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
+  def url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline"
+  echo "Pipeline: ${url}"
 
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
 
@@ -33,7 +34,7 @@ node('maven') {
   }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
-    notify("good", "Build Success: ${env.JOB_NAME} ${url} ${env.BUILD_NUMBER}")
+    notify("good", "Build Success: ${env.JOB_NAME} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
@@ -53,5 +54,5 @@ node('maven') {
 }
 
 def notify(color, message) {
-  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} ${message}"
+  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} \"${message}\""
 }
