@@ -40,13 +40,13 @@ node('maven') {
       notify("danger", "Unit Test Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
       throw e
     }
-    notify("good", "Build Success: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Code Analysis') {
     sh "mvn sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
   }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
+    notify("good", "Build Success: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
@@ -67,5 +67,5 @@ node('maven') {
 }
 
 def notify(color, message) {
-  sh "curl -s https://raw.githubusercontent.com/nalbam/toaster/master/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
+  sh "curl -s http://repo.toast.sh/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
 }
