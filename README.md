@@ -12,6 +12,8 @@ docker pull nalbam/sample-spring:slim   (107MB)
 ```
 oc import-image openshift/redhat-openjdk-18:1.3 -n openshift \
                 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest --confirm
+
+oc create -n ops -f https://raw.githubusercontent.com/nalbam/openshift/master/s2i/openjdk18-basic-s2i.json
 ```
 
 ### Create project
@@ -42,7 +44,7 @@ oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
            -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring \
-           -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/a/b/c
+           -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token
 ```
 
 ### Start Build
