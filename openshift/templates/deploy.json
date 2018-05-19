@@ -46,7 +46,7 @@
     {
       "name": "SLACK_WEBHOOK",
       "displayName": "Slack WebHook Url",
-      "value": "https://hooks.slack.com/services/workspace/webhook/token",
+      "value": "https://hooks.slack.com/services/web/hook/token",
       "required": false
     },
     {
