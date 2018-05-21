@@ -168,11 +168,6 @@
                 "name": "${APPLICATION_NAME}",
                 "image": "${APPLICATION_NAME}",
                 "imagePullPolicy": "Always",
-                "envFrom": {
-                  "configMapRef": {
-                    "name": "${APPLICATION_NAME}"
-                  }
-                },
                 "env": [
                   {
                     "name": "PROFILE",
