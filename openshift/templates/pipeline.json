@@ -75,6 +75,13 @@
       "required": false
     },
     {
+      "name": "JENKINS_URL",
+      "displayName": "Jenkins URL",
+      "description": "The Jenkins URL",
+      "value": "http://jenkins.ops.svc:8080",
+      "required": false
+    },
+    {
       "name": "SONAR_HOST_URL",
       "displayName": "Sonar Host URL",
       "description": "The Sonar Host URL",
@@ -179,6 +186,10 @@
               {
                 "name": "MAVEN_MIRROR_URL",
                 "value": "${MAVEN_MIRROR_URL}"
+              },
+              {
+                "name": "JENKINS_URL",
+                "value": "${JENKINS_URL}"
               },
               {
                 "name": "SONAR_HOST_URL",

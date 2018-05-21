@@ -8,13 +8,14 @@ echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
 echo "JENKINS_URL  ${env.JENKINS_URL}"
 
 node('maven') {
-  def app = "${env.APPLICATION_NAME}"
-  def git_url = "${env.SOURCE_REPOSITORY_URL}"
-  def git_ref = "${env.SOURCE_REPOSITORY_REF}"
+  String app = "${env.APPLICATION_NAME}"
 
-  def jenkins = "https://jenkins-ops.13.125.121.161.xip.io/blue/organizations/jenkins"
-  def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
-  def url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
+  String git_url = "${env.SOURCE_REPOSITORY_URL}"
+  String git_ref = "${env.SOURCE_REPOSITORY_REF}"
+
+  String jenkins = "${env.JENKINS_URL}/blue/organizations/jenkins"
+  String job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
+  String url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
   echo "Pipeline: ${url}"
 
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
@@ -70,8 +71,10 @@ node('maven') {
 def notify(color, message) {
   try {
     if (env.SLACK_WEBHOOK_URL) {
-      sh "curl -s http://repo.toast.sh/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
+      if (env.SLACK_WEBHOOK_URL) {
+        sh "curl -s http://toast.sh/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} ${message}"
+      }
     }
-  } catch (e) {
+  } catch (ignored) {
   }
 }
