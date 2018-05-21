@@ -1,6 +1,5 @@
 package com.nalbam.sample.listener;
 
-import com.nalbam.sample.config.SlackConfig;
 import com.nalbam.sample.repository.SlackRepository;
 import com.nalbam.sample.util.PackageUtil;
 import in.ashwanthkumar.slack.webhook.SlackMessage;
@@ -20,13 +19,13 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
     @Value("${app.profile}")
     private String profile;
 
-    private final SlackConfig slackConfig;
+    @Value("${message}")
+    private String message;
 
     private final SlackRepository slackRepository;
 
     @Autowired
-    public RefreshedEventListener(SlackConfig slackConfig, SlackRepository slackRepository) {
-        this.slackConfig = slackConfig;
+    public RefreshedEventListener(SlackRepository slackRepository) {
         this.slackRepository = slackRepository;
     }
 
@@ -34,10 +33,10 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
     public void onApplicationEvent(ContextRefreshedEvent event) {
         final Map<String, String> data = PackageUtil.getData(this.getClass());
 
-        log.info("{} : [{}] [{}] [{}] [{}]", slackConfig.getMessage(), this.profile, data.get("artifactId"), data.get("version"), event.getTimestamp());
+        log.info("{} : [{}] [{}] [{}] [{}]", this.message, this.profile, data.get("artifactId"), data.get("version"), event.getTimestamp());
 
         this.slackRepository.send(
-                new SlackMessage(slackConfig.getMessage()).text(" ")
+                new SlackMessage(this.message).text(" ")
                         .code(this.profile).text(" ")
                         .code(data.get("artifactId")).text(" ")
                         .code(data.get("version"))
