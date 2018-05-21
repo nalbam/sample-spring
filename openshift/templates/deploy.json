@@ -24,6 +24,13 @@
       "required": true
     },
     {
+      "name": "NAMESPACE",
+      "displayName": "Namespace",
+      "description": "The OpenShift Namespace where the ImageStream resides.",
+      "value": "dev",
+      "required": true
+    },
+    {
       "name": "HOSTNAME",
       "displayName": "Hostname",
       "description": "Public hostname for the route. If not specified, a hostname is generated.",
@@ -109,6 +116,20 @@
         "labels": {
           "application": "${APPLICATION_NAME}"
         }
+      }
+    },
+    {
+      "kind": "ConfigMap",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "application": "${APPLICATION_NAME}"
+        }
+      },
+      "data": {
+        "PROFILE": "${NAMESPACE}",
+        "MESSAGE": "UP"
       }
     },
     {
