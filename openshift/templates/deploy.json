@@ -127,7 +127,9 @@
           "application": "${APPLICATION_NAME}"
         }
       },
-      "data": "PROFILE=${NAMESPACE}"
+      "data": {
+        "PROFILE": "${NAMESPACE}"
+      }
     },
     {
       "kind": "DeploymentConfig",
