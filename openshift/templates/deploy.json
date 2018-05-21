@@ -36,24 +36,6 @@
       "description": "Maximum amount of memory the container can use.",
       "value": "512Mi",
       "required": true
-    },
-    {
-      "name": "PROFILE",
-      "displayName": "Profile",
-      "value": "",
-      "required": false
-    },
-    {
-      "name": "SLACK_WEBHOOK",
-      "displayName": "Slack WebHook Url",
-      "value": "https://hooks.slack.com/services/web/hook/token",
-      "required": false
-    },
-    {
-      "name": "SLACK_CHANNEL",
-      "displayName": "Slack Notification Channel",
-      "value": "sandbox",
-      "required": false
     }
   ],
   "objects": [
@@ -166,20 +148,6 @@
                     "configMapRef": {
                       "name": "${APPLICATION_NAME}"
                     }
-                  }
-                ],
-                "env": [
-                  {
-                    "name": "PROFILE",
-                    "value": "${PROFILE}"
-                  },
-                  {
-                    "name": "SLACK_WEBHOOK",
-                    "value": "${SLACK_WEBHOOK}"
-                  },
-                  {
-                    "name": "SLACK_CHANNEL",
-                    "value": "${SLACK_CHANNEL}"
                   }
                 ],
                 "ports": [

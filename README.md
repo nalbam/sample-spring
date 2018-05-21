@@ -29,12 +29,27 @@ oc policy add-role-to-user admin developer -n dev
 oc policy add-role-to-user admin developer -n qa
 ```
 
+### Create configMap
+```json
+{
+    "kind": "ConfigMap",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "sample-spring"
+    },
+    "data": {
+        "MESSAGE": "UP",
+        "PROFILE": "dev",
+        "SLACK_CHANNEL": "sandbox",
+        "SLACK_WEBHOOK": "https://hooks.slack.com/services/web/hook/token"
+    }
+}
+```
+
 ### Create application
 ```
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev \
-           -p PROFILE=dev
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa \
-           -p PROFILE=qa
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa
 ```
 
 ### Create pipeline
