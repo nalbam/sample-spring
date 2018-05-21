@@ -36,11 +36,11 @@
         </dependency>
 
         <!-- kubernetes -->
-        <dependency>
-            <groupId>io.fabric8</groupId>
-            <artifactId>spring-cloud-kubernetes-core</artifactId>
-            <version>0.1.6</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>io.fabric8</groupId>-->
+        <!--<artifactId>spring-cloud-kubernetes-core</artifactId>-->
+        <!--<version>0.1.6</version>-->
+        <!--</dependency>-->
 
         <!-- slack -->
         <dependency>
