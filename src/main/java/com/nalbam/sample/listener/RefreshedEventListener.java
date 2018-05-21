@@ -25,9 +25,9 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
     private final SlackRepository slackRepository;
 
     @Autowired
-    public RefreshedEventListener(SlackRepository slackRepository, SlackConfig slackConfig) {
-        this.slackRepository = slackRepository;
+    public RefreshedEventListener(SlackConfig slackConfig, SlackRepository slackRepository) {
         this.slackConfig = slackConfig;
+        this.slackRepository = slackRepository;
     }
 
     @Override
