@@ -1,15 +1,15 @@
 # sample-spring
 
 ## Docker
-```
-docker pull nalbam/sample-spring:latest (301MB)
-docker pull nalbam/sample-spring:alpine (88MB)
-docker pull nalbam/sample-spring:slim   (107MB)
+```bash
+docker pull nalbam/sample-spring:latest # 301MB
+docker pull nalbam/sample-spring:alpine #  88MB
+docker pull nalbam/sample-spring:slim   # 107MB
 ```
 
 ## Openshift
-### Prepare openjdk (s2i)
-```
+### Prepare Openjdk (s2i)
+```bash
 oc import-image openshift/redhat-openjdk-18:1.3 -n openshift \
                 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest \
                 --confirm
@@ -18,8 +18,8 @@ oc create -f https://raw.githubusercontent.com/nalbam/openshift/master/s2i/openj
           -n ops
 ```
 
-### Create project
-```
+### Create Project
+```bash
 oc new-project ops
 oc new-project dev
 oc new-project qa
@@ -29,7 +29,7 @@ oc policy add-role-to-user admin developer -n dev
 oc policy add-role-to-user admin developer -n qa
 ```
 
-### Create configMap
+### Create ConfigMap
 ```json
 {
     "kind": "ConfigMap",
@@ -38,38 +38,37 @@ oc policy add-role-to-user admin developer -n qa
         "name": "sample-spring"
     },
     "data": {
-        "MESSAGE": "UP",
         "PROFILE": "dev",
+        "SLACK_WEBHOOK": "https://hooks.slack.com/services/web/hook/token",
         "SLACK_CHANNEL": "sandbox",
-        "SLACK_WEBHOOK": "https://hooks.slack.com/services/web/hook/token"
+        "MESSAGE": "UP"
     }
 }
 ```
 
-### Create application
-```
+### Create Application
+```bash
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa
 ```
 
-### Create pipeline
-```
+### Create Pipeline
+```bash
 oc new-app jenkins-ephemeral -n ops
 
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
-           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring \
-           -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token
+           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring
 ```
 
 ### Start Build
-```
+```bash
 oc start-build sample-spring-pipeline -n ops
 ```
 
 ### Cleanup
-```
+```bash
 oc delete project ops dev qa
 ```

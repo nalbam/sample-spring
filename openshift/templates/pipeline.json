@@ -66,34 +66,6 @@
       "from": "[a-zA-Z0-9]{8}",
       "generate": "expression",
       "required": true
-    },
-    {
-      "name": "MAVEN_MIRROR_URL",
-      "displayName": "Custom Maven Mirror URL",
-      "description": "The custom Maven mirror URL",
-      "value": "http://nexus.ops.svc:8081/repository/maven-public/",
-      "required": false
-    },
-    {
-      "name": "JENKINS_URL",
-      "displayName": "Jenkins URL",
-      "description": "The Jenkins URL",
-      "value": "http://jenkins.ops.svc:8080",
-      "required": false
-    },
-    {
-      "name": "SONAR_HOST_URL",
-      "displayName": "Sonar Host URL",
-      "description": "The Sonar Host URL",
-      "value": "http://sonarqube.ops.svc:9000",
-      "required": false
-    },
-    {
-      "name": "SLACK_WEBHOOK_URL",
-      "displayName": "Slack Webhook URL",
-      "description": "Send your notification",
-      "value": "",
-      "required": false
     }
   ],
   "objects": [
@@ -170,6 +142,13 @@
           "type": "JenkinsPipeline",
           "jenkinsPipelineStrategy": {
             "jenkinsfilePath": "openshift/templates/Jenkinsfile",
+            "envFrom": [
+              {
+                "configMapRef": {
+                  "name": "pipeline"
+                }
+              }
+            ],
             "env": [
               {
                 "name": "APPLICATION_NAME",
@@ -182,22 +161,6 @@
               {
                 "name": "SOURCE_REPOSITORY_REF",
                 "value": "${SOURCE_REPOSITORY_REF}"
-              },
-              {
-                "name": "MAVEN_MIRROR_URL",
-                "value": "${MAVEN_MIRROR_URL}"
-              },
-              {
-                "name": "JENKINS_URL",
-                "value": "${JENKINS_URL}"
-              },
-              {
-                "name": "SONAR_HOST_URL",
-                "value": "${SONAR_HOST_URL}"
-              },
-              {
-                "name": "SLACK_WEBHOOK_URL",
-                "value": "${SLACK_WEBHOOK_URL}"
               }
             ]
           }
