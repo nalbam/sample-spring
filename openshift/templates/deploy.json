@@ -127,10 +127,16 @@
           "application": "${APPLICATION_NAME}"
         }
       },
-      "data": {
-        "PROFILE": "${NAMESPACE}",
-        "MESSAGE": "UP"
-      }
+      "data": [
+        {
+          "name": "PROFILE",
+          "value": "${NAMESPACE}"
+        },
+        {
+          "name": "MESSAGE",
+          "value": "UP"
+        }
+      ]
     },
     {
       "kind": "DeploymentConfig",
