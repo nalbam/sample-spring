@@ -128,7 +128,8 @@
         }
       },
       "data": {
-        "PROFILE": "${NAMESPACE}"
+        "PROFILE": "${NAMESPACE}",
+        "MESSAGE": "UP"
       }
     },
     {
