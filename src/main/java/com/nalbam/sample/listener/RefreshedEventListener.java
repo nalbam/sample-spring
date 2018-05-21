@@ -22,7 +22,7 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
 
     private final SlackConfig slackConfig;
 
-    private SlackRepository slackRepository;
+    private final SlackRepository slackRepository;
 
     @Autowired
     public RefreshedEventListener(SlackRepository slackRepository, SlackConfig slackConfig) {
