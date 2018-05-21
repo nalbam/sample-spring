@@ -27,7 +27,7 @@
       "name": "NAMESPACE",
       "displayName": "Namespace",
       "description": "The OpenShift Namespace where the ImageStream resides.",
-      "value": "openshift",
+      "value": "ops",
       "required": true
     },
     {
