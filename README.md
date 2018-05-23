@@ -29,7 +29,7 @@ oc policy add-role-to-user admin developer -n dev
 oc policy add-role-to-user admin developer -n qa
 ```
 
-### Create ConfigMap for Applications
+### Create ConfigMap
 ```bash
 oc create configmap sample-spring -n dev \
     --from-literal=PROFILE=dev \
@@ -50,15 +50,6 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa
 ```
 
-### Create ConfigMap for Pipeline
-```bash
-oc create configmap pipeline -n ops \
-    --from-literal=JENKINS_URL=https://jenkins-ops.nalbam.com \
-    --from-literal=MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/ \
-    --from-literal=SONAR_HOST_URL=http://sonarqube.ops.svc:9000 \
-    --from-literal=SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token
-```
-
 ### Create Pipeline
 ```bash
 oc new-app jenkins-ephemeral -n ops
@@ -66,7 +57,11 @@ oc new-app jenkins-ephemeral -n ops
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
+           -p JENKINS_URL=https://jenkins-ops.opspresso.com \
+           -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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 \
+           -p MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/ \
+           -p SONAR_HOST_URL=http://sonarqube.ops.svc:9000
 ```
 
 ### Start Build
