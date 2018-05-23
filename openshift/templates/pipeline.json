@@ -66,13 +66,6 @@
       "from": "[a-zA-Z0-9]{8}",
       "generate": "expression",
       "required": true
-    },
-    {
-      "name": "MAVEN_MIRROR_URL",
-      "displayName": "Custom Maven Mirror URL",
-      "description": "The custom Maven mirror URL",
-      "value": "http://nexus.ops.svc:8081/repository/maven-public/",
-      "required": false
     }
   ],
   "objects": [
@@ -115,7 +108,12 @@
             "env": [
               {
                 "name": "MAVEN_MIRROR_URL",
-                "value": "${MAVEN_MIRROR_URL}"
+                "valueFrom": {
+                  "configMapKeyRef": {
+                    "name": "pipeline",
+                    "key": "MAVEN_MIRROR_URL"
+                  }
+                }
               }
             ]
           }
@@ -149,13 +147,6 @@
           "type": "JenkinsPipeline",
           "jenkinsPipelineStrategy": {
             "jenkinsfilePath": "openshift/templates/Jenkinsfile",
-            "envFrom": [
-              {
-                "configMapRef": {
-                  "name": "pipeline"
-                }
-              }
-            ],
             "env": [
               {
                 "name": "APPLICATION_NAME",
@@ -171,7 +162,39 @@
               },
               {
                 "name": "MAVEN_MIRROR_URL",
-                "value": "${MAVEN_MIRROR_URL}"
+                "valueFrom": {
+                  "configMapKeyRef": {
+                    "name": "pipeline",
+                    "key": "MAVEN_MIRROR_URL"
+                  }
+                }
+              },
+              {
+                "name": "SONAR_HOST_URL",
+                "valueFrom": {
+                  "configMapKeyRef": {
+                    "name": "pipeline",
+                    "key": "SONAR_HOST_URL"
+                  }
+                }
+              },
+              {
+                "name": "JENKINS_URL",
+                "valueFrom": {
+                  "configMapKeyRef": {
+                    "name": "pipeline",
+                    "key": "JENKINS_URL"
+                  }
+                }
+              },
+              {
+                "name": "SLACK_WEBHOOK_URL",
+                "valueFrom": {
+                  "configMapKeyRef": {
+                    "name": "pipeline",
+                    "key": "SLACK_WEBHOOK_URL"
+                  }
+                }
               }
             ]
           }
