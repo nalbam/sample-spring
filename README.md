@@ -59,7 +59,7 @@ oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
            -p JENKINS_URL=https://jenkins-ops.opspresso.com \
-           -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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 \
+           -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token \
            -p MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/ \
            -p SONAR_HOST_URL=http://sonarqube.ops.svc:9000
 ```
