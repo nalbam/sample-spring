@@ -29,27 +29,34 @@ oc policy add-role-to-user admin developer -n dev
 oc policy add-role-to-user admin developer -n qa
 ```
 
-### Create ConfigMap
-```json
-{
-    "kind": "ConfigMap",
-    "apiVersion": "v1",
-    "metadata": {
-        "name": "sample-spring"
-    },
-    "data": {
-        "PROFILE": "dev",
-        "SLACK_WEBHOOK": "https://hooks.slack.com/services/web/hook/token",
-        "SLACK_CHANNEL": "sandbox",
-        "MESSAGE": "UP"
-    }
-}
+### Create ConfigMap for Applications
+```bash
+oc create configmap sample-spring -n dev \
+    --from-literal=PROFILE=dev \
+    --from-literal=SLACK_WEBHOOK=https://hooks.slack.com/services/web/hook/token \
+    --from-literal=SLACK_CHANNEL=sandbox \
+    --from-literal=MESSAGE=UP
+
+oc create configmap sample-spring -n qa \
+    --from-literal=PROFILE=qa \
+    --from-literal=SLACK_WEBHOOK=https://hooks.slack.com/services/web/hook/token \
+    --from-literal=SLACK_CHANNEL=sandbox \
+    --from-literal=MESSAGE=UP
 ```
 
-### Create Application
+### Create Applications
 ```bash
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n dev
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n qa
+```
+
+### Create ConfigMap for Pipeline
+```bash
+oc create configmap pipeline -n ops \
+    --from-literal=JENKINS_URL=https://jenkins-ops.nalbam.com \
+    --from-literal=MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/ \
+    --from-literal=SONAR_HOST_URL=http://sonarqube.ops.svc:9000 \
+    --from-literal=SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token
 ```
 
 ### Create Pipeline
@@ -60,7 +67,8 @@ oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
 oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
-           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring
+           -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring \
+           -p MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/
 ```
 
 ### Start Build
