@@ -45,6 +45,13 @@
       "required": false
     },
     {
+      "name": "SOURCE_REPOSITORY_SECRET",
+      "displayName": "Git SourceSecret",
+      "description": "Optional SourceSecret name.",
+      "value": "",
+      "required": false
+    },
+    {
       "name": "CONTEXT_DIR",
       "displayName": "Context Directory",
       "description": "Path within Git project to build; empty for root project directory.",
@@ -123,6 +130,9 @@
             "uri": "${SOURCE_REPOSITORY_URL}",
             "ref": "${SOURCE_REPOSITORY_REF}"
           },
+          "sourceSecret": {
+            "name": "${SOURCE_REPOSITORY_SECRET}"
+          },
           "contextDir": "${CONTEXT_DIR}"
         },
         "strategy": {
@@ -182,6 +192,10 @@
               {
                 "name": "SOURCE_REPOSITORY_REF",
                 "value": "${SOURCE_REPOSITORY_REF}"
+              },
+              {
+                "name": "SOURCE_REPOSITORY_SECRET",
+                "value": "${SOURCE_REPOSITORY_SECRET}"
               },
               {
                 "name": "JENKINS_URL",

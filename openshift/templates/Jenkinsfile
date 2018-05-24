@@ -5,6 +5,7 @@ echo "JOB_NAME     ${env.JOB_NAME}"
 echo "BUILD_NUMBER ${env.BUILD_NUMBER}"
 echo "GIT_URL      ${env.SOURCE_REPOSITORY_URL}"
 echo "GIT_REF      ${env.SOURCE_REPOSITORY_REF}"
+echo "GIT_SECRET   ${env.SOURCE_REPOSITORY_SECRET}"
 echo "JENKINS_URL  ${env.JENKINS_URL}"
 echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
