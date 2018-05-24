@@ -8,11 +8,13 @@ docker pull nalbam/sample-spring:slim   # 107MB
 ```
 
 ## Openshift
+
 ### Prepare Openjdk (s2i)
 ```bash
-oc import-image openshift/redhat-openjdk-18:1.3 -n openshift \
+oc import-image openshift/redhat-openjdk-18:1.3 \
                 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest \
-                --confirm
+                --confirm \
+                -n ops
 
 oc create -f https://raw.githubusercontent.com/nalbam/openshift/master/s2i/openjdk18-basic-s2i.json \
           -n ops
@@ -57,12 +59,13 @@ oc new-app jenkins-ephemeral -n ops
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n dev
 oc policy add-role-to-user edit system:serviceaccount:ops:jenkins -n qa
 
-oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops \
+oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json \
            -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring \
            -p JENKINS_URL=https://jenkins-ops.apps.nalbam.com \
            -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token \
            -p MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/ \
-           -p SONAR_HOST_URL=http://sonarqube.ops.svc:9000
+           -p SONAR_HOST_URL=http://sonarqube.ops.svc:9000 \
+           -n ops
 ```
 
 ### Start Build
