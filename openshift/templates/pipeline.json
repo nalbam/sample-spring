@@ -174,7 +174,11 @@
           "git": {
             "uri": "${SOURCE_REPOSITORY_URL}",
             "ref": "${SOURCE_REPOSITORY_REF}"
-          }
+          },
+          "sourceSecret": {
+            "name": "${SOURCE_REPOSITORY_SECRET}"
+          },
+          "contextDir": "${CONTEXT_DIR}"
         },
         "strategy": {
           "type": "JenkinsPipeline",
