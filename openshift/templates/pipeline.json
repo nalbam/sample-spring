@@ -183,7 +183,7 @@
         "strategy": {
           "type": "JenkinsPipeline",
           "jenkinsPipelineStrategy": {
-            "jenkinsfilePath": "openshift/templates/Jenkinsfile",
+            "jenkinsfilePath": "openshift/pipeline/Jenkinsfile",
             "env": [
               {
                 "name": "APPLICATION_NAME",
