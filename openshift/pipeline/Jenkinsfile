@@ -9,8 +9,6 @@ echo "GIT_SECRET   ${env.SOURCE_REPOSITORY_SECRET}"
 echo "JENKINS_URL  ${env.JENKINS_URL}"
 echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
-def template = "https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json"
-
 node('maven') {
   String app = "${env.APPLICATION_NAME}"
   String ver = "1.0.${env.BUILD_NUMBER}"
@@ -22,6 +20,8 @@ node('maven') {
   String job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
   String url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
   echo "PIPELINE    ${url}"
+
+  String template = "https://raw.githubusercontent.com/nalbam/${app}/master/openshift/templates/deploy.json"
 
   String mvnCmd = "mvn -s configuration/settings.xml"
 
