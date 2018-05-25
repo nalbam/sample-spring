@@ -35,13 +35,6 @@
             <artifactId>jolokia-core</artifactId>
         </dependency>
 
-        <!-- kubernetes -->
-        <!--<dependency>-->
-        <!--<groupId>io.fabric8</groupId>-->
-        <!--<artifactId>spring-cloud-kubernetes-core</artifactId>-->
-        <!--<version>0.1.6</version>-->
-        <!--</dependency>-->
-
         <!-- slack -->
         <dependency>
             <groupId>in.ashwanthkumar</groupId>
@@ -99,5 +92,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://nexus.ops.svc:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>nexus-snapshots</id>
+            <url>http://nexus.ops.svc:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

@@ -22,7 +22,10 @@ node('maven') {
   String url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
   echo "Pipeline: ${url}"
 
-  sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
+  String mvnCmd = "mvn -s configuration/settings.xml"
+
+  // https://github.com/openshift/jenkins/blob/master/slave-maven/contrib/settings.xml
+  //sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
 
   stage('Checkout') {
     if (env.SOURCE_REPOSITORY_SECRET) {
@@ -30,11 +33,14 @@ node('maven') {
     } else {
       git url: git_url, branch: git_ref
     }
+    if (git_ref == 'master') {
+      sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' ~/.m2/settings.xml"
+    }
   }
   stage('Build') {
     try {
       timeout(time: 60, unit: 'MINUTES') {
-        sh "mvn clean package -DskipTests=true"
+        sh "${mvnCmd} package -DskipTests=true"
       }
     } catch (e) {
       notify("danger", "Build Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
@@ -43,8 +49,8 @@ node('maven') {
   }
   stage('Unit Tests') {
     try {
-      timeout(time: 60, unit: 'MINUTES') {
-        sh "mvn test"
+      timeout(time: 15, unit: 'MINUTES') {
+        sh "${mvnCmd} test"
       }
     } catch (e) {
       notify("danger", "Unit Test Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
@@ -52,14 +58,25 @@ node('maven') {
     }
   }
   stage('Code Analysis') {
-    sh "mvn sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
+    sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
+  }
+  stage('Deploy') {
+    try {
+      timeout(time: 15, unit: 'MINUTES') {
+        sh "${mvnCmd} deploy -DskipTests=true"
+      }
+    } catch (e) {
+      notify("danger", "Deploy Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
+      throw e
+    }
   }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'ops', destinationStream: app, destinationTag: ver)
     notify("good", "Build Success: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
-    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: ver)
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
   }
@@ -70,7 +87,7 @@ node('maven') {
     }
   }
   stage('Deploy QA') {
-    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: app, destinationTag: ver)
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'qa', deploymentConfig: app)
     openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
   }
