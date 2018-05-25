@@ -8,10 +8,10 @@
       "version": "1.0.0",
       "description": "sample spring boot application."
     },
-    "name": "bespin-spring-deploy"
+    "name": "sample-spring"
   },
   "labels": {
-    "template": "bespin-spring-deploy",
+    "template": "sample-spring",
     "xpaas": "1.0.0"
   },
   "message": "A new java application has been created in your project.",

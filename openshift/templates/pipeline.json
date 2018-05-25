@@ -8,10 +8,10 @@
       "version": "1.0.0",
       "description": "sample spring boot application."
     },
-    "name": "bespin-spring-pipeline"
+    "name": "sample-spring-pipeline"
   },
   "labels": {
-    "template": "bespin-spring-pipeline",
+    "template": "sample-spring-pipeline",
     "xpaas": "1.0.0"
   },
   "message": "A new java application has been created in your project.",
@@ -134,7 +134,7 @@
             "from": {
               "kind": "ImageStreamTag",
               "namespace": "openshift",
-              "name": "openjdk-18:1.3"
+              "name": "openjdk18"
             },
             "env": [
               {
