@@ -11,9 +11,11 @@ echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
 node('maven') {
   String app = "${env.APPLICATION_NAME}"
+  String ver = "1.0.${env.BUILD_NUMBER}"
 
   String git_url = "${env.SOURCE_REPOSITORY_URL}"
   String git_ref = "${env.SOURCE_REPOSITORY_REF}"
+  String git_sec = "ops-${env.SOURCE_REPOSITORY_SECRET}"
 
   String jenkins = "${env.JENKINS_URL}/blue/organizations/jenkins"
   String job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
@@ -23,7 +25,11 @@ node('maven') {
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
 
   stage('Checkout') {
-    git url: git_url, branch: git_ref
+    if (env.SOURCE_REPOSITORY_SECRET) {
+      git url: git_url, branch: git_ref, credentialsId: git_sec
+    } else {
+      git url: git_url, branch: git_ref
+    }
   }
   stage('Build') {
     try {
@@ -53,7 +59,7 @@ node('maven') {
     notify("good", "Build Success: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
-    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'dev', destinationStream: app, destinationTag: ver)
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
   }
@@ -64,7 +70,7 @@ node('maven') {
     }
   }
   stage('Deploy QA') {
-    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'qa', destinationStream: app, destinationTag: ver)
     openshiftDeploy(namespace: 'qa', deploymentConfig: app)
     openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
   }
