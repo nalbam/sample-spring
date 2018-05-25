@@ -33,11 +33,8 @@ oc policy add-role-to-user admin developer -n qa
 
 ### Create Catalog
 ```bash
-oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json \
-          -n ops
-
-oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json \
-          -n ops
+oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json -n ops
+oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/pipeline.json -n ops
 ```
 
 ### Create ConfigMap
