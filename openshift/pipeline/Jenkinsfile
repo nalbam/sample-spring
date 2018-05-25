@@ -9,6 +9,8 @@ echo "GIT_SECRET   ${env.SOURCE_REPOSITORY_SECRET}"
 echo "JENKINS_URL  ${env.JENKINS_URL}"
 echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
+def template = "https://raw.githubusercontent.com/nalbam/sample-spring/master/openshift/templates/deploy.json"
+
 node('maven') {
   String app = "${env.APPLICATION_NAME}"
   String ver = "1.0.${env.BUILD_NUMBER}"
@@ -19,7 +21,7 @@ node('maven') {
   String jenkins = "${env.JENKINS_URL}/blue/organizations/jenkins"
   String job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
   String url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
-  echo "Pipeline: ${url}"
+  echo "PIPELINE    ${url}"
 
   String mvnCmd = "mvn -s configuration/settings.xml"
 
@@ -33,7 +35,7 @@ node('maven') {
       git url: git_url, branch: git_ref
     }
     if (git_ref == 'master') {
-      sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' pom.xml"
+      sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' ./pom.xml"
     }
   }
   stage('Build') {
@@ -42,7 +44,7 @@ node('maven') {
         sh "${mvnCmd} package -DskipTests=true"
       }
     } catch (e) {
-      notify("danger", "Build Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
+      notify("danger", "Build Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
       throw e
     }
   }
@@ -52,40 +54,42 @@ node('maven') {
         sh "${mvnCmd} test"
       }
     } catch (e) {
-      notify("danger", "Unit Test Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
+      notify("danger", "Unit Test Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
       throw e
     }
   }
   stage('Code Analysis') {
     sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
   }
-  stage('Deploy') {
+  stage('Release') {
     try {
       timeout(time: 15, unit: 'MINUTES') {
         sh "${mvnCmd} deploy -DskipTests=true"
       }
     } catch (e) {
-      notify("danger", "Deploy Failed: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
+      notify("danger", "Deploy Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
       throw e
     }
   }
   stage('Build Image') {
     openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'ops', destinationStream: app, destinationTag: ver)
-    notify("good", "Build Success: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
+    notify("good", "Build Success: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
+    //openshiftCreateResource(apiURL: template, namespace: 'dev')
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
   }
   stage('Proceed QA') {
-    notify("#439FE0", "Proceed QA?: ${env.APPLICATION_NAME} <${url}|#${env.BUILD_NUMBER}>")
+    notify("#439FE0", "Proceed QA?: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
     timeout(time: 15, unit: 'MINUTES') {
       input(message: 'Proceed QA?')
     }
   }
   stage('Deploy QA') {
+    //openshiftCreateResource(apiURL: template, namespace: 'qa')
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'qa', deploymentConfig: app)
     openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
