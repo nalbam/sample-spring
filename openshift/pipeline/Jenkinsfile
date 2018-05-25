@@ -85,7 +85,7 @@ node('maven') {
   stage('Proceed QA') {
     notify("#439FE0", "Proceed QA?: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
     timeout(time: 15, unit: 'MINUTES') {
-      input(message: 'Proceed QA?')
+      input(message: "Proceed QA?: ${app}-${ver}")
     }
   }
   stage('Deploy QA') {
