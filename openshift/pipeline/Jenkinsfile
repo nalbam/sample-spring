@@ -15,7 +15,6 @@ node('maven') {
 
   String git_url = "${env.SOURCE_REPOSITORY_URL}"
   String git_ref = "${env.SOURCE_REPOSITORY_REF}"
-  String git_sec = "ops-${env.SOURCE_REPOSITORY_SECRET}"
 
   String jenkins = "${env.JENKINS_URL}/blue/organizations/jenkins"
   String job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
@@ -25,16 +24,16 @@ node('maven') {
   String mvnCmd = "mvn -s configuration/settings.xml"
 
   // https://github.com/openshift/jenkins/blob/master/slave-maven/contrib/settings.xml
-  //sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><mirrorOf>*</mirrorOf><url>${env.MAVEN_MIRROR_URL}</url><id>mirror</id></mirror>|' ~/.m2/settings.xml"
+  //sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>${env.MAVEN_MIRROR_URL}</url><mirrorOf>*</mirrorOf></mirror>|' ~/.m2/settings.xml"
 
   stage('Checkout') {
     if (env.SOURCE_REPOSITORY_SECRET) {
-      git url: git_url, branch: git_ref, credentialsId: git_sec
+      git url: git_url, branch: git_ref, credentialsId: "ops-${env.SOURCE_REPOSITORY_SECRET}"
     } else {
       git url: git_url, branch: git_ref
     }
     if (git_ref == 'master') {
-      sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' ~/.m2/settings.xml"
+      sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' pom.xml"
     }
   }
   stage('Build') {
