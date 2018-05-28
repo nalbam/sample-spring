@@ -23,7 +23,7 @@ node('maven') {
 
   String template = "https://raw.githubusercontent.com/nalbam/${app}/master/openshift/templates/deploy.json"
 
-  String mvnCmd = "mvn -s configuration/settings.xml"
+  String mvnCmd = "mvn -s .m2/settings.xml"
 
   // https://github.com/openshift/jenkins/blob/master/slave-maven/contrib/settings.xml
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>${env.MAVEN_MIRROR_URL}</url><mirrorOf>*</mirrorOf></mirror>|' ~/.m2/settings.xml"
