@@ -35,17 +35,19 @@ oc create -f https://raw.githubusercontent.com/nalbam/sample-spring/master/opens
 
 ### Create ConfigMap
 ```bash
-oc create configmap sample-spring -n dev \
+oc create configmap sample-spring \
     --from-literal=PROFILE=dev \
     --from-literal=SLACK_WEBHOOK=https://hooks.slack.com/services/web/hook/token \
     --from-literal=SLACK_CHANNEL=sandbox \
-    --from-literal=MESSAGE=UP
+    --from-literal=MESSAGE=UP \
+    -n dev
 
-oc create configmap sample-spring -n qa \
+oc create configmap sample-spring \
     --from-literal=PROFILE=qa \
     --from-literal=SLACK_WEBHOOK=https://hooks.slack.com/services/web/hook/token \
     --from-literal=SLACK_CHANNEL=sandbox \
-    --from-literal=MESSAGE=UP
+    --from-literal=MESSAGE=UP \
+    -n qa
 ```
 
 ### Create Applications
