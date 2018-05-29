@@ -72,7 +72,7 @@ node('maven') {
     }
   }
   stage('Build Image') {
-    openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true')
+    openshiftBuild(namespace: 'ops', buildConfig: app, showBuildLogs: 'true', env: [VERSION: "${ver}"])
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: 'latest', destinationNamespace: 'ops', destinationStream: app, destinationTag: ver)
     notify("good", "Build Success: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
   }
