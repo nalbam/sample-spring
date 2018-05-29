@@ -20,7 +20,7 @@
       "name": "APPLICATION_NAME",
       "displayName": "Name",
       "description": "Application name.",
-      "value": "sample-tomcat",
+      "value": "sample-spring",
       "required": true
     },
     {
