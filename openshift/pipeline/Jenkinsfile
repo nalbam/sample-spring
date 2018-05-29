@@ -11,7 +11,7 @@ echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
 node('maven') {
   String app = "${env.APPLICATION_NAME}"
-  String ver = "1.0.${env.BUILD_NUMBER}"
+  String ver = "1.0.${env.BUILD_NUMBER}-SNAPSHOT"
 
   String git_url = "${env.SOURCE_REPOSITORY_URL}"
   String git_ref = "${env.SOURCE_REPOSITORY_REF}"
