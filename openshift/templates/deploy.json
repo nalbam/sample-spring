@@ -24,6 +24,13 @@
       "required": true
     },
     {
+      "name": "NAMESPACE",
+      "displayName": "Namespace",
+      "description": "The OpenShift Namespace where the ImageStream resides.",
+      "value": "dev",
+      "required": true
+    },
+    {
       "name": "HOSTNAME",
       "displayName": "Hostname",
       "description": "Public hostname for the route. If not specified, a hostname is generated.",
@@ -42,6 +49,15 @@
     {
       "kind": "Service",
       "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "application": "${APPLICATION_NAME}"
+        },
+        "annotations": {
+          "description": "The application's http port."
+        }
+      },
       "spec": {
         "ports": [
           {
@@ -51,15 +67,6 @@
         ],
         "selector": {
           "deploymentConfig": "${APPLICATION_NAME}"
-        }
-      },
-      "metadata": {
-        "name": "${APPLICATION_NAME}",
-        "labels": {
-          "application": "${APPLICATION_NAME}"
-        },
-        "annotations": {
-          "description": "The application's http port."
         }
       }
     },
@@ -91,6 +98,22 @@
         "labels": {
           "application": "${APPLICATION_NAME}"
         }
+      }
+    },
+    {
+      "kind": "ConfigMap",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "application": "${APPLICATION_NAME}"
+        }
+      },
+      "data": {
+        "PROFILE": "${NAMESPACE}",
+        "SLACK_WEBHOOK": "https://hooks.slack.com/services/web/hook/token",
+        "SLACK_CHANNEL": "sandbox",
+        "MESSAGE": "UP"
       }
     },
     {
