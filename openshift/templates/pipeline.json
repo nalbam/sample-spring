@@ -19,9 +19,16 @@
     {
       "name": "APPLICATION_NAME",
       "displayName": "Name",
-      "description": "Identifies the resources created for this application.",
-      "value": "sample-spring",
+      "description": "Application name.",
+      "value": "sample-tomcat",
       "required": true
+    },
+    {
+      "name": "VERSION",
+      "displayName": "Version",
+      "description": "Application version.",
+      "value": "0.0.0-SNAPSHOT",
+      "required": false
     },
     {
       "name": "SOURCE_REPOSITORY_URL",
