@@ -140,7 +140,7 @@
           "sourceStrategy": {
             "from": {
               "kind": "ImageStreamTag",
-              "namespace": "openshift",
+              "namespace": "ops",
               "name": "spring:latest"
             },
             "env": [

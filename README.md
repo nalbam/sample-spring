@@ -9,11 +9,6 @@ docker pull nalbam/sample-spring:slim   # 107MB
 
 ## Openshift
 
-### Openjdk (s2i)
-```bash
-oc import-image spring --from=docker.io/nalbam/s2i-spring --confirm -n openshift
-```
-
 ### Create Project
 ```bash
 oc new-project ops
@@ -23,6 +18,11 @@ oc new-project qa
 oc policy add-role-to-user admin developer -n ops
 oc policy add-role-to-user admin developer -n dev
 oc policy add-role-to-user admin developer -n qa
+```
+
+### s2i-spring
+```bash
+oc import-image spring --from=docker.io/nalbam/s2i-spring --confirm -n ops
 ```
 
 ### Create Catalog
