@@ -141,7 +141,7 @@
             "from": {
               "kind": "ImageStreamTag",
               "namespace": "openshift",
-              "name": "openjdk18:latest"
+              "name": "spring:latest"
             },
             "env": [
               {
