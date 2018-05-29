@@ -147,6 +147,10 @@
               {
                 "name": "MAVEN_MIRROR_URL",
                 "value": "${MAVEN_MIRROR_URL}"
+              },
+              {
+                "name": "VERSION",
+                "value": "${VERSION}"
               }
             ]
           }
