@@ -10,12 +10,11 @@ echo "JENKINS_URL  ${env.JENKINS_URL}"
 echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
 node('maven') {
+  String app = "${env.APPLICATION_NAME}"
+  String ver = "1.0.${env.BUILD_NUMBER}-SNAPSHOT"
+
   String git_url = "${env.SOURCE_REPOSITORY_URL}"
   String git_ref = "${env.SOURCE_REPOSITORY_REF}"
-  String git_ver = "$(git rev-parse --short=6 HEAD)"
-
-  String app = "${env.APPLICATION_NAME}"
-  String ver = "1.0.${git_ver}"
 
   String jenkins = "${env.JENKINS_URL}/blue/organizations/jenkins"
   String job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
@@ -35,9 +34,9 @@ node('maven') {
     } else {
       git url: git_url, branch: git_ref
     }
-    if (git_ref == 'master') {
-      sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' ./pom.xml"
-    }
+    String git_ver = sh(script: "git rev-parse --short=6 HEAD", returnStdout: true)
+    ver = "1.0.${git_ver}"
+    sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' ./pom.xml"
   }
   stage('Build') {
     try {
