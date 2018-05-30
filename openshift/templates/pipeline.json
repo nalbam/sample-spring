@@ -85,7 +85,7 @@
       "name": "MAVEN_MIRROR_URL",
       "displayName": "Custom Maven Mirror URL",
       "description": "The custom Maven mirror URL",
-      "value": "http://nexus.ops.svc:8081/repository/maven-public/",
+      "value": "http://nexus.ops.svc:8081/repository/maven-all-public/",
       "required": false
     },
     {

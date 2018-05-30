@@ -65,7 +65,7 @@ oc new-app -f https://raw.githubusercontent.com/nalbam/sample-spring/master/open
            -p SOURCE_REPOSITORY_URL=https://github.com/nalbam/sample-spring \
            -p JENKINS_URL=https://jenkins-ops.apps.nalbam.com \
            -p SLACK_WEBHOOK_URL=https://hooks.slack.com/services/web/hook/token \
-           -p MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-public/ \
+           -p MAVEN_MIRROR_URL=http://nexus.ops.svc:8081/repository/maven-all-public/ \
            -p SONAR_HOST_URL=http://sonarqube.ops.svc:9000 \
            -n ops
 ```
