@@ -30,9 +30,9 @@ node('maven') {
 
   stage('Checkout') {
     if (env.SOURCE_REPOSITORY_SECRET) {
-      git url: git_url, branch: git_ref, credentialsId: "ops-${env.SOURCE_REPOSITORY_SECRET}"
+      git(url: git_url, branch: git_ref, credentialsId: "ops-${env.SOURCE_REPOSITORY_SECRET}")
     } else {
-      git url: git_url, branch: git_ref
+      git(url: git_url, branch: git_ref)
     }
     def pom = readMavenPom(file: 'pom.xml')
     def rev = sh(script: "git rev-parse --short=6 HEAD", returnStdout: true)
@@ -44,6 +44,7 @@ node('maven') {
     echo "VERSION ${pom.version}"
     pom.version = "${ver}"
     echo "VERSION ${pom.version}"
+    writeMavenPom(model: pom)
   }
   stage('Build') {
     try {
