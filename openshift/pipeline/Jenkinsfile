@@ -34,9 +34,15 @@ node('maven') {
     } else {
       git url: git_url, branch: git_ref
     }
-    String git_ver = sh(script: "git rev-parse --short=6 HEAD", returnStdout: true)
-    ver = "1.0.${git_ver}"
-    sh "sed -i 's|<version>0.0.1-SNAPSHOT</version>|<version>${ver}</version>|' ./pom.xml"
+    def pom = readMavenPom(file: 'pom.xml')
+    def rev = sh(script: "git rev-parse --short=6 HEAD", returnStdout: true)
+    if (git_ref == 'master') {
+      ver = "${pom.version}-${rev}"
+    } else {
+      ver = "${pom.version}-SNAPSHOT"
+    }
+    pom.version = "${ver}"
+    echo "VERSION     ${pom.version}"
   }
   stage('Build') {
     try {
