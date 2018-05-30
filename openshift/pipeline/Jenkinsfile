@@ -73,8 +73,8 @@ node('maven') {
         sh "${mvnCmd} deploy -DskipTests=true"
       }
     } catch (e) {
-      notify("danger", "Deploy Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
-      throw e
+      notify("danger", "Release Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
+      //throw e
     }
   }
   stage('Build Image') {
