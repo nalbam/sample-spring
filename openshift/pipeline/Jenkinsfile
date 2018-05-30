@@ -11,7 +11,7 @@ echo "SLACK_URL    ${env.SLACK_WEBHOOK_URL}"
 
 node('maven') {
   def app = "${env.APPLICATION_NAME}"
-  def ver = "0.0.0"
+  def ver = "1.0.0"
 
   def git_url = "${env.SOURCE_REPOSITORY_URL}"
   def git_ref = "${env.SOURCE_REPOSITORY_REF}"
@@ -20,8 +20,6 @@ node('maven') {
   def job = "${env.JOB_NAME}".replaceAll(/\//, '%2F')
   def url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
   echo "PIPELINE ${url}"
-
-  def template = "https://raw.githubusercontent.com/nalbam/${app}/master/openshift/templates/deploy.json"
 
   def mvnCmd = "mvn -s .m2/settings.xml"
 
@@ -85,10 +83,9 @@ node('maven') {
     notify("good", "Build Success: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
-    //openshiftCreateResource(apiURL: template, namespace: 'dev')
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
-    openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
+    //openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
   }
   stage('Proceed QA') {
     notify("#439FE0", "Proceed QA?: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
@@ -97,10 +94,9 @@ node('maven') {
     }
   }
   stage('Deploy QA') {
-    //openshiftCreateResource(apiURL: template, namespace: 'qa')
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'qa', deploymentConfig: app)
-    openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
+    //openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
   }
 }
 
