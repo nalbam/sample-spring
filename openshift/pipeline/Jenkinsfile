@@ -41,6 +41,7 @@ node('maven') {
     } else {
       ver = "${pom.version}-SNAPSHOT"
     }
+    echo "VERSION ${pom.version}"
     pom.version = "${ver}"
     echo "VERSION ${pom.version}"
   }
