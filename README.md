@@ -15,9 +15,9 @@ oc new-project ops
 oc new-project dev
 oc new-project qa
 
-oc policy add-role-to-user admin developer -n ops
-oc policy add-role-to-user admin developer -n dev
-oc policy add-role-to-user admin developer -n qa
+oc policy add-role-to-user admin admin -n ops
+oc policy add-role-to-user admin admin -n dev
+oc policy add-role-to-user admin admin -n qa
 ```
 
 ### s2i-spring
