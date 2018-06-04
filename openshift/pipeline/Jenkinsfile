@@ -21,7 +21,7 @@ node('maven') {
   def url = "${jenkins}/${job}/detail/ops-${env.APPLICATION_NAME}-pipeline/${env.BUILD_NUMBER}/pipeline/"
   echo "PIPELINE ${url}"
 
-  def mvnCmd = "mvn -s .m2/settings.xml"
+  def maven = "mvn -s .m2/settings.xml"
 
   // https://github.com/openshift/jenkins/blob/master/slave-maven/contrib/settings.xml
   sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>${env.MAVEN_MIRROR_URL}</url><mirrorOf>*</mirrorOf></mirror>|' ~/.m2/settings.xml"
@@ -47,7 +47,7 @@ node('maven') {
   stage('Build') {
     try {
       timeout(time: 60, unit: 'MINUTES') {
-        sh "${mvnCmd} package -DskipTests=true"
+        sh "${maven} package -DskipTests=true"
       }
     } catch (e) {
       notify("danger", "Build Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
@@ -57,7 +57,7 @@ node('maven') {
   stage('Unit Tests') {
     try {
       timeout(time: 15, unit: 'MINUTES') {
-        sh "${mvnCmd} test"
+        sh "${maven} test"
       }
     } catch (e) {
       notify("danger", "Unit Test Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
@@ -65,12 +65,12 @@ node('maven') {
     }
   }
   stage('Code Analysis') {
-    sh "${mvnCmd} sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
+    sh "${maven} sonar:sonar -Dsonar.host.url=${env.SONAR_HOST_URL} -DskipTests=true"
   }
   stage('Release') {
     try {
       timeout(time: 15, unit: 'MINUTES') {
-        sh "${mvnCmd} deploy -DskipTests=true"
+        sh "${maven} deploy -DskipTests=true"
       }
     } catch (e) {
       notify("danger", "Release Failed: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
