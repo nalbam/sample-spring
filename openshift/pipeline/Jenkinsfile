@@ -83,6 +83,10 @@ node('maven') {
     notify("good", "Build Success: ${app}-${ver} <${url}|#${env.BUILD_NUMBER}>")
   }
   stage('Deploy DEV') {
+    try {
+      sh "oc new-app -f ./openshift/templates/deploy.yml -n dev"
+    } catch (ignored) {
+    }
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     //openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
@@ -94,6 +98,10 @@ node('maven') {
     }
   }
   stage('Deploy QA') {
+    try {
+      sh "oc new-app -f ./openshift/templates/deploy.yml -n qa"
+    } catch (ignored) {
+    }
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
     openshiftDeploy(namespace: 'qa', deploymentConfig: app)
     //openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
