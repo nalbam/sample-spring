@@ -24,7 +24,9 @@ node('maven') {
   def maven = "mvn -s .m2/settings.xml"
 
   // https://github.com/openshift/jenkins/blob/master/slave-maven/contrib/settings.xml
-  sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>${env.MAVEN_MIRROR_URL}</url><mirrorOf>*</mirrorOf></mirror>|' ~/.m2/settings.xml"
+  if (env.MAVEN_MIRROR_URL) {
+    sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>${env.MAVEN_MIRROR_URL}</url><mirrorOf>*</mirrorOf></mirror>|' ~/.m2/settings.xml"
+  }
 
   stage('Checkout') {
     if (env.SOURCE_REPOSITORY_SECRET) {
