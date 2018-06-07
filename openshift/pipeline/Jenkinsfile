@@ -86,11 +86,13 @@ node('maven') {
   }
   stage('Deploy DEV') {
     try {
+	  //sh "oc delete dc -l application=${app} -n dev"
       sh "oc new-app -f ./openshift/templates/deploy.yml -n dev"
     } catch (ignored) {
     }
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'dev', destinationStream: app, destinationTag: 'latest')
-    openshiftDeploy(namespace: 'dev', deploymentConfig: app)
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'dev', destinationStream: app, destinationTag: ver)
+    //openshiftDeploy(namespace: 'dev', deploymentConfig: app)
     //openshiftScale(namespace: 'dev', deploymentConfig: app, replicaCount: '1')
   }
   stage('Proceed QA') {
@@ -101,11 +103,13 @@ node('maven') {
   }
   stage('Deploy QA') {
     try {
+	  //sh "oc delete dc -l application=${app} -n qa"
       sh "oc new-app -f ./openshift/templates/deploy.yml -n qa"
     } catch (ignored) {
     }
     openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'qa', destinationStream: app, destinationTag: 'latest')
-    openshiftDeploy(namespace: 'qa', deploymentConfig: app)
+    openshiftTag(namespace: 'ops', sourceStream: app, sourceTag: ver, destinationNamespace: 'qa', destinationStream: app, destinationTag: ver)
+    //openshiftDeploy(namespace: 'qa', deploymentConfig: app)
     //openshiftScale(namespace: 'qa', deploymentConfig: app, replicaCount: '1')
   }
 }
