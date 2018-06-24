@@ -14,6 +14,16 @@ public class HomeController {
         return "<p>OK</p>";
     }
 
+    @GetMapping("/live")
+    public String live() {
+        return "<p>live OK</p>";
+    }
+
+    @GetMapping("/read")
+    public String read() {
+        return "<p>read OK</p>";
+    }
+
     @GetMapping("/package")
     public Map<String, String> health() {
         return PackageUtil.getData(this.getClass());
