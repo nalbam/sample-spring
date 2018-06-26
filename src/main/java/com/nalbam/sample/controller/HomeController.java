@@ -28,6 +28,12 @@ public class HomeController {
         return "<p>read OK</p>";
     }
 
+    @GetMapping("/spring")
+    public String read() {
+        log.info("spring check");
+        return "<p>spring OK</p>";
+    }
+
     @GetMapping("/package")
     public Map<String, String> health() {
         return PackageUtil.getData(this.getClass());
