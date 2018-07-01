@@ -29,9 +29,21 @@ public class HomeController {
     }
 
     @GetMapping("/spring")
-    public String read() {
+    public String spring() {
         log.info("spring check");
         return "<p>spring OK</p>";
+    }
+
+    @GetMapping("/stress")
+    public String stress() {
+        log.info("stress check");
+
+        int sum = 0;
+        for (int i = 0; i < 100000; i++) {
+            sum = sum + i;
+        }
+
+        return "<p>stress " + sum + "</p>";
     }
 
     @GetMapping("/package")
