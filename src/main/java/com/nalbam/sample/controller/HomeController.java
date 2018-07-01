@@ -40,7 +40,7 @@ public class HomeController {
 
         float sum = 0;
         for (int i = 0; i < 1000000; i++) {
-            sum = (float) (sum + Math.sqrt(i));
+            sum += Math.sqrt(i);
         }
 
         return "<p>stress " + sum + "</p>";
