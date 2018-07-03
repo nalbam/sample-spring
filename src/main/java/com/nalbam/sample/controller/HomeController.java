@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Slf4j
 @Controller
@@ -25,6 +26,7 @@ public class HomeController {
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
 
         model.put("host", host);
         model.put("date", sdf.format(new Date()));
