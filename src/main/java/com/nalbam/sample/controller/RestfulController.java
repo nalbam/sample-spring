@@ -49,7 +49,7 @@ public class RestfulController {
     public Map stress() {
         log.info("stress check");
 
-        float sum = 0;
+        Double sum = 0d;
         for (int i = 0; i < 1000000; i++) {
             sum += Math.sqrt(i);
         }
