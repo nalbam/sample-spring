@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Slf4j
@@ -22,7 +24,10 @@ public class HomeController {
             e.printStackTrace();
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
         model.put("host", host);
+        model.put("date", sdf.format(new Date()));
 
         return "index";
     }

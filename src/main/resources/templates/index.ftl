@@ -10,6 +10,7 @@
 
 <p><img src="https://cdn.nalbam.com/logo/spring-boot.png"></p>
 <p>${host}</p>
+<p>${date}</p>
 
 </body>
 </html>
