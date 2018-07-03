@@ -15,15 +15,16 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        String hostname;
+        String logo = "https://cdn.nalbam.com/logo/spring-boot.png";
+        String host;
         try {
-            hostname = InetAddress.getLocalHost().getHostName();
+            host = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
-            hostname = "Unknown";
+            host = "Unknown";
             e.printStackTrace();
         }
 
-        return "<h1>Hello Spring Boot!</h1><p>" + hostname + "</p>";
+        return "<h1>Hello Spring Boot!</h1><img src=" + logo + "></p><p>" + host + "</p>";
     }
 
     @GetMapping("/live")
