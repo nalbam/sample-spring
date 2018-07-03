@@ -23,7 +23,7 @@ public class HomeController {
             e.printStackTrace();
         }
 
-        return "<h1>OK</h1><p>" + hostname + "</p>";
+        return "<h1>Hello Spring Boot!</h1><p>" + hostname + "</p>";
     }
 
     @GetMapping("/live")
