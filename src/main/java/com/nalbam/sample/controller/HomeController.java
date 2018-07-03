@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 @Slf4j
@@ -13,25 +15,33 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "<p>OK</p>";
+        String hostname;
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            hostname = "Unknown";
+            e.printStackTrace();
+        }
+
+        return "<h1>OK</h1><p>" + hostname + "</p>";
     }
 
     @GetMapping("/live")
     public String live() {
         log.info("live check");
-        return "<p>live OK</p>";
+        return "<h1>OK</h1><p>live</p>";
     }
 
     @GetMapping("/read")
     public String read() {
         log.info("read check");
-        return "<p>read OK</p>";
+        return "<h1>OK</h1><p>read</p>";
     }
 
     @GetMapping("/spring")
     public String spring() {
         log.info("spring check");
-        return "<p>spring OK</p>";
+        return "<h1>OK</h1><p>spring</p>";
     }
 
     @GetMapping("/stress")
@@ -43,7 +53,7 @@ public class HomeController {
             sum += Math.sqrt(i);
         }
 
-        return "<p>stress " + sum + "</p>";
+        return "<h1>OK</h1><p>" + sum + "</p>";
     }
 
     @GetMapping("/package")
