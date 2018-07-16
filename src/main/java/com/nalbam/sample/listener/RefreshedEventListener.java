@@ -31,7 +31,7 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        final Map<String, String> data = PackageUtil.getData(this.getClass());
+        final Map<String, Object> data = PackageUtil.getData(this.getClass());
 
         log.info("{} : [{}] [{}] [{}] [{}]", this.message, this.profile, data.get("artifactId"), data.get("version"), event.getTimestamp());
 
@@ -40,8 +40,8 @@ public class RefreshedEventListener implements ApplicationListener<ContextRefres
         this.slackRepository.send(
                 new SlackMessage(this.message).text(" ")
                         .code(this.profile).text(" ")
-                        .code(data.get("artifactId")).text(" ")
-                        .code(data.get("version"))
+                        .code(data.get("artifactId").toString()).text(" ")
+                        .code(data.get("version").toString())
         );
     }
 

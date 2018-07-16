@@ -12,7 +12,7 @@ public class PackageUtilTests {
 
     @Test
     public void testPackageData() {
-        final Map<String, String> data = PackageUtil.getData(this.getClass());
+        final Map<String, Object> data = PackageUtil.getData(this.getClass());
 
         assertNotNull(data);
         assertNotNull(data.get("artifactId"));

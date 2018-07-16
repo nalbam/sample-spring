@@ -5,8 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PackageUtil {
 
-    public static Map<String, String> getData(final Class<?> c) {
-        final Map<String, String> data = new ConcurrentHashMap<>();
+    public static Map<String, Object> getData(final Class<?> c) {
+        final Map<String, Object> data = new ConcurrentHashMap<>();
         final Package p = c.getPackage();
         if (p != null) {
             if (p.getImplementationTitle() != null) {

@@ -13,10 +13,10 @@ import java.util.Map;
 public class RestfulController {
 
     @GetMapping("/live")
-    public Map live() {
+    public Map<String, Object> live() {
         log.info("live check");
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "live");
 
@@ -24,10 +24,10 @@ public class RestfulController {
     }
 
     @GetMapping("/read")
-    public Map read() {
+    public Map<String, Object> read() {
         log.info("read check");
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "live");
 
@@ -35,10 +35,10 @@ public class RestfulController {
     }
 
     @GetMapping("/spring")
-    public Map spring() {
+    public Map<String, Object> spring() {
         log.info("spring check");
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "spring");
 
@@ -46,7 +46,7 @@ public class RestfulController {
     }
 
     @GetMapping("/stress")
-    public Map stress() {
+    public Map<String, Object> stress() {
         log.info("stress check");
 
         Double sum = 0d;
@@ -62,7 +62,7 @@ public class RestfulController {
     }
 
     @GetMapping("/package")
-    public Map health() {
+    public Map<String, Object> health() {
         return PackageUtil.getData(this.getClass());
     }
 

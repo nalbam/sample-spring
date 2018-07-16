@@ -14,6 +14,11 @@ $RECYCLE.BIN/
 # Mac
 .DS_Store
 
+# Java
+.project
+.classpath
+.factorypath
+
 # Maven
 target/
 build/
@@ -25,7 +30,6 @@ build/
 # Eclipse
 .settings/
 .metadata/
-.project
 
 # Temp
 *.pid
