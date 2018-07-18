@@ -8,7 +8,7 @@ service:
   name: java
   type: ClusterIP
   externalPort: 80
-  internalPort: 4567
+  internalPort: 8080
 resources:
   limits:
     cpu: 100m

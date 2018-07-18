@@ -1,6 +1,6 @@
 [environments]
   [environments.development]
-    name = "sample"
+    name = "sample-spring"
     namespace = "default"
     wait = true
     watch = false
