@@ -1,6 +1,6 @@
 # Dockerfile
 
-FROM maven:3.5-jdk-8-alpine as BUILD
+FROM maven:3.5-jdk-8 as BUILD
 COPY . /data/src/
 RUN mvn -f /data/src/pom.xml clean package -DskipTests
 
