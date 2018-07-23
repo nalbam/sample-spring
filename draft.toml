@@ -1,7 +1,16 @@
 [environments]
   [environments.development]
-    name = "sample-spring"
+    name = "sample-spring-development"
     namespace = "default"
+    wait = true
+    watch = false
+    watch-delay = 2
+    auto-connect = false
+    dockerfile = ""
+    chart = ""
+  [environments.staging]
+    name = "sample-spring-staging"
+    namespace = "staging"
     wait = true
     watch = false
     watch-delay = 2
