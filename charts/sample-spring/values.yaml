@@ -1,8 +1,11 @@
 # Default values for Maven projects.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-replicaCount: 1
+nameOverride: sample-spring
+replicaCount: 2
 image:
+  repository: docker-registory/sample-spring
+  tag: latest
   pullPolicy: IfNotPresent
 service:
   name: java
@@ -11,11 +14,11 @@ service:
   internalPort: 8080
 resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 1000m
+    memory: 1024Mi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 500m
+    memory: 512Mi
 ingress:
   enabled: true
 basedomain: apps.opspresso.com
