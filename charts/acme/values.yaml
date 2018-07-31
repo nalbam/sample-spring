@@ -1,14 +1,12 @@
 # Default values for Maven projects.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-nameOverride: sample-spring
 replicaCount: 2
 image:
-  repository: docker-registory/sample-spring
+  repository: acme
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 service:
-  name: java
   type: ClusterIP
   externalPort: 80
   internalPort: 8080
