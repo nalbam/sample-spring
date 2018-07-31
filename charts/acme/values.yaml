@@ -19,7 +19,12 @@ resources:
     memory: 512Mi
 ingress:
   enabled: true
-basedomain: apps.opspresso.com
+  basedomain: apps.opspresso.com
+hpa:
+  enabled: true
+  min: 2
+  max: 30
+  cpu: 50
 env:
 # - name: PROFILE
 #   valueFrom:
