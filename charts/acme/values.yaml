@@ -20,3 +20,19 @@ resources:
 ingress:
   enabled: true
 basedomain: apps.opspresso.com
+env:
+# - name: PROFILE
+#   valueFrom:
+#     configMapKeyRef:
+#       name: sample-spring
+#       key: PROFILE
+# - name: SLACK_WEBHOOK
+#   valueFrom:
+#     configMapKeyRef:
+#       name: sample-spring
+#       key: SLACK_WEBHOOK
+# - name: SLACK_CHANNEL
+#   valueFrom:
+#     configMapKeyRef:
+#       name: sample-spring
+#       key: SLACK_CHANNEL
