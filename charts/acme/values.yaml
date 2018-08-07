@@ -25,19 +25,3 @@ hpa:
   min: 2
   max: 30
   cpu: 50
-env:
-# - name: PROFILE
-#   valueFrom:
-#     configMapKeyRef:
-#       name: sample-spring
-#       key: PROFILE
-# - name: SLACK_WEBHOOK
-#   valueFrom:
-#     configMapKeyRef:
-#       name: sample-spring
-#       key: SLACK_WEBHOOK
-# - name: SLACK_CHANNEL
-#   valueFrom:
-#     configMapKeyRef:
-#       name: sample-spring
-#       key: SLACK_CHANNEL
