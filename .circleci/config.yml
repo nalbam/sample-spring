@@ -17,8 +17,8 @@ jobs:
           - v1-dependencies-{{ checksum "pom.xml" }}
           - v1-dependencies-
 
-      - run: mvn package
-      - run: cp pom.xml target/${CIRCLE_PROJECT_REPONAME}-1.0.0.pom
+      - run: mvn package -Dthis.version=1.1.1
+      - run: cp pom.xml target/${CIRCLE_PROJECT_REPONAME}-1.1.1.pom
 
       - save_cache:
           paths:
@@ -34,8 +34,9 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - target/*.jar
             - target/*.pom
+            - target/*.jar
+            - target/*.war
 
   release:
     docker:
@@ -47,7 +48,7 @@ jobs:
       - attach_workspace:
           at: /tmp
 
-      - run: aws s3 sync /tmp/target/ s3://repo.nalbam.com/maven2/com/nalbam/${CIRCLE_PROJECT_REPONAME}/1.0.0/
+      - run: aws s3 sync /tmp/target/ s3://repo.nalbam.com/maven2/com/nalbam/${CIRCLE_PROJECT_REPONAME}/1.1.1/
 
 workflows:
   version: 2
