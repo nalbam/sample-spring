@@ -1,0 +1,10 @@
+[environments]
+  [environments.NAMESPACE]
+    name = "NAME"
+    namespace = "NAMESPACE"
+    wait = true
+    watch = false
+    watch-delay = 2
+    auto-connect = false
+    dockerfile = ""
+    chart = ""
