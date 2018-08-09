@@ -10,6 +10,6 @@ EXPOSE 8080
 
 WORKDIR data
 
-COPY target/*.jar /data/ROOT.jar
+COPY ./target/*.jar /data/ROOT.jar
 
 CMD ["java", "-jar", "ROOT.jar"]
