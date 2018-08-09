@@ -8,6 +8,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 
 EXPOSE 8080
 
+RUN ls -al target
+
 WORKDIR data
 
 COPY target/*.jar /data/ROOT.jar
