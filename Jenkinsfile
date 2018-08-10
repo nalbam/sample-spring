@@ -7,7 +7,7 @@ properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
 ])
 podTemplate(label: label, containers: [
-  containerTemplate(name: "builder", image: "nalbam/builder", command: "cat", ttyEnabled: true, alwaysPullImage: true),
+  containerTemplate(name: "builder", image: "quay.io/nalbam/builder", command: "cat", ttyEnabled: true, alwaysPullImage: true),
   containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true, alwaysPullImage: true),
   containerTemplate(name: "maven", image: "maven", command: "cat", ttyEnabled: true, alwaysPullImage: true),
   containerTemplate(name: "node", image: "node", command: "cat", ttyEnabled: true, alwaysPullImage: true)
