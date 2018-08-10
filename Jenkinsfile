@@ -1,6 +1,7 @@
 def REPOSITORY_URL = "https://github.com/nalbam/sample-spring"
 def REPOSITORY_SECRET = ""
 def IMAGE_NAME = "sample-spring"
+def SLACK_TOKEN = "T03FUG4UB/B8RQJGNR0/U7LtWJKf8E2gVkh1S1oASlG5"
 
 def label = "worker-${UUID.randomUUID().toString()}"
 properties([
@@ -46,6 +47,8 @@ podTemplate(label: label, containers: [
         """
       }
     }
+    // def JENKINS = readFile "/home/jenkins/JENKINS"
+    // def PIPELINE = "https://$JENKINS/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_NUMBER/pipeline"
     def LANG = readFile "/home/jenkins/SOURCE_LANG"
     if (LANG == 'java') {
       stage("Build") {
@@ -60,6 +63,7 @@ podTemplate(label: label, containers: [
             mvn package -s .m2/settings.xml
           """
         }
+        //notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
       }
     }
     else if (LANG == 'nodejs') {
@@ -71,6 +75,7 @@ podTemplate(label: label, containers: [
             npm run build
           """
         }
+        //notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
       }
     }
     else {
@@ -134,3 +139,11 @@ podTemplate(label: label, containers: [
     }
   }
 }
+// def notify(COLOR, MESSAGE) {
+//   try {
+//     if (SLACK_TOKEN) {
+//       sh "curl -sL toast.sh/helper/slack.sh | bash -s -- --token=$SLACK_TOKEN --color=$COLOR '$MESSAGE'"
+//     }
+//   } catch (ignored) {
+//   }
+// }
