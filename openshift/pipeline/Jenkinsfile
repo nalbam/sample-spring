@@ -117,7 +117,7 @@ node('maven') {
 def notify(color, message) {
   try {
     if (env.SLACK_WEBHOOK_URL) {
-      sh "curl -s https://toast.sh/helper/slack.sh | bash -s -- -u=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
+      sh "curl -sL toast.sh/helper/slack.sh | bash -s -- --url=${env.SLACK_WEBHOOK_URL} --color=${color} '${message}'"
     }
   } catch (ignored) {
   }
