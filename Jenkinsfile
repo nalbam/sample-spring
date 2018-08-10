@@ -4,6 +4,13 @@ def IMAGE_NAME = "sample-spring"
 def SLACK_TOKEN = "T03FUG4UB/B8RQJGNR0/U7LtWJKf8E2gVkh1S1oASlG5"
 
 def label = "worker-${UUID.randomUUID().toString()}"
+def VERSION = ""
+def SOURCE_LANG = ""
+def SOURCE_ROOT = ""
+def BASE_DOMAIN = ""
+def JENKINS = ""
+def REGISTRY = ""
+def PIPELINE = ""
 properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
 ])
@@ -25,18 +32,25 @@ podTemplate(label: label, containers: [
         git(url: "$REPOSITORY_URL", branch: "$BRANCH_NAME")
       }
     }
-    stage("Make Version") {
+    stage("Prepare") {
       container("builder") {
         sh """
           bash /root/extra/build-init.sh $IMAGE_NAME $BRANCH_NAME
         """
-      }
-    }
-    stage("Make Charts") {
-      container("builder") {
-        def BASE_DOMAIN = readFile "/home/jenkins/BASE_DOMAIN"
-        def REGISTRY = readFile "/home/jenkins/REGISTRY"
-        def VERSION = readFile "/home/jenkins/VERSION"
+        VERSION = readFile "/home/jenkins/VERSION"
+        SOURCE_LANG = readFile "/home/jenkins/SOURCE_LANG"
+        SOURCE_ROOT = readFile "/home/jenkins/SOURCE_ROOT"
+        BASE_DOMAIN = readFile "/home/jenkins/BASE_DOMAIN"
+        JENKINS = readFile "/home/jenkins/JENKINS"
+        REGISTRY = readFile "/home/jenkins/REGISTRY"
+        PIPELINE = "https://$JENKINS/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_NUMBER/pipeline"
+        if (SOURCE_LANG == 'java') {
+          def NEXUS = readFile "/home/jenkins/NEXUS"
+          if (NEXUS) {
+            def NEXUS_PUBLIC = "https://$NEXUS/repository/maven-public/"
+            sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>$NEXUS_PUBLIC</url><mirrorOf>*</mirrorOf></mirror>|' .m2/settings.xml"
+          }
+        }
         sh """
           sed -i -e "s/name: .*/name: $IMAGE_NAME/" charts/acme/Chart.yaml
           sed -i -e "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
@@ -47,35 +61,26 @@ podTemplate(label: label, containers: [
         """
       }
     }
-    // def JENKINS = readFile "/home/jenkins/JENKINS"
-    // def PIPELINE = "https://$JENKINS/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_NUMBER/pipeline"
-    def LANG = readFile "/home/jenkins/SOURCE_LANG"
-    if (LANG == 'java') {
+    if (SOURCE_LANG == 'java') {
       stage("Build") {
         container("maven") {
-          def NEXUS = readFile "/home/jenkins/NEXUS"
-          if (NEXUS != '') {
-            def BASE_DOMAIN = readFile "/home/jenkins/BASE_DOMAIN"
-            def NEXUS_PUBLIC = "https://sonatype-nexus-devops.$BASE_DOMAIN/repository/maven-public/"
-            sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>$NEXUS_PUBLIC</url><mirrorOf>*</mirrorOf></mirror>|' .m2/settings.xml"
-          }
           sh """
+            cd $SOURCE_ROOT
             mvn package -s .m2/settings.xml
           """
+          notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
         }
-        //notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
       }
     }
-    else if (LANG == 'nodejs') {
+    else if (SOURCE_LANG == 'nodejs') {
       stage("Build") {
         container("node") {
-          def ROOT = readFile "/home/jenkins/SOURCE_ROOT"
           sh """
-            cd $ROOT
+            cd $SOURCE_ROOT
             npm run build
           """
+          notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
         }
-        //notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
       }
     }
     else {
@@ -101,8 +106,6 @@ podTemplate(label: label, containers: [
     if (BRANCH_NAME == 'master') {
       stage("Build Image") {
         container("docker") {
-          def REGISTRY = readFile "/home/jenkins/REGISTRY"
-          def VERSION = readFile "/home/jenkins/VERSION"
           sh """
             docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
             docker push $REGISTRY/$IMAGE_NAME:$VERSION
@@ -111,9 +114,6 @@ podTemplate(label: label, containers: [
       }
       stage("Build Charts") {
         container("builder") {
-          def BASE_DOMAIN = readFile "/home/jenkins/BASE_DOMAIN"
-          def REGISTRY = readFile "/home/jenkins/REGISTRY"
-          def VERSION = readFile "/home/jenkins/VERSION"
           sh """
             bash /root/extra/helm-init.sh
             cd charts/$IMAGE_NAME
@@ -124,10 +124,28 @@ podTemplate(label: label, containers: [
           """
         }
       }
-      stage("Deploy Staging") {
+      stage("Staging") {
         container("builder") {
           def NAMESPACE = "staging"
-          def VERSION = readFile "/home/jenkins/VERSION"
+          sh """
+            helm upgrade --install $IMAGE_NAME-$NAMESPACE chartmuseum/$IMAGE_NAME \
+                         --version $VERSION --namespace $NAMESPACE --devel \
+                         --set fullnameOverride=$IMAGE_NAME-$NAMESPACE
+            helm history $IMAGE_NAME-$NAMESPACE
+          """
+        }
+      }
+      stage('Proceed') {
+        container("builder") {
+          notify("#439FE0", "Proceed Production?: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
+          timeout(time: 60, unit: 'MINUTES') {
+            input(message: "Proceed Production?: $IMAGE_NAME-$VERSION")
+          }
+        }
+      }
+      stage("Production") {
+        container("builder") {
+          def NAMESPACE = "production"
           sh """
             helm upgrade --install $IMAGE_NAME-$NAMESPACE chartmuseum/$IMAGE_NAME \
                          --version $VERSION --namespace $NAMESPACE --devel \
@@ -139,11 +157,11 @@ podTemplate(label: label, containers: [
     }
   }
 }
-// def notify(COLOR, MESSAGE) {
-//   try {
-//     if (SLACK_TOKEN) {
-//       sh "curl -sL toast.sh/helper/slack.sh | bash -s -- --token=$SLACK_TOKEN --color=$COLOR '$MESSAGE'"
-//     }
-//   } catch (ignored) {
-//   }
-// }
+def notify(COLOR, MESSAGE) {
+  try {
+    if (SLACK_TOKEN) {
+      sh "curl -sL toast.sh/helper/slack.sh | bash -s -- --token=$SLACK_TOKEN --color=$COLOR '$MESSAGE'"
+    }
+  } catch (ignored) {
+  }
+}
