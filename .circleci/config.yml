@@ -6,48 +6,36 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk
-
     working_directory: ~/repo
-
     steps:
       - checkout
-
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "pom.xml" }}
           - v1-dependencies-
-
       - run: mvn package -Dthis.version=1.1.1
       - run: cp pom.xml target/${CIRCLE_PROJECT_REPONAME}-1.1.1.pom
-
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
       - store_test_results:
           path: ~/repo/target/surefire-reports
-
       - store_artifacts:
           path: ~/repo/target
-
       - persist_to_workspace:
           root: ~/repo
           paths:
             - target/*.pom
             - target/*.jar
             - target/*.war
-
   release:
     docker:
       - image: nalbam/builder:python
-
     steps:
       - checkout
-
       - attach_workspace:
           at: /tmp
-
       - run: aws s3 sync /tmp/target/ s3://repo.nalbam.com/maven2/com/nalbam/${CIRCLE_PROJECT_REPONAME}/1.1.1/
 
 workflows:
