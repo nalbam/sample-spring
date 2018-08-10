@@ -44,13 +44,6 @@ podTemplate(label: label, containers: [
         JENKINS = readFile "/home/jenkins/JENKINS"
         REGISTRY = readFile "/home/jenkins/REGISTRY"
         PIPELINE = "https://$JENKINS/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_NUMBER/pipeline"
-        if (SOURCE_LANG == 'java') {
-          def NEXUS = readFile "/home/jenkins/NEXUS"
-          if (NEXUS) {
-            def NEXUS_PUBLIC = "https://$NEXUS/repository/maven-public/"
-            sh "sed -i 's|<!-- ### configured mirrors ### -->|<mirror><id>mirror</id><url>$NEXUS_PUBLIC</url><mirrorOf>*</mirrorOf></mirror>|' .m2/settings.xml"
-          }
-        }
         sh """
           sed -i -e "s/name: .*/name: $IMAGE_NAME/" charts/acme/Chart.yaml
           sed -i -e "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
@@ -66,7 +59,7 @@ podTemplate(label: label, containers: [
         container("maven") {
           sh """
             cd $SOURCE_ROOT
-            mvn package -s .m2/settings.xml
+            mvn package -s /home/jenkins/settings.xml
           """
           notify("good", "Build Success: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
         }
