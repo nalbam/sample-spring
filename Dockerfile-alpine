@@ -1,11 +1,10 @@
 # Dockerfile
 
-FROM maven:3.5-jdk-8-slim as BUILD
+FROM maven as BUILD
 COPY . /data/src/
 RUN mvn -f /data/src/pom.xml clean package -DskipTests
 
 FROM openjdk:8-jre-alpine
-ENV PORT 8080
 ENV TZ Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 EXPOSE 8080
