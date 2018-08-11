@@ -54,7 +54,7 @@ podTemplate(label: label, containers: [
         """
       }
     }
-    if (SOURCE_LANG == 'java') {
+    if (SOURCE_LANG == "java") {
       stage("Build") {
         container("maven") {
           sh """
@@ -65,7 +65,7 @@ podTemplate(label: label, containers: [
         }
       }
     }
-    else if (SOURCE_LANG == 'nodejs') {
+    else if (SOURCE_LANG == "nodejs") {
       stage("Build") {
         container("node") {
           sh """
@@ -83,7 +83,7 @@ podTemplate(label: label, containers: [
         """
       }
     }
-    if (BRANCH_NAME != 'master') {
+    if (BRANCH_NAME != "master") {
       stage("Deploy Development") {
         container("builder") {
           def NAMESPACE = "development"
@@ -96,26 +96,30 @@ podTemplate(label: label, containers: [
         }
       }
     }
-    if (BRANCH_NAME == 'master') {
+    if (BRANCH_NAME == "master") {
       stage("Build Image") {
-        container("docker") {
-          sh """
-            docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
-            docker push $REGISTRY/$IMAGE_NAME:$VERSION
-          """
-        }
-      }
-      stage("Build Charts") {
-        container("builder") {
-          sh """
-            bash /root/extra/helm-init.sh
-            cd charts/$IMAGE_NAME
-            helm lint .
-            helm push . chartmuseum
-            helm repo update
-            helm search $IMAGE_NAME
-          """
-        }
+        parallel(
+          "Build Docker": {
+            container("docker") {
+              sh """
+                docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
+                docker push $REGISTRY/$IMAGE_NAME:$VERSION
+              """
+            }
+          },
+          "Build Charts": {
+            container("builder") {
+              sh """
+                bash /root/extra/helm-init.sh
+                cd charts/$IMAGE_NAME
+                helm lint .
+                helm push . chartmuseum
+                helm repo update
+                helm search $IMAGE_NAME
+              """
+            }
+          }
+        )
       }
       stage("Staging") {
         container("builder") {
@@ -128,10 +132,10 @@ podTemplate(label: label, containers: [
           """
         }
       }
-      stage('Proceed') {
+      stage("Proceed") {
         container("builder") {
           notify("#439FE0", "Proceed Production?: $IMAGE_NAME-$VERSION <$PIPELINE|#$BUILD_NUMBER>")
-          timeout(time: 60, unit: 'MINUTES') {
+          timeout(time: 60, unit: "MINUTES") {
             input(message: "Proceed Production?: $IMAGE_NAME-$VERSION")
           }
         }
