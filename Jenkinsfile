@@ -9,7 +9,6 @@ def SOURCE_LANG = ""
 def SOURCE_ROOT = ""
 def BASE_DOMAIN = ""
 def JENKINS = ""
-def REGISTRY = ""
 def PIPELINE = ""
 properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
@@ -33,7 +32,6 @@ podTemplate(label: label, containers: [
         VERSION = readFile "/home/jenkins/VERSION"
         BASE_DOMAIN = readFile "/home/jenkins/BASE_DOMAIN"
         JENKINS = readFile "/home/jenkins/JENKINS"
-        REGISTRY = readFile "/home/jenkins/REGISTRY"
         PIPELINE = "https://$JENKINS/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_NUMBER/pipeline"
       }
     }
@@ -52,18 +50,10 @@ podTemplate(label: label, containers: [
       }
       container("builder") {
         sh """
-          bash /root/extra/detect.sh
+          bash /root/extra/detect.sh $IMAGE_NAME
         """
         SOURCE_LANG = readFile "/home/jenkins/SOURCE_LANG"
         SOURCE_ROOT = readFile "/home/jenkins/SOURCE_ROOT"
-        sh """
-          sed -i -e "s/name: .*/name: $IMAGE_NAME/" charts/acme/Chart.yaml
-          sed -i -e "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
-          sed -i -e "s|basedomain: .*|basedomain: $BASE_DOMAIN|" charts/acme/values.yaml
-          sed -i -e "s|repository: .*|repository: $REGISTRY/$IMAGE_NAME|" charts/acme/values.yaml
-          sed -i -e "s|tag: .*|tag: $VERSION|" charts/acme/values.yaml
-          mv charts/acme charts/$IMAGE_NAME
-        """
       }
     }
     stage("Build") {
@@ -102,15 +92,13 @@ podTemplate(label: label, containers: [
       }
     }
     if (BRANCH_NAME != "master") {
-      stage("Deploy Development") {
+      stage("Development") {
         container("builder") {
           def NAMESPACE = "development"
           sh """
-            bash /root/extra/draft-init.sh
-            sed -i -e "s/NAMESPACE/$NAMESPACE/g" draft.toml
-            sed -i -e "s/NAME/$IMAGE_NAME-$NAMESPACE/g" draft.toml
-            draft up --docker-debug
+            bash /root/extra/draft-up.sh $IMAGE_NAME $NAMESPACE
           """
+          deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
         }
       }
     }
@@ -120,20 +108,14 @@ podTemplate(label: label, containers: [
           "Build Docker": {
             container("docker") {
               sh """
-                docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
-                docker push $REGISTRY/$IMAGE_NAME:$VERSION
+                bash /root/extra/build-image.sh $IMAGE_NAME
               """
             }
           },
           "Build Charts": {
             container("builder") {
               sh """
-                bash /root/extra/helm-init.sh
-                cd charts/$IMAGE_NAME
-                helm lint .
-                helm push . chartmuseum
-                helm repo update
-                helm search $IMAGE_NAME
+                bash /root/extra/build-charts.sh $IMAGE_NAME
               """
             }
           }
@@ -143,11 +125,9 @@ podTemplate(label: label, containers: [
         container("builder") {
           def NAMESPACE = "staging"
           sh """
-            helm upgrade --install $IMAGE_NAME-$NAMESPACE chartmuseum/$IMAGE_NAME \
-                        --version $VERSION --namespace $NAMESPACE --devel \
-                        --set fullnameOverride=$IMAGE_NAME-$NAMESPACE
-            helm history $IMAGE_NAME-$NAMESPACE
+            bash /root/extra/deploy.sh $IMAGE_NAME $VERSION $NAMESPACE
           """
+          // deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
         }
       }
       stage("Confirm") {
@@ -163,11 +143,9 @@ podTemplate(label: label, containers: [
         container("builder") {
           def NAMESPACE = "production"
           sh """
-            helm upgrade --install $IMAGE_NAME-$NAMESPACE chartmuseum/$IMAGE_NAME \
-                        --version $VERSION --namespace $NAMESPACE --devel \
-                        --set fullnameOverride=$IMAGE_NAME-$NAMESPACE
-            helm history $IMAGE_NAME-$NAMESPACE
+            bash /root/extra/deploy.sh $IMAGE_NAME $VERSION $NAMESPACE
           """
+          deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
         }
       }
     }
@@ -185,12 +163,16 @@ def build_success(IMAGE_NAME, VERSION, PIPELINE) {
 def deploy_confirm(IMAGE_NAME, VERSION, STAGE, PIPELINE) {
   notify("warning", "Deply Confirm", "`$IMAGE_NAME` `$VERSION` :rocket: `$STAGE`", "$env.JOB_NAME <$PIPELINE|#$env.BUILD_NUMBER>")
 }
-def notify(COLOR, TITLE, MESSAGE, LINK) {
+def deploy_success(IMAGE_NAME, VERSION, STAGE, BASE_DOMAIN) {
+  def SEE="https://$IMAGE_NAME-$STAGE.$BASE_DOMAIN"
+  notify("good", "Deply Success", "`$IMAGE_NAME` `$VERSION` :satellite: `$STAGE`", "see <$SEE|$env.IMAGE_NAME-$STAGE>")
+}
+def notify(COLOR, TITLE, MESSAGE, FOOTER) {
   try {
     if (SLACK_TOKEN) {
       sh """
         curl -sL toast.sh/helper/slack.sh | bash -s -- --token='$SLACK_TOKEN' \
-             --color='$COLOR' --title='$TITLE' --footer='$LINK' '$MESSAGE'
+             --color='$COLOR' --title='$TITLE' --footer='$FOOTER' '$MESSAGE'
       """
     }
   } catch (ignored) {
