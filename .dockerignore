@@ -1,3 +1,4 @@
 Dockerfile
 draft.toml
 charts/
+.git/
