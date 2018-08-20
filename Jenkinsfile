@@ -16,9 +16,9 @@ properties([
 ])
 podTemplate(label: label, containers: [
   containerTemplate(name: "builder", image: "quay.io/nalbam/builder", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "maven", image: "maven", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "node", image: "node", command: "cat", ttyEnabled: true, alwaysPullImage: true)
+  containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true),
+  containerTemplate(name: "maven", image: "maven", command: "cat", ttyEnabled: true),
+  containerTemplate(name: "node", image: "node", command: "cat", ttyEnabled: true)
 ], volumes: [
   hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
   hostPathVolume(mountPath: "/home/jenkins/.draft", hostPath: "/home/jenkins/.draft"),
@@ -37,21 +37,19 @@ podTemplate(label: label, containers: [
       }
     }
     stage("Checkout") {
-      try {
-        if (REPOSITORY_SECRET) {
-          git(url: "$REPOSITORY_URL", branch: "$BRANCH_NAME", credentialsId: "$REPOSITORY_SECRET")
-        } else {
-          git(url: "$REPOSITORY_URL", branch: "$BRANCH_NAME")
-        }
-      } catch (e) {
-        container("builder") {
-          checkout_failure(IMAGE_NAME, PIPELINE)
-        }
-        throw e
-      }
       container("builder") {
+        try {
+          if (REPOSITORY_SECRET) {
+            git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
+          } else {
+            git(url: REPOSITORY_URL, branch: BRANCH_NAME)
+          }
+        } catch (e) {
+          checkout_failure(IMAGE_NAME, PIPELINE)
+          throw e
+        }
         sh """
-          /root/extra/detect.sh
+          /root/extra/detect.sh $IMAGE_NAME $BRANCH_NAME
         """
         VERSION = readFile "/home/jenkins/VERSION"
         SOURCE_LANG = readFile "/home/jenkins/SOURCE_LANG"
@@ -130,7 +128,7 @@ podTemplate(label: label, containers: [
           sh """
             /root/extra/deploy.sh $IMAGE_NAME $VERSION $NAMESPACE
           """
-          // deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
+          deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
         }
       }
       stage("Confirm") {
