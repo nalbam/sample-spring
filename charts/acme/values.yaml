@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 image:
   repository: acme
   tag: latest
@@ -9,20 +9,26 @@ service:
   internalPort: 8080
 resources:
   limits:
-    cpu: 1000m
-    memory: 1024Mi
+    cpu: 500m
+    memory: 512Mi
   requests:
     cpu: 500m
     memory: 512Mi
 ingress:
   enabled: true
-  basedomain: apps.opspresso.com
+  basedomain: opspresso.com
 hpa:
   enabled: true
   min: 2
   max: 30
   cpu: 50
+env:
+envFrom:
 configmap:
   enabled: false
+  data:
+    PROFILE: development
 secret:
   enabled: false
+  data:
+    PASSWORD: cGFzc3dvcmQ=

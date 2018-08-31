@@ -1,7 +1,9 @@
+def IMAGE_NAME = "sample-spring"
 def REPOSITORY_URL = "https://github.com/nalbam/sample-spring"
 def REPOSITORY_SECRET = ""
-def IMAGE_NAME = "sample-spring"
-def SLACK_TOKEN = "T03FUG4UB/B8RQJGNR0/U7LtWJKf8E2gVkh1S1oASlG5"
+def CLUSTER = ""
+def BASE_DOMAIN = ""
+def SLACK_TOKEN = ""
 
 @Library('github.com/opspresso/pipeline@master')
 def pipeline = new com.opspresso.Pipeline()
@@ -9,8 +11,6 @@ def label = "worker-${UUID.randomUUID().toString()}"
 def VERSION = ""
 def SOURCE_LANG = ""
 def SOURCE_ROOT = ""
-def BASE_DOMAIN = ""
-def REGISTRY = ""
 properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
 ])
@@ -42,13 +42,12 @@ podTemplate(label: label, containers: [
         VERSION = pipeline.version
         SOURCE_LANG = pipeline.source_lang
         SOURCE_ROOT = pipeline.source_root
-        REGISTRY = pipeline.registry
 
         if (!BASE_DOMAIN) {
           BASE_DOMAIN = pipeline.base_domain
         }
         if (!SLACK_TOKEN) {
-          SLACK_TOKEN = pipeline.slack_token
+          SLACK_TOKEN = ""
         }
       }
     }
