@@ -19,6 +19,12 @@ $RECYCLE.BIN/
 .classpath
 .factorypath
 
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
 # Maven
 target/
 build/
@@ -30,11 +36,6 @@ build/
 # Eclipse
 .settings/
 .metadata/
-
-# Java
-.project
-.classpath
-.factorypath
 
 # Temp
 *.pid
