@@ -1,22 +1,21 @@
-def REPOSITORY_URL = "https://github.com/nalbam/sample-spring"
-def REPOSITORY_SECRET = ""
 def IMAGE_NAME = "sample-spring"
-def SLACK_TOKEN = "T03FUG4UB/B8RQJGNR0/U7LtWJKf8E2gVkh1S1oASlG5"
+def REPOSITORY_URL = "https://github.com/nalbam/sample-spring.git"
+def REPOSITORY_SECRET = ""
+def CLUSTER = ""
+def BASE_DOMAIN = ""
+def SLACK_TOKEN = ""
 
+@Library("github.com/opspresso/pipeline")
+def pipeline = new com.opspresso.Pipeline()
 def label = "worker-${UUID.randomUUID().toString()}"
 def VERSION = ""
 def SOURCE_LANG = ""
 def SOURCE_ROOT = ""
-def BASE_DOMAIN = ""
-def REGISTRY = ""
-def JENKINS = ""
-def PIPELINE = ""
 properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
 ])
 podTemplate(label: label, containers: [
   containerTemplate(name: "builder", image: "quay.io/opspresso/builder", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true),
   containerTemplate(name: "maven", image: "maven", command: "cat", ttyEnabled: true),
   containerTemplate(name: "node", image: "node", command: "cat", ttyEnabled: true)
 ], volumes: [
@@ -25,17 +24,6 @@ podTemplate(label: label, containers: [
   hostPathVolume(mountPath: "/home/jenkins/.helm", hostPath: "/home/jenkins/.helm")
 ]) {
   node(label) {
-    stage("Prepare") {
-      container("builder") {
-        sh """
-          /root/extra/prepare.sh $IMAGE_NAME $BRANCH_NAME
-        """
-        BASE_DOMAIN = readFile "/home/jenkins/BASE_DOMAIN"
-        REGISTRY = readFile "/home/jenkins/REGISTRY"
-        JENKINS = readFile "/home/jenkins/JENKINS"
-        PIPELINE = "https://$JENKINS/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_NUMBER/pipeline"
-      }
-    }
     stage("Checkout") {
       container("builder") {
         try {
@@ -45,15 +33,22 @@ podTemplate(label: label, containers: [
             git(url: REPOSITORY_URL, branch: BRANCH_NAME)
           }
         } catch (e) {
-          checkout_failure(IMAGE_NAME, PIPELINE)
+          checkout_failure(IMAGE_NAME)
           throw e
         }
-        sh """
-          /root/extra/detect.sh $IMAGE_NAME $BRANCH_NAME
-        """
-        VERSION = readFile "/home/jenkins/VERSION"
-        SOURCE_LANG = readFile "/home/jenkins/SOURCE_LANG"
-        SOURCE_ROOT = readFile "/home/jenkins/SOURCE_ROOT"
+
+        pipeline.scan(IMAGE_NAME, BRANCH_NAME)
+
+        VERSION = pipeline.version
+        SOURCE_LANG = pipeline.source_lang
+        SOURCE_ROOT = pipeline.source_root
+
+        if (!BASE_DOMAIN) {
+          BASE_DOMAIN = pipeline.base_domain
+        }
+        if (!SLACK_TOKEN) {
+          SLACK_TOKEN = pipeline.slack_token
+        }
       }
     }
     stage("Build") {
@@ -62,11 +57,11 @@ podTemplate(label: label, containers: [
           try {
             sh """
               cd $SOURCE_ROOT
-              mvn package -s /home/jenkins/settings.xml
+              mvn package -s /home/jenkins/.m2/settings.xml
             """
-            build_success(IMAGE_NAME, VERSION, PIPELINE)
+            build_success(IMAGE_NAME, VERSION)
           } catch (e) {
-            build_failure(IMAGE_NAME, PIPELINE)
+            build_failure(IMAGE_NAME)
             throw e
           }
         }
@@ -78,9 +73,9 @@ podTemplate(label: label, containers: [
               cd $SOURCE_ROOT
               npm run build
             """
-            build_success(IMAGE_NAME, VERSION, PIPELINE)
+            build_success(IMAGE_NAME, VERSION)
           } catch (e) {
-            build_failure(IMAGE_NAME, PIPELINE)
+            build_failure(IMAGE_NAME)
             throw e
           }
         }
@@ -94,11 +89,8 @@ podTemplate(label: label, containers: [
     if (BRANCH_NAME != "master") {
       stage("Development") {
         container("builder") {
-          def NAMESPACE = "development"
-          sh """
-            /root/extra/draft-up.sh $NAMESPACE
-          """
-          deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
+          pipeline.draft_up(IMAGE_NAME, "development", CLUSTER, BASE_DOMAIN)
+          deploy_success(IMAGE_NAME, VERSION, "development", BASE_DOMAIN)
         }
       }
     }
@@ -106,76 +98,63 @@ podTemplate(label: label, containers: [
       stage("Build Image") {
         parallel(
           "Build Docker": {
-            container("docker") {
-              sh """
-                docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
-                docker push $REGISTRY/$IMAGE_NAME:$VERSION
-              """
+            container("builder") {
+              pipeline.build_image(IMAGE_NAME, VERSION)
             }
           },
           "Build Charts": {
             container("builder") {
-              sh """
-                /root/extra/build-charts.sh
-              """
+              pipeline.build_chart(IMAGE_NAME, VERSION)
             }
           }
         )
       }
-      stage("Staging") {
+      stage("Development") {
         container("builder") {
-          def NAMESPACE = "staging"
-          sh """
-            /root/extra/deploy.sh $IMAGE_NAME $VERSION $NAMESPACE
-          """
-          deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
+          pipeline.helm_install(IMAGE_NAME, VERSION, "development", CLUSTER, BASE_DOMAIN)
+          deploy_success(IMAGE_NAME, VERSION, "development", BASE_DOMAIN)
         }
       }
       stage("Confirm") {
         container("builder") {
-          def NAMESPACE = "production"
-          deploy_confirm(IMAGE_NAME, VERSION, NAMESPACE, PIPELINE)
+          deploy_confirm(IMAGE_NAME, VERSION, "staging")
           timeout(time: 60, unit: "MINUTES") {
-            input(message: "$IMAGE_NAME $VERSION to $NAMESPACE")
+            input(message: "$IMAGE_NAME $VERSION to staging")
           }
         }
       }
-      stage("Production") {
+      stage("Staging") {
         container("builder") {
-          def NAMESPACE = "production"
-          sh """
-            /root/extra/deploy.sh $IMAGE_NAME $VERSION $NAMESPACE
-          """
-          deploy_success(IMAGE_NAME, VERSION, NAMESPACE, BASE_DOMAIN)
+          pipeline.helm_install(IMAGE_NAME, VERSION, "staging", CLUSTER, BASE_DOMAIN)
+          deploy_success(IMAGE_NAME, VERSION, "staging", BASE_DOMAIN)
         }
       }
     }
   }
 }
-def checkout_failure(IMAGE_NAME, PIPELINE) {
-  notify("danger", "Checkout Failure", "`$IMAGE_NAME`", "$env.JOB_NAME <$PIPELINE|#$env.BUILD_NUMBER>")
+def checkout_failure(name) {
+  notify("danger", "Checkout Failure", "`$name`", "$JOB_NAME <$RUN_DISPLAY_URL|#$BUILD_NUMBER>")
 }
-def build_failure(IMAGE_NAME, PIPELINE) {
-  notify("danger", "Build Failure", "`$IMAGE_NAME`", "$env.JOB_NAME <$PIPELINE|#$env.BUILD_NUMBER>")
+def build_failure(name) {
+  notify("danger", "Build Failure", "`$name`", "$JOB_NAME <$RUN_DISPLAY_URL|#$BUILD_NUMBER>")
 }
-def build_success(IMAGE_NAME, VERSION, PIPELINE) {
-  notify("good", "Build Success", "`$IMAGE_NAME` `$VERSION` :heavy_check_mark:", "$env.JOB_NAME <$PIPELINE|#$env.BUILD_NUMBER>")
+def build_success(name, version) {
+  notify("good", "Build Success", "`$name` `$version` :heavy_check_mark:", "$JOB_NAME <$RUN_DISPLAY_URL|#$BUILD_NUMBER>")
 }
-def deploy_confirm(IMAGE_NAME, VERSION, STAGE, PIPELINE) {
-  notify("warning", "Deply Confirm", "`$IMAGE_NAME` `$VERSION` :rocket: `$STAGE`", "$env.JOB_NAME <$PIPELINE|#$env.BUILD_NUMBER>")
+def deploy_confirm(name, version, namespace) {
+  notify("warning", "Deploy Confirm", "`$name` `$version` :rocket: `$namespace`", "$JOB_NAME <$RUN_DISPLAY_URL|#$BUILD_NUMBER>")
 }
-def deploy_success(IMAGE_NAME, VERSION, STAGE, BASE_DOMAIN) {
-  def SEE="https://$IMAGE_NAME-$STAGE.$BASE_DOMAIN"
-  notify("good", "Deply Success", "`$IMAGE_NAME` `$VERSION` :satellite: `$STAGE`", "see <$SEE|$env.IMAGE_NAME-$STAGE>")
+def deploy_success(name, version, namespace, base_domain) {
+  def link = "https://$name-$namespace.$base_domain"
+  notify("good", "Deploy Success", "`$name` `$version` :satellite: `$namespace`", "$JOB_NAME <$RUN_DISPLAY_URL|#$BUILD_NUMBER> :: <$link|$name-$namespace>")
 }
-def notify(COLOR, TITLE, MESSAGE, FOOTER) {
+def notify(color, title, message, footer) {
   try {
-    if (SLACK_TOKEN) {
-      sh """
-        curl -sL toast.sh/helper/slack.sh | bash -s -- --token='$SLACK_TOKEN' \
-             --color='$COLOR' --title='$TITLE' --footer='$FOOTER' '$MESSAGE'
-      """
-    }
+    // pipeline.slack(SLACK_TOKEN, color, title, message, footer)
+    sh """
+      curl -sL toast.sh/helper/slack.sh | bash -s -- --token='$SLACK_TOKEN' \
+      --color='$color' --title='$title' --footer='$footer' '$message'
+    """
   } catch (ignored) {
   }
 }
