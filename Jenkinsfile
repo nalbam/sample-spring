@@ -5,7 +5,7 @@ def CLUSTER = ""
 def BASE_DOMAIN = ""
 def SLACK_TOKEN = ""
 
-@Library('github.com/opspresso/pipeline@master')
+@Library('github.com/opspresso/pipeline')
 def pipeline = new com.opspresso.Pipeline()
 def label = "worker-${UUID.randomUUID().toString()}"
 def VERSION = ""
