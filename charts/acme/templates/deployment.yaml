@@ -29,9 +29,9 @@ spec:
 {{ toYaml .Values.envFrom | indent 10 }}
 {{- if .Values.configmap.enabled -}}
           - configMapRef:
-            name: {{ template "fullname" . }}
+              name: {{ template "fullname" . }}
 {{- end -}}
 {{- if .Values.secret.enabled -}}
           - secretRef:
-            name: {{ template "fullname" . }}
+              name: {{ template "fullname" . }}
 {{- end -}}

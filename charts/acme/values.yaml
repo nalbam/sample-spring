@@ -30,9 +30,5 @@ envFrom:
   #   name: sample-config-map
 configmap:
   enabled: false
-  # data:
-  #   PROFILE: profile
 secret:
   enabled: false
-  # data:
-  #   PASSWORD: cGFzc3dvcmQ=
