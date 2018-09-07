@@ -2,17 +2,12 @@ server:
   port: 8080
 
 spring:
-  application:
-    name: sample-spring
   profiles:
     active: ${PROFILE:default}
   jackson:
     time-zone: Asia/Seoul
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
-
-app:
-  profile: ${PROFILE:default}
 
 slack:
   webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
