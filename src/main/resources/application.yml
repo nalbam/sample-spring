@@ -2,6 +2,10 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: sample-spring
+  profiles:
+    active: ${PROFILE:default}
   jackson:
     time-zone: Asia/Seoul
     serialization:

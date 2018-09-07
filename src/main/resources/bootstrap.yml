@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: sample-spring
-  profiles:
-    active: ${PROFILE:default}
