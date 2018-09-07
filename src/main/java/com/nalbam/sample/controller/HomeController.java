@@ -1,5 +1,6 @@
 package com.nalbam.sample.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -12,6 +13,9 @@ import java.util.TimeZone;
 
 @Controller
 public class HomeController {
+
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @GetMapping("/")
     public String index(Map<String, Object> model) {
@@ -26,7 +30,13 @@ public class HomeController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
 
+        // profile
+        model.put("profile", profile);
+
+        // host
         model.put("host", host);
+
+        // date
         model.put("date", sdf.format(new Date()));
 
         return "index";
