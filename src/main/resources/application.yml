@@ -19,6 +19,13 @@ message: ${MESSAGE:Refreshed}
 ---
 
 spring:
+  profiles: default
+
+message: ${MESSAGE:Server UP}
+
+---
+
+spring:
   profiles: dev
 
 message: ${MESSAGE:Development UP}
