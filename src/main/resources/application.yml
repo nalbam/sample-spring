@@ -20,33 +20,40 @@ message: ${MESSAGE:Refreshed}
 
 spring:
   profiles: default
-
 message: ${MESSAGE:Server UP}
 
 ---
 
 spring:
   profiles: dev
-
 message: ${MESSAGE:Development UP}
 
 ---
 
 spring:
   profiles: stage
-
 message: ${MESSAGE:Staging UP}
 
 ---
 
 spring:
-  profiles: dev-dev
+  profiles: prod
+message: ${MESSAGE:Production UP}
 
+---
+
+spring:
+  profiles: dev-dev
 message: ${MESSAGE:Development UP}
 
 ---
 
 spring:
   profiles: dev-stage
-
 message: ${MESSAGE:Staging UP}
+
+---
+
+spring:
+  profiles: dev-prod
+message: ${MESSAGE:Production UP}
