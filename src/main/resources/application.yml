@@ -15,3 +15,17 @@ slack:
   channel: ${SLACK_CHANNEL:sandbox}
 
 message: ${MESSAGE:Refreshed}
+
+---
+
+spring:
+  profiles: dev
+
+message: ${MESSAGE:Development UP}
+
+---
+
+spring:
+  profiles: stage
+
+message: ${MESSAGE:Staging UP}
