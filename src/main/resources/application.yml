@@ -36,3 +36,17 @@ spring:
   profiles: stage
 
 message: ${MESSAGE:Staging UP}
+
+---
+
+spring:
+  profiles: dev-dev
+
+message: ${MESSAGE:Development UP}
+
+---
+
+spring:
+  profiles: dev-stage
+
+message: ${MESSAGE:Staging UP}
