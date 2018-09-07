@@ -23,6 +23,9 @@ spec:
         - containerPort: {{ .Values.service.internalPort }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
+        env:
+          - name: PROFILE
+            value: {{ .Values.profile }}
 {{ if or .Values.configmap.enabled .Values.secret.enabled }}
         envFrom:
 {{ end }}
