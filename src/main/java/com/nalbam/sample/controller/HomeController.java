@@ -17,6 +17,9 @@ public class HomeController {
     @Value("${spring.profiles.active}")
     private String profile;
 
+    @Value("${message}")
+    private String message;
+
     @GetMapping("/")
     public String index(Map<String, Object> model) {
         String host;
@@ -32,6 +35,9 @@ public class HomeController {
 
         // profile
         model.put("profile", profile);
+
+        // message
+        model.put("message", message);
 
         // host
         model.put("host", host);
