@@ -1,5 +1,5 @@
 def IMAGE_NAME = "sample-spring"
-def REPOSITORY_URL = "git@github.com:nalbam/sample-spring.git"
+def REPOSITORY_URL = "https://github.com/nalbam/sample-spring.git"
 def REPOSITORY_SECRET = ""
 def CLUSTER = ""
 def BASE_DOMAIN = ""
@@ -49,7 +49,7 @@ podTemplate(label: label, containers: [
           throw e
         }
 
-        pipeline.scan(IMAGE_NAME, BRANCH_NAME)
+        pipeline.scan(IMAGE_NAME, BRANCH_NAME, "java")
 
         VERSION = pipeline.version
         SOURCE_LANG = pipeline.source_lang
@@ -57,38 +57,17 @@ podTemplate(label: label, containers: [
       }
     }
     stage("Build") {
-      if (SOURCE_LANG == "java") {
-        container("maven") {
-          try {
-            sh """
-              cd $SOURCE_ROOT
-              mvn package -s /home/jenkins/.m2/settings.xml
-            """
-            success(SLACK_TOKEN, "Build", IMAGE_NAME, VERSION)
-          } catch (e) {
-            failure(SLACK_TOKEN, "Build", IMAGE_NAME)
-            throw e
-          }
+      container("maven") {
+        try {
+          sh """
+            cd $SOURCE_ROOT
+            mvn package -s /home/jenkins/.m2/settings.xml
+          """
+          success(SLACK_TOKEN, "Build", IMAGE_NAME, VERSION)
+        } catch (e) {
+          failure(SLACK_TOKEN, "Build", IMAGE_NAME)
+          throw e
         }
-      }
-      else if (SOURCE_LANG == "nodejs") {
-        container("node") {
-          try {
-            sh """
-              cd $SOURCE_ROOT
-              npm run build
-            """
-            success(SLACK_TOKEN, "Build", IMAGE_NAME, VERSION)
-          } catch (e) {
-            failure(SLACK_TOKEN, "Build", IMAGE_NAME)
-            throw e
-          }
-        }
-      }
-      else {
-        sh """
-          echo "skipped."
-        """
       }
     }
     // if (BRANCH_NAME != "master") {
