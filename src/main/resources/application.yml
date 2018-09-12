@@ -2,16 +2,57 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    active: ${PROFILE:default}
   jackson:
     time-zone: Asia/Seoul
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
-
-app:
-  profile: ${PROFILE:default}
 
 slack:
   webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
   channel: ${SLACK_CHANNEL:sandbox}
 
 message: ${MESSAGE:Refreshed}
+
+---
+
+spring:
+  profiles: default
+message: ${MESSAGE:Server UP}
+
+---
+
+spring:
+  profiles: dev
+message: ${MESSAGE:Development UP}
+
+---
+
+spring:
+  profiles: stage
+message: ${MESSAGE:Staging UP}
+
+---
+
+spring:
+  profiles: prod
+message: ${MESSAGE:Production UP}
+
+---
+
+spring:
+  profiles: dev-dev
+message: ${MESSAGE:Development UP}
+
+---
+
+spring:
+  profiles: dev-stage
+message: ${MESSAGE:Staging UP}
+
+---
+
+spring:
+  profiles: dev-prod
+message: ${MESSAGE:Production UP}

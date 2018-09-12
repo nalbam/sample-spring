@@ -24,14 +24,16 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         env:
-{{ toYaml .Values.env | indent 10 }}
+          - name: PROFILE
+            value: {{ .Values.profile }}
+{{ if or .Values.configmap.enabled .Values.secret.enabled }}
         envFrom:
-{{ toYaml .Values.envFrom | indent 10 }}
-{{- if .Values.configmap.enabled -}}
+{{ end }}
+{{ if .Values.configmap.enabled }}
           - configMapRef:
-            name: {{ template "fullname" . }}
-{{- end -}}
-{{- if .Values.secret.enabled -}}
+              name: {{ template "fullname" . }}
+{{ end }}
+{{ if .Values.secret.enabled }}
           - secretRef:
-            name: {{ template "fullname" . }}
-{{- end -}}
+              name: {{ template "fullname" . }}
+{{ end }}
