@@ -1,7 +1,7 @@
 [environments]
-  [environments.NAMESPACE]
-    name = "NAME"
-    namespace = "NAMESPACE"
+  [environments.default]
+    name = "sample-spring"
+    namespace = "default"
     wait = true
     watch = false
     watch-delay = 2

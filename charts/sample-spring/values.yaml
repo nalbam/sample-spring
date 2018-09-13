@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: acme
+  repository: sample-spring
   tag: latest
   pullPolicy: Always
 service:
@@ -16,7 +16,7 @@ resources:
     memory: 512Mi
 ingress:
   enabled: true
-  basedomain: opspresso.com
+  basedomain: 127.0.0.1.nip.io
 hpa:
   enabled: true
   min: 1
