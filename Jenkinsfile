@@ -5,8 +5,8 @@ def CLUSTER = "dev"
 def BASE_DOMAIN = "dev.nalbam.com"
 def SLACK_TOKEN = ""
 
-@Library("github.com/opspresso/pipeline")
-def pipeline = new com.opspresso.Pipeline()
+@Library("github.com/opsnow-tools/valve-pump")
+def pump = new com.opsnow.valve.Pump()
 def label = "worker-${UUID.randomUUID().toString()}"
 def VERSION = ""
 def SOURCE_LANG = ""
@@ -26,13 +26,13 @@ podTemplate(label: label, containers: [
   node(label) {
     stage("Prepare") {
       container("builder") {
-        pipeline.prepare()
+        pump.prepare()
 
         if (!BASE_DOMAIN) {
-          BASE_DOMAIN = pipeline.base_domain
+          BASE_DOMAIN = pump.base_domain
         }
         if (!SLACK_TOKEN) {
-          SLACK_TOKEN = pipeline.slack_token
+          SLACK_TOKEN = pump.slack_token
         }
       }
     }
@@ -49,11 +49,11 @@ podTemplate(label: label, containers: [
           throw e
         }
 
-        pipeline.scan(IMAGE_NAME, BRANCH_NAME, "java")
+        pump.scan(IMAGE_NAME, BRANCH_NAME, "java")
 
-        VERSION = pipeline.version
-        SOURCE_LANG = pipeline.source_lang
-        SOURCE_ROOT = pipeline.source_root
+        VERSION = pump.version
+        SOURCE_LANG = pump.source_lang
+        SOURCE_ROOT = pump.source_root
       }
     }
     stage("Build") {
@@ -73,7 +73,7 @@ podTemplate(label: label, containers: [
     // if (BRANCH_NAME != "master") {
     //   stage("Deploy PRE") {
     //     container("builder") {
-    //       pipeline.draft_up(IMAGE_NAME, "pre", CLUSTER, BASE_DOMAIN)
+    //       pump.draft_up(IMAGE_NAME, "pre", CLUSTER, BASE_DOMAIN)
     //       success(SLACK_TOKEN, "Deploy PRE", IMAGE_NAME, VERSION, "pre", BASE_DOMAIN)
     //     }
     //   }
@@ -83,19 +83,19 @@ podTemplate(label: label, containers: [
         parallel(
           "Build Docker": {
             container("builder") {
-              pipeline.build_image(IMAGE_NAME, VERSION)
+              pump.build_image(IMAGE_NAME, VERSION)
             }
           },
           "Build Charts": {
             container("builder") {
-              pipeline.build_chart(IMAGE_NAME, VERSION)
+              pump.build_chart(IMAGE_NAME, VERSION)
             }
           }
         )
       }
       stage("Deploy DEV") {
         container("builder") {
-          pipeline.helm_install(IMAGE_NAME, VERSION, "dev", BASE_DOMAIN, CLUSTER)
+          pump.helm_install(IMAGE_NAME, VERSION, "dev", BASE_DOMAIN, CLUSTER)
           success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", BASE_DOMAIN)
         }
       }
@@ -109,7 +109,7 @@ podTemplate(label: label, containers: [
       }
       stage("Deploy STAGE") {
         container("builder") {
-          pipeline.helm_install(IMAGE_NAME, VERSION, "stage", BASE_DOMAIN, CLUSTER)
+          pump.helm_install(IMAGE_NAME, VERSION, "stage", BASE_DOMAIN, CLUSTER)
           success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", BASE_DOMAIN)
         }
       }
@@ -137,9 +137,9 @@ def proceed(token = "", type = "", name = "", version = "", namespace = "") {
 }
 def slack(token = "", color = "", title = "", message = "", footer = "") {
   try {
-    // pipeline.slack("$token", "$color", "$title", "$message", "$footer")
+    // pump.slack("$token", "$color", "$title", "$message", "$footer")
     sh """
-      curl -sL toast.sh/helper/slack.sh | bash -s -- --token='$token' \
+      curl -sL repo.opsnow.io/helper/slack.sh | bash -s -- --token='$token' \
       --color='$color' --title='$title' --footer='$footer' '$message'
     """
   } catch (ignored) {
