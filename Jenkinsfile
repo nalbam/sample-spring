@@ -5,8 +5,8 @@ def CLUSTER = "dev"
 def BASE_DOMAIN = "dev.nalbam.com"
 def SLACK_TOKEN = ""
 
-@Library("github.com/opsnow-tools/valve-pump")
-def pump = new com.opsnow.valve.Pump()
+@Library("github.com/opsnow-tools/valve-butler")
+def pump = new com.opsnow.valve.Butler()
 def label = "worker-${UUID.randomUUID().toString()}"
 def VERSION = ""
 def SOURCE_LANG = ""
