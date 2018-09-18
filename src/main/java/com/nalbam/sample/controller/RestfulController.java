@@ -5,8 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Slf4j
 @RestController
@@ -49,6 +52,9 @@ public class RestfulController {
     public Map<String, Object> stress() {
         log.info("stress check");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
         Double sum = 0d;
         for (int i = 0; i < 1000000; i++) {
             sum += Math.sqrt(i);
@@ -57,6 +63,7 @@ public class RestfulController {
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("sum", sum);
+        map.put("date", sdf.format(new Date()));
 
         return map;
     }
