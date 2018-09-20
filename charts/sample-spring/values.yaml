@@ -8,12 +8,12 @@ service:
   externalPort: 80
   internalPort: 8080
 resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
   requests:
     cpu: 500m
     memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
 ingress:
   enabled: true
   basedomain: 127.0.0.1.nip.io
