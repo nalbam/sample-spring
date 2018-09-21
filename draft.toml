@@ -1,6 +1,6 @@
 [environments]
   [environments.development]
-    name = "sample-spring"
+    name = "sample-spring-development"
     namespace = "development"
     wait = true
     watch = false
