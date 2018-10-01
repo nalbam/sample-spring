@@ -22,6 +22,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <this.version>0.0.1</this.version>
+        <aws.version>1.11.213</aws.version>
+        <slack.version>0.0.9</slack.version>
     </properties>
 
     <dependencies>
@@ -47,11 +49,18 @@
             <artifactId>jolokia-core</artifactId>
         </dependency>
 
+        <!-- aws -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+
         <!-- slack -->
         <dependency>
             <groupId>in.ashwanthkumar</groupId>
             <artifactId>slack-java-webhook</artifactId>
-            <version>0.0.9</version>
+            <version>${slack.version}</version>
         </dependency>
 
         <!-- lombok -->

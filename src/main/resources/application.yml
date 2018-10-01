@@ -15,44 +15,31 @@ slack:
 
 message: ${MESSAGE:Refreshed}
 
+aws:
+  region: ${AWS_REGION:ap-northeast-2}
+  access_key: ${AWS_ACCESS_KEY:STRING}
+  secret_key: ${AWS_SECRET_KEY:STRING}
+
 ---
 
 spring:
   profiles: default
-message: ${MESSAGE:Server UP}
+message: "Server UP"
 
 ---
 
 spring:
   profiles: dev
-message: ${MESSAGE:Development UP}
+message: "Development UP"
 
 ---
 
 spring:
   profiles: stage
-message: ${MESSAGE:Staging UP}
+message: "Staging UP"
 
 ---
 
 spring:
   profiles: prod
-message: ${MESSAGE:Production UP}
-
----
-
-spring:
-  profiles: dev-dev
-message: ${MESSAGE:Development UP}
-
----
-
-spring:
-  profiles: dev-stage
-message: ${MESSAGE:Staging UP}
-
----
-
-spring:
-  profiles: dev-prod
-message: ${MESSAGE:Production UP}
+message: "Production UP"
