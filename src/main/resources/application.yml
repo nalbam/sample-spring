@@ -24,22 +24,22 @@ aws:
 
 spring:
   profiles: default
-message: "Server UP"
+message: ":tada: Server UP"
 
 ---
 
 spring:
   profiles: dev
-message: "Development UP"
+message: ":tada: Development UP"
 
 ---
 
 spring:
   profiles: stage
-message: "Staging UP"
+message: ":tada: Staging UP"
 
 ---
 
 spring:
   profiles: prod
-message: "Production UP"
+message: ":tada: Production UP"
