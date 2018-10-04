@@ -28,6 +28,12 @@ $RECYCLE.BIN/
 # Maven
 target/
 build/
+bin/
+
+# Nodejs
+node_modules/
+package-lock.json
+dist/
 
 # JetBrains
 .idea/
