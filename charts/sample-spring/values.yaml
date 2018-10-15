@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: docker-registry.127.0.0.1.nip.io:30500/sample-spring
+  repository: sample-spring
   tag: latest
   pullPolicy: Always
 service:
@@ -14,6 +14,20 @@ resources:
   limits:
     cpu: 1000m
     memory: 1024Mi
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  failureThreshold: 6
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  failureThreshold: 6
 ingress:
   enabled: true
   basedomain: 127.0.0.1.nip.io

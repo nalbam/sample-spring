@@ -16,7 +16,7 @@ properties([
 ])
 podTemplate(label: label, containers: [
   containerTemplate(name: "builder", image: "quay.io/opsnow-tools/valve-builder", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "maven", image: "maven", command: "cat", ttyEnabled: true)
+  containerTemplate(name: "maven", image: "maven:3.5.4-jdk-8-slim", command: "cat", ttyEnabled: true)
 ], volumes: [
   hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
   hostPathVolume(mountPath: "/home/jenkins/.draft", hostPath: "/home/jenkins/.draft"),
@@ -51,20 +51,37 @@ podTemplate(label: label, containers: [
         butler.scan(IMAGE_NAME, BRANCH_NAME, "java")
 
         VERSION = butler.version
-        SOURCE_LANG = butler.source_lang
-        SOURCE_ROOT = butler.source_root
+        // SOURCE_LANG = butler.source_lang
+        // SOURCE_ROOT = butler.source_root
       }
     }
     stage("Build") {
       container("maven") {
         try {
-          sh """
-            cd $SOURCE_ROOT
-            mvn package -s /home/jenkins/.m2/settings.xml
-          """
+          butler.mvn_build()
           success(SLACK_TOKEN, "Build", IMAGE_NAME, VERSION)
         } catch (e) {
           failure(SLACK_TOKEN, "Build", IMAGE_NAME)
+          throw e
+        }
+      }
+    }
+    stage("Tests") {
+      container("maven") {
+        try {
+          butler.mvn_test()
+        } catch (e) {
+          failure(SLACK_TOKEN, "Tests", IMAGE_NAME)
+          throw e
+        }
+      }
+    }
+    stage("Code Analysis") {
+      container("maven") {
+        try {
+          butler.mvn_sonar()
+        } catch (e) {
+          failure(SLACK_TOKEN, "Code Analysis", IMAGE_NAME)
           throw e
         }
       }
@@ -82,12 +99,22 @@ podTemplate(label: label, containers: [
         parallel(
           "Build Docker": {
             container("builder") {
-              butler.build_image(IMAGE_NAME, VERSION)
+              try {
+                butler.build_image(IMAGE_NAME, VERSION)
+              } catch (e) {
+                failure(SLACK_TOKEN, "Build Docker", IMAGE_NAME)
+                throw e
+              }
             }
           },
           "Build Charts": {
             container("builder") {
-              butler.build_chart(IMAGE_NAME, VERSION)
+              try {
+                butler.build_chart(IMAGE_NAME, VERSION)
+              } catch (e) {
+                failure(SLACK_TOKEN, "Build Charts", IMAGE_NAME)
+                throw e
+              }
             }
           }
         )
@@ -139,7 +166,8 @@ def slack(token = "", color = "", title = "", message = "", footer = "") {
     // butler.slack("$token", "$color", "$title", "$message", "$footer")
     sh """
       curl -sL repo.opsnow.io/valve-ctl/slack | bash -s -- --token='$token' \
-      --color='$color' --title='$title' --footer='$footer' '$message'
+        --footer='$footer' --footer_icon='https://jenkins.io/sites/default/files/jenkins_favicon.ico' \
+        --color='$color' --title='$title' '$message'
     """
   } catch (ignored) {
   }
