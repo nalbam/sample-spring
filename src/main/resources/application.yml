@@ -23,7 +23,7 @@ aws:
   secret_key: ${AWS_SECRET_KEY:STRING}
 
 logzio:
-  token: ${LOGZIO_TOKEN:zeVEeWvhdhGjPldQBYAwzZcXUQjSABvS}
+  token: ${LOGZIO_TOKEN:STRING}
 
 ---
 
