@@ -2,26 +2,44 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <jmxConfigurator/>
+    <springProperty scope="context" name="product" source="spring.application.name"/>
+    <springProperty scope="context" name="profile" source="spring.profiles.active"/>
+    <springProperty scope="context" name="token" source="logzio.token"/>
 
-    <!--<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
-    <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
-    <!--<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level -&#45;&#45; [%-21.21thread] %-35.35logger{35} : %m%n</pattern>-->
-    <!--</layout>-->
-    <!--</appender>-->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
-    <!--<appender name="ROLLIN" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-    <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-    <!--<fileNamePattern>spring.%d{yyyy-MM-dd}.log</fileNamePattern>-->
-    <!--</rollingPolicy>-->
-    <!--<encoder>-->
-    <!--<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level -&#45;&#45; [%-21.21thread] %-35.35logger{35} : %m%n</pattern>-->
-    <!--</encoder>-->
-    <!--</appender>-->
+    <appender name="ROLLIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>spring.${product}.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%-21.21thread] %-35.35logger{35} : %m%n</pattern>
+        </encoder>
+    </appender>
 
-    <!--<springProfile name="default">-->
-    <!--<root level="INFO">-->
-    <!--<appender-ref ref="STDOUT"/>-->
-    <!--</root>-->
-    <!--</springProfile>-->
+    <appender name="Logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>dev-sre-elasticsearch.opsnow.io</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"product":"${product}","profile":"${profile}"}</customFields>
+        </encoder>
+    </appender>
+
+    <appender name="Logzio" class="io.logz.logback.LogzioLogbackAppender">
+        <token>${token}</token>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <springProfile name="default">
+        <root level="INFO">
+            <appender-ref ref="Logstash"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev, prod">
+        <root level="INFO">
+            <appender-ref ref="Logzio"/>
+        </root>
+    </springProfile>
 </configuration>

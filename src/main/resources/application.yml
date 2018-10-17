@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: sample-spring
   profiles:
     active: ${PROFILE:default}
   jackson:
@@ -19,6 +21,9 @@ aws:
   region: ${AWS_REGION:ap-northeast-2}
   access_key: ${AWS_ACCESS_KEY:STRING}
   secret_key: ${AWS_SECRET_KEY:STRING}
+
+logzio:
+  token: ${LOGZIO_TOKEN:zeVEeWvhdhGjPldQBYAwzZcXUQjSABvS}
 
 ---
 
