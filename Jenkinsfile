@@ -1,8 +1,8 @@
 def IMAGE_NAME = "sample-spring"
 def REPOSITORY_URL = "git@github.com:nalbam/sample-spring.git"
-def REPOSITORY_SECRET = "nalbam-secret"
-def CLUSTER = "dev"
-def BASE_DOMAIN = "dev.nalbam.com"
+def REPOSITORY_SECRET = ""
+def CLUSTER = ""
+def BASE_DOMAIN = ""
 def SLACK_TOKEN = ""
 
 @Library("github.com/opsnow-tools/valve-butler")
