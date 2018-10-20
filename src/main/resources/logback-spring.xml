@@ -33,12 +33,13 @@
 
     <springProfile name="default">
         <root level="INFO">
-            <appender-ref ref="Logstash"/>
+            <appender-ref ref="ROLLIN"/>
         </root>
     </springProfile>
 
     <springProfile name="dev, prod">
         <root level="INFO">
+            <appender-ref ref="Logstash"/>
             <appender-ref ref="Logzio"/>
         </root>
     </springProfile>
