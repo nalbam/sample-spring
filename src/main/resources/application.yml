@@ -19,8 +19,14 @@ message: ${MESSAGE:Refreshed}
 
 aws:
   region: ${AWS_REGION:ap-northeast-2}
-  access_key: ${AWS_ACCESS_KEY:STRING}
-  secret_key: ${AWS_SECRET_KEY:STRING}
+  key:
+    access: ${AWS_ACCESS_KEY:STRING}
+    secret: ${AWS_SECRET_KEY:STRING}
+  sqs:
+    queueName: sample
+    maxTimeout: ${AWS_SQS_MAX_TIMEOUT:36000}
+    maxDelay: ${AWS_SQS_MAX_DELAY:900}
+    endPoint: sqs.${AWS_REGION:ap-northeast-2}.amazonaws.com
 
 logzio:
   token: ${LOGZIO_TOKEN:STRING}
