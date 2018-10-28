@@ -30,11 +30,6 @@ public class SendTask {
         call("http://sample-spring.default/spring");
     }
 
-    @Scheduled(fixedRate = 5000)
-    public void call_productpage() {
-        call("http://productpage.default:9080/");
-    }
-
     private void call(String url) {
         Map<String, String> data = new HashMap<>();
         data.put("url", url);
