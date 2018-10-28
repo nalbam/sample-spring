@@ -26,7 +26,7 @@ public class QueueTask {
     @Autowired
     private SendService sendService;
 
-    @Scheduled(fixedRate = 10000)
+    // @Scheduled(fixedRate = 10000)
     public void counter_up() {
         Map<String, String> data = new HashMap<>();
         data.put("url", "http://sample-node:3000/counter/up");
@@ -49,7 +49,7 @@ public class QueueTask {
                 });
     }
 
-    @Scheduled(fixedRate = 1000)
+    // @Scheduled(fixedRate = 1000)
     public void receive() {
         this.queueService.receive()
                 .exceptionally(e -> {
