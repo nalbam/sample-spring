@@ -20,14 +20,19 @@ public class SendTask {
     @Autowired
     private SendService sendService;
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 3000)
     public void call_sample_node() {
         call("http://sample-node.default/counter/down");
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 7000)
     public void call_sample_spring() {
-        call("http://sample-spring/spring");
+        call("http://sample-spring.default/spring");
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void call_productpage() {
+        call("http://productpage.default:9080/");
     }
 
     private void call(String url) {
