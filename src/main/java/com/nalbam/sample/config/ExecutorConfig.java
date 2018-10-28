@@ -1,4 +1,4 @@
-package com.nalbam.bot.config;
+package com.nalbam.sample.config;
 
 import io.netty.handler.ssl.SslContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
