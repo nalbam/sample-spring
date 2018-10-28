@@ -17,12 +17,6 @@ import java.util.*;
 @Component
 public class QueueTask {
 
-    @Value("${spring.application.name}")
-    private String name;
-
-    @Value("${spring.profiles.active}")
-    private String profile;
-
     @Value("${aws.region}")
     private String region;
 
@@ -32,10 +26,10 @@ public class QueueTask {
     @Autowired
     private SendService sendService;
 
-    @Scheduled(fixedRate = 60000)
-    public void send() {
+    @Scheduled(fixedRate = 10000)
+    public void counter_up() {
         Map<String, String> data = new HashMap<>();
-        data.put("url", "http://" + name + "/health");
+        data.put("url", "http://sample-node:3000/counter/up");
 
         Queue queue = new Queue();
         queue.setType('2');
