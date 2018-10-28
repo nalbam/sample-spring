@@ -2,7 +2,7 @@
 
 FROM maven as BUILD
 COPY . /data/src/
-RUN mvn -f /data/src/pom.xml clean package -DskipTests
+RUN mvn -f /data/src/pom.xml package -DskipTests
 
 FROM openjdk:8-jre
 ENV TZ Asia/Seoul
