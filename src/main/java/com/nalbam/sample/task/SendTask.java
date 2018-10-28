@@ -22,7 +22,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 10000)
     public void call_sample_node() {
-        call("http://sample-node:3000/counter/down");
+        call("http://sample-node.default/counter/down");
     }
 
     @Scheduled(fixedRate = 10000)
