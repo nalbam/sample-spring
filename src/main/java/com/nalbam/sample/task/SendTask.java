@@ -27,7 +27,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 10000)
     public void call_sample_spring() {
-        call("http://sample-spring:8080/spring");
+        call("http://sample-spring/spring");
     }
 
     private void call(String url) {
