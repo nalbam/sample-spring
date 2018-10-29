@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 
 @Slf4j
@@ -92,7 +95,7 @@ public class RestfulController {
 
     @GetMapping("/sleep/{sec}")
     public Map<String, Object> slow(@PathVariable Integer sec) {
-        log.info("stress check");
+        log.info("sleep {}", sec);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -108,6 +111,21 @@ public class RestfulController {
         map.put("date", sdf.format(new Date()));
 
         return map;
+    }
+
+    @GetMapping("/fault/{rate}")
+    public String fault(@PathVariable Integer rate) {
+        log.info("fault {}", rate);
+
+        List<String> greetings = Arrays.asList("Hi there", "Greetings", "Lok'tar");
+
+        Random random = new Random();
+
+        if (rate < random.nextInt(100)) {
+            return greetings.get(random.nextInt(greetings.size()));
+        }
+
+        return greetings.get(greetings.size());
     }
 
 }
