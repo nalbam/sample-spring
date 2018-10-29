@@ -121,6 +121,12 @@ public class RestfulController {
 
         Random random = new Random();
 
+        try {
+            Thread.sleep(random.nextInt(500) + 10);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (rate < random.nextInt(100)) {
             return greetings.get(random.nextInt(greetings.size()));
         }
