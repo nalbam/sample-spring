@@ -28,9 +28,9 @@ public class SendTask {
         call("http://sample-node-" + profile + "/counter/down");
     }
 
-    @Scheduled(fixedRate = 7000)
+    @Scheduled(fixedRate = 2000)
     public void call_sample_spring() {
-        call("http://sample-spring-" + profile + "/spring");
+        call("http://sample-spring-" + profile + "/fault/30");
     }
 
     private void call(String url) {
@@ -44,7 +44,7 @@ public class SendTask {
         queue.setTokens(new ArrayList<>());
         queue.setRegistered(new Date());
 
-        // 발송
+        // send
         this.sendService.send(queue);
     }
 
