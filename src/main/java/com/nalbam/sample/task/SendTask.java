@@ -17,17 +17,20 @@ import java.util.Map;
 @Component
 public class SendTask {
 
+    @Value("${spring.profiles.active}")
+    private String profile;
+
     @Autowired
     private SendService sendService;
 
     @Scheduled(fixedRate = 3000)
     public void call_sample_node() {
-        call("http://sample-node.default/counter/down");
+        call("http://sample-node-" + profile + "/counter/down");
     }
 
     @Scheduled(fixedRate = 7000)
     public void call_sample_spring() {
-        call("http://sample-spring.default/spring");
+        call("http://sample-spring-" + profile + "/spring");
     }
 
     private void call(String url) {
