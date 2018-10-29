@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.nalbam.sample.service.AmazonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -40,6 +41,11 @@ public class RestfulController {
         map.put("type", "live");
 
         return map;
+    }
+
+    @GetMapping("/package")
+    public Map<String, Object> health() {
+        return PackageUtil.getData(this.getClass());
     }
 
     @GetMapping("/spring")
@@ -84,9 +90,24 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/package")
-    public Map<String, Object> health() {
-        return PackageUtil.getData(this.getClass());
+    @GetMapping("/sleep/{sec}")
+    public Map<String, Object> slow(@PathVariable Integer sec) {
+        log.info("stress check");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        try {
+            Thread.sleep(sec * 1000);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", "OK");
+        map.put("date", sdf.format(new Date()));
+
+        return map;
     }
 
 }
