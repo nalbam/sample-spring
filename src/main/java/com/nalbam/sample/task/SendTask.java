@@ -30,7 +30,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 2000)
     public void call_sample_spring() {
-        call("http://sample-spring-" + profile + "/fault/30");
+        call("http://sample-spring-" + profile + "/spring");
     }
 
     private void call(String url) {
