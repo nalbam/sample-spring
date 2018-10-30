@@ -7,6 +7,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 @Slf4j
 @Component
 public class SendTask {
@@ -19,7 +23,11 @@ public class SendTask {
 
     @Scheduled(fixedRate = 3000)
     public void call_sample_node() {
-        call("http://sample-node-" + profile + "/counter/up");
+        List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
+
+        Random random = new Random();
+
+        call("http://sample-node-" + profile + commands.get(random.nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 2000)
