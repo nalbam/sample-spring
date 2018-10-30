@@ -121,8 +121,13 @@ podTemplate(label: label, containers: [
       }
       stage("Deploy DEV") {
         container("builder") {
-          butler.helm_install(IMAGE_NAME, VERSION, "dev", BASE_DOMAIN, CLUSTER)
-          success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", BASE_DOMAIN)
+          try {
+            butler.helm_install(IMAGE_NAME, VERSION, "dev", BASE_DOMAIN, CLUSTER)
+            success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", BASE_DOMAIN)
+          } catch (e) {
+            failure(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME)
+            throw e
+          }
         }
       }
       stage("Proceed STAGE") {
@@ -135,8 +140,13 @@ podTemplate(label: label, containers: [
       }
       stage("Deploy STAGE") {
         container("builder") {
-          butler.helm_install(IMAGE_NAME, VERSION, "stage", BASE_DOMAIN, CLUSTER)
-          success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", BASE_DOMAIN)
+          try {
+            butler.helm_install(IMAGE_NAME, VERSION, "stage", BASE_DOMAIN, CLUSTER)
+            success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", BASE_DOMAIN)
+          } catch (e) {
+            failure(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME)
+            throw e
+          }
         }
       }
     }
