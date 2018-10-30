@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 3
 image:
   repository: docker-registry.127.0.0.1.nip.io:30500/sample-spring
   tag: latest
@@ -38,7 +38,7 @@ ingress:
   basedomain: 127.0.0.1.nip.io
 hpa:
   enabled: true
-  min: 1
+  min: 3
   max: 5
   cpu: 65
   mem: 65
