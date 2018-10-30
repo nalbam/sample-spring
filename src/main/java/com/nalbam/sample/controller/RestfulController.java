@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RestController
@@ -111,6 +112,42 @@ public class RestfulController {
         map.put("date", sdf.format(new Date()));
 
         return map;
+    }
+
+    @GetMapping("/dealy/{sec}")
+    public Map<String, Object> dealy(@PathVariable Integer sec) {
+        log.info("dealy {}", sec);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        try {
+            Thread.sleep(sec * 1000);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", "OK");
+        map.put("date", sdf.format(new Date()));
+
+        return map;
+    }
+
+    @GetMapping("/timeout/{sec}")
+    public Map<String, Object> timeout(@PathVariable Integer sec) throws TimeoutException {
+        log.info("timeout {}", sec);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        try {
+            Thread.sleep(sec * 1000);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        throw new TimeoutException("Timeout");
     }
 
     @GetMapping("/fault/{rate}")
