@@ -2,7 +2,6 @@ package com.nalbam.sample.task;
 
 import com.nalbam.sample.domain.Queue;
 import com.nalbam.sample.service.SendService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @Component
 public class SendTask {
 
@@ -25,12 +23,22 @@ public class SendTask {
 
     @Scheduled(fixedRate = 3000)
     public void call_sample_node() {
-        call("http://sample-node-" + profile + "/counter/down");
+        call("http://sample-node-" + profile + "/counter/up");
     }
 
     @Scheduled(fixedRate = 2000)
     public void call_sample_spring() {
         call("http://sample-spring-" + profile + "/spring");
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void call_sample_stress() {
+        call("http://sample-spring-" + profile + "/stress");
+    }
+
+    @Scheduled(fixedRate = 3000)
+    public void call_sample_dealy() {
+        call("http://sample-spring-" + profile + "/dealy/1");
     }
 
     private void call(String url) {
