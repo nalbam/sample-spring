@@ -8,7 +8,6 @@ import com.nalbam.sample.service.SendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -16,6 +15,9 @@ import java.util.*;
 @Slf4j
 @Component
 public class QueueTask {
+
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @Value("${aws.region}")
     private String region;
@@ -27,9 +29,9 @@ public class QueueTask {
     private SendService sendService;
 
     // @Scheduled(fixedRate = 10000)
-    public void counter_up() {
+    public void counter() {
         Map<String, String> data = new HashMap<>();
-        data.put("url", "http://sample-node:3000/counter/up");
+        data.put("url", "http://sample-node-" + profile + "/counter/up");
 
         Queue queue = new Queue();
         queue.setType('2');
