@@ -94,26 +94,6 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/sleep/{sec}")
-    public Map<String, Object> slow(@PathVariable Integer sec) {
-        log.info("sleep {}", sec);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-
-        try {
-            Thread.sleep(sec * 1000);
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("result", "OK");
-        map.put("date", sdf.format(new Date()));
-
-        return map;
-    }
-
     @GetMapping("/dealy/{sec}")
     public Map<String, Object> dealy(@PathVariable Integer sec) {
         log.info("dealy {}", sec);
@@ -159,7 +139,7 @@ public class RestfulController {
         Random random = new Random();
 
         try {
-            Thread.sleep(random.nextInt(200) + 10);
+            Thread.sleep(random.nextInt(500) + 100);
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }

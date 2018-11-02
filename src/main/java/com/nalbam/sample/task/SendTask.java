@@ -21,7 +21,7 @@ public class SendTask {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 3245)
     public void call_sample_node() {
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
 
@@ -30,24 +30,25 @@ public class SendTask {
         call("http://sample-node-" + profile + commands.get(random.nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 2168)
     public void call_sample_spring() {
         call("http://sample-spring-" + profile + "/spring");
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 5312)
     public void call_sample_stress() {
         call("http://sample-spring-" + profile + "/stress");
     }
 
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 3156)
     public void call_sample_dealy() {
         call("http://sample-spring-" + profile + "/dealy/1");
     }
 
     private void call(String url) {
+        log.info("req: {}", url);
         String res = restTemplate.getForObject(url, String.class);
-        log.info("Receive : {}", res);
+        log.info("res: {}", res);
     }
 
 }
