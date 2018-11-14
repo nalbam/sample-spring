@@ -34,7 +34,7 @@ spec:
         env:
           - name: PROFILE
             value: {{ .Values.profile }}
-{{ if or .Values.configmap.enabled .Values.secret.enabled .Values.aeskey.enabled }}
+{{ if or .Values.configmap.enabled .Values.secret.enabled }}
         envFrom:
 {{ end }}
 {{ if .Values.configmap.enabled }}
@@ -44,8 +44,4 @@ spec:
 {{ if .Values.secret.enabled }}
           - secretRef:
               name: {{ template "fullname" . }}
-{{ end }}
-{{ if .Values.aeskey.enabled }}
-          - secretRef:
-              name: aeskey-properties
 {{ end }}

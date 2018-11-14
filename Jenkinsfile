@@ -1,8 +1,6 @@
 def IMAGE_NAME = "sample-spring"
 def REPOSITORY_URL = "git@github.com:nalbam/sample-spring.git"
 def REPOSITORY_SECRET = "nalbam-secret"
-def CLUSTER = "dev"
-def BASE_DOMAIN = "dev.nalbam.com"
 def SLACK_TOKEN = ""
 
 @Library("github.com/opsnow-tools/valve-butler")
@@ -27,9 +25,6 @@ podTemplate(label: label, containers: [
       container("builder") {
         butler.prepare()
 
-        if (!BASE_DOMAIN) {
-          BASE_DOMAIN = butler.base_domain
-        }
         if (!SLACK_TOKEN) {
           SLACK_TOKEN = butler.slack_token
         }
@@ -86,14 +81,6 @@ podTemplate(label: label, containers: [
         }
       }
     }
-    // if (BRANCH_NAME != "master") {
-    //   stage("Deploy PRE") {
-    //     container("builder") {
-    //       butler.draft_up(IMAGE_NAME, "pre", CLUSTER, BASE_DOMAIN)
-    //       success(SLACK_TOKEN, "Deploy PRE", IMAGE_NAME, VERSION, "pre", BASE_DOMAIN)
-    //     }
-    //   }
-    // }
     if (BRANCH_NAME == "master") {
       stage("Build Image") {
         parallel(
@@ -122,8 +109,8 @@ podTemplate(label: label, containers: [
       stage("Deploy DEV") {
         container("builder") {
           try {
-            butler.helm_install(IMAGE_NAME, VERSION, "dev", BASE_DOMAIN, CLUSTER)
-            success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", BASE_DOMAIN)
+            butler.helm_install(IMAGE_NAME, VERSION, "dev", "dev.opsnow.com", "dev")
+            success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", "dev.opsnow.com")
           } catch (e) {
             failure(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME)
             throw e
@@ -141,8 +128,8 @@ podTemplate(label: label, containers: [
       stage("Deploy STAGE") {
         container("builder") {
           try {
-            butler.helm_install(IMAGE_NAME, VERSION, "stage", BASE_DOMAIN, CLUSTER)
-            success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", BASE_DOMAIN)
+            butler.helm_install(IMAGE_NAME, VERSION, "stage", "stage.opsnow.com", "stage")
+            success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", "stage.opsnow.com")
           } catch (e) {
             failure(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME)
             throw e
