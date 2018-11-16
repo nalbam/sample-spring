@@ -128,8 +128,8 @@ podTemplate(label: label, containers: [
       stage("Deploy STAGE") {
         container("builder") {
           try {
-            butler.helm_install(IMAGE_NAME, VERSION, "stage", "stage.opsnow.com", "stage")
-            success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", "stage.opsnow.com")
+            butler.helm_install(IMAGE_NAME, VERSION, "stage", "dev.opsnow.com", "dev")
+            success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", "dev.opsnow.com")
           } catch (e) {
             failure(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME)
             throw e
