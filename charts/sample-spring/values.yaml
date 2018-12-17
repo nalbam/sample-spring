@@ -31,6 +31,8 @@ livenessProbe:
 ingress:
   enabled: true
   basedomain: 127.0.0.1.nip.io
+  hosts:
+    - sample-spring.opsnow.com
 hpa:
   enabled: true
   min: 1
@@ -38,7 +40,3 @@ hpa:
   cpu: 80
   mem: 80
 profile: default
-configmap:
-  enabled: false
-secret:
-  enabled: false
