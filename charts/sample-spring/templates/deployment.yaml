@@ -6,6 +6,10 @@ metadata:
     draft: {{ default "draft-app" .Values.draft }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     app: {{ template "fullname" . }}
+{{- with .Values.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -25,6 +29,8 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
+        hostNetwork: true
+        dnsPolicy: ClusterFirstWithHostNet
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         readinessProbe:
@@ -34,10 +40,14 @@ spec:
         env:
           - name: PROFILE
             value: {{ .Values.profile }}
-# -- valve-env -- start -- #
-          - name: AES_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ template "fullname" . }}
-                key: AES_KEY
-# -- valve-env -- end -- #
+{{ if or .Values.configmap.enabled .Values.secret.enabled }}
+        envFrom:
+{{ end }}
+{{ if .Values.configmap.enabled }}
+          - configMapRef:
+              name: {{ template "fullname" . }}
+{{ end }}
+{{ if .Values.secret.enabled }}
+          - secretRef:
+              name: {{ template "fullname" . }}
+{{ end }}
