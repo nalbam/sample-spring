@@ -12,12 +12,13 @@ service:
   labels: {}
 ingress:
   enabled: true
+  subdomain: sample-spring
   basedomain: 127.0.0.1.nip.io
   hosts:
     - sample-spring.opsnow.com
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   labels: {}
 hpa:
   enabled: true

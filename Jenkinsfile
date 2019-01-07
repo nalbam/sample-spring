@@ -1,14 +1,15 @@
-def IMAGE_NAME = "sample-spring"
+def SERVICE_GROUP = "sample"
+def SERVICE_NAME = "spring"
+def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
 def REPOSITORY_URL = "git@github.com:nalbam/sample-spring.git"
 def REPOSITORY_SECRET = "nalbam-secret"
-def SLACK_TOKEN = ""
+def SLACK_TOKEN_DEV = ""
+def SLACK_TOKEN_DQA = ""
 
 @Library("github.com/opsnow-tools/valve-butler")
-def butler = new com.opsnow.valve.Butler()
+def butler = new com.opsnow.valve.v7.Butler()
 def label = "worker-${UUID.randomUUID().toString()}"
-def VERSION = ""
-def SOURCE_LANG = ""
-def SOURCE_ROOT = ""
+
 properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
 ])
@@ -23,11 +24,7 @@ podTemplate(label: label, containers: [
   node(label) {
     stage("Prepare") {
       container("builder") {
-        butler.prepare()
-
-        if (!SLACK_TOKEN) {
-          SLACK_TOKEN = butler.slack_token
-        }
+        butler.prepare(IMAGE_NAME)
       }
     }
     stage("Checkout") {
@@ -39,24 +36,20 @@ podTemplate(label: label, containers: [
             git(url: REPOSITORY_URL, branch: BRANCH_NAME)
           }
         } catch (e) {
-          butler.failure(SLACK_TOKEN, "Checkout", IMAGE_NAME)
+          butler.failure(SLACK_TOKEN_DEV, "Checkout")
           throw e
         }
 
-        butler.scan(IMAGE_NAME, BRANCH_NAME, "java")
-
-        VERSION = butler.version
-        // SOURCE_LANG = butler.source_lang
-        // SOURCE_ROOT = butler.source_root
+        butler.scan("java")
       }
     }
     stage("Build") {
       container("maven") {
         try {
           butler.mvn_build()
-          butler.success(SLACK_TOKEN, "Build", IMAGE_NAME, VERSION)
+          butler.success(SLACK_TOKEN_DEV, "Build")
         } catch (e) {
-          butler.failure(SLACK_TOKEN, "Build", IMAGE_NAME)
+          butler.failure(SLACK_TOKEN_DEV, "Build")
           throw e
         }
       }
@@ -66,7 +59,7 @@ podTemplate(label: label, containers: [
         try {
           butler.mvn_test()
         } catch (e) {
-          butler.failure(SLACK_TOKEN, "Tests", IMAGE_NAME)
+          butler.failure(SLACK_TOKEN_DEV, "Tests")
           throw e
         }
       }
@@ -76,7 +69,7 @@ podTemplate(label: label, containers: [
         try {
           butler.mvn_sonar()
         } catch (e) {
-          butler.failure(SLACK_TOKEN, "Code Analysis", IMAGE_NAME)
+          butler.failure(SLACK_TOKEN_DEV, "Code Analysis")
           throw e
         }
       }
@@ -87,9 +80,9 @@ podTemplate(label: label, containers: [
           "Build Docker": {
             container("builder") {
               try {
-                butler.build_image(IMAGE_NAME, VERSION)
+                butler.build_image()
               } catch (e) {
-                butler.failure(SLACK_TOKEN, "Build Docker", IMAGE_NAME)
+                butler.failure(SLACK_TOKEN_DEV, "Build Docker")
                 throw e
               }
             }
@@ -97,9 +90,9 @@ podTemplate(label: label, containers: [
           "Build Charts": {
             container("builder") {
               try {
-                butler.build_chart(IMAGE_NAME, VERSION)
+                butler.build_chart()
               } catch (e) {
-                butler.failure(SLACK_TOKEN, "Build Charts", IMAGE_NAME)
+                butler.failure(SLACK_TOKEN_DEV, "Build Charts")
                 throw e
               }
             }
@@ -109,29 +102,39 @@ podTemplate(label: label, containers: [
       stage("Deploy DEV") {
         container("builder") {
           try {
-            butler.helm_install(IMAGE_NAME, VERSION, "dev", "dev.opsnow.com", "dev")
-            butler.success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", "dev.opsnow.com")
+            // deploy(cluster, namespace, sub_domain, profile)
+            butler.deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
+            butler.success(SLACK_TOKEN_DEV, "Deploy DEV")
           } catch (e) {
-            butler.failure(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME)
+            butler.failure(SLACK_TOKEN_DEV, "Deploy DEV")
             throw e
+          }
+        }
+      }
+      stage("Request STAGE") {
+        container("builder") {
+          butler.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
+          timeout(time: 60, unit: "MINUTES") {
+            input(message: "${butler.name} ${butler.version} to stage")
           }
         }
       }
       stage("Proceed STAGE") {
         container("builder") {
-          butler.proceed(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage")
+          butler.proceed([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE", "stage")
           timeout(time: 60, unit: "MINUTES") {
-            input(message: "$IMAGE_NAME $VERSION to stage")
+            input(message: "${butler.name} ${butler.version} to stage")
           }
         }
       }
       stage("Deploy STAGE") {
         container("builder") {
           try {
-            butler.helm_install(IMAGE_NAME, VERSION, "stage", "dev.opsnow.com", "dev")
-            butler.success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", "dev.opsnow.com")
+            // deploy(cluster, namespace, sub_domain, profile)
+            butler.deploy("dev", "${SERVICE_GROUP}-stage", "${IMAGE_NAME}-stage", "stage")
+            butler.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
           } catch (e) {
-            butler.failure(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME)
+            butler.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
             throw e
           }
         }

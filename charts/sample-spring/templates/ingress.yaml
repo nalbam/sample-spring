@@ -18,8 +18,8 @@ metadata:
 {{- end }}
 spec:
   rules:
-{{ if not (empty .Values.ingress.basedomain) }}
-  - host: {{ .Release.Name }}.{{ .Values.ingress.basedomain }}
+{{ if and .Values.ingress.subdomain .Values.ingress.basedomain }}
+  - host: {{ .Values.ingress.subdomain }}.{{ .Values.ingress.basedomain }}
     http:
       paths:
       - path: /
@@ -35,11 +35,5 @@ spec:
         backend:
           serviceName: {{ $fullName }}
           servicePort: {{ $servicePort }}
-{{ end }}
-{{ if (not (empty .Values.ingress.tls)) }}
-  tls:
-  - hosts:
-    - {{ .Release.Name }}.{{ .Values.ingress.basedomain }}
-    secretName: {{ template "fullname" . }}-tls
 {{ end }}
 {{ end }}
