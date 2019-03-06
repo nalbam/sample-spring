@@ -4,6 +4,12 @@ image:
   repository: docker-registry.127.0.0.1.nip.io:30500/sample-spring
   tag: latest
   pullPolicy: Always
+labels: {}
+annotations: {}
+pod:
+  labels: {}
+  annotations: {}
+pdb: {}
 service:
   type: ClusterIP
   externalPort: 80
@@ -14,8 +20,9 @@ ingress:
   enabled: true
   subdomain: sample-spring
   basedomain: 127.0.0.1.nip.io
-  hosts:
-    - sample-spring.opsnow.com
+  hosts: {}
+  # hosts:
+  #   - sample-spring.opsnow.com
   annotations:
     kubernetes.io/ingress.class: nginx
     # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -31,22 +38,32 @@ resources:
     cpu: 500m
     memory: 1024Mi
   limits:
-    cpu: 1000m
-    memory: 2048Mi
+    cpu: 600m
+    memory: 1252Mi
 readinessProbe:
   httpGet:
     path: /
     port: 8080
   initialDelaySeconds: 30
-  periodSeconds: 15
-  failureThreshold: 6
+  periodSeconds: 10
 livenessProbe:
   httpGet:
     path: /
     port: 8080
   initialDelaySeconds: 30
-  periodSeconds: 15
-  failureThreshold: 6
+  periodSeconds: 10
+# livenessProbe:
+#   exec:
+#     command:
+#     - cat
+#     - /tmp/healthy
+#   initialDelaySeconds: 30
+#   periodSeconds: 10
+# livenessProbe:
+#   tcpSocket:
+#     port: 8080
+#   initialDelaySeconds: 30
+#   periodSeconds: 10
 configmap:
   enabled: false
 secret:

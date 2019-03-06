@@ -6,6 +6,9 @@ metadata:
     draft: {{ default "draft-app" .Values.draft }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     app: {{ template "fullname" . }}
+{{- if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+{{- end }}
 {{- with .Values.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
@@ -17,11 +20,17 @@ spec:
       app: {{ template "fullname" . }}
   template:
     metadata:
-      annotations:
-        buildID: {{ .Values.buildID }}
       labels:
         app: {{ template "fullname" . }}
         version: master
+{{- if .Values.pod.labels }}
+{{ toYaml .Values.pod.labels | indent 8 }}
+{{- end }}
+      annotations:
+        buildID: {{ .Values.buildID }}
+{{- if .Values.pod.annotations }}
+{{ toYaml .Values.pod.annotations | indent 8 }}
+{{- end }}
     spec:
       containers:
       - name: {{ .Chart.Name }}
