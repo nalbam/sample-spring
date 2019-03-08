@@ -44,25 +44,25 @@ readinessProbe:
   httpGet:
     path: /
     port: 8080
-  initialDelaySeconds: 30
+  initialDelaySeconds: 15
   periodSeconds: 10
 livenessProbe:
   httpGet:
     path: /
     port: 8080
-  initialDelaySeconds: 30
+  initialDelaySeconds: 15
   periodSeconds: 10
 # livenessProbe:
 #   exec:
 #     command:
 #     - cat
 #     - /tmp/healthy
-#   initialDelaySeconds: 30
+#   initialDelaySeconds: 15
 #   periodSeconds: 10
 # livenessProbe:
 #   tcpSocket:
 #     port: 8080
-#   initialDelaySeconds: 30
+#   initialDelaySeconds: 15
 #   periodSeconds: 10
 configmap:
   enabled: false
