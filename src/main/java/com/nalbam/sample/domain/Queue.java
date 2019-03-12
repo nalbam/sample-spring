@@ -23,7 +23,7 @@ public class Queue {
     private Date registered;
     private Date reserved;
 
-    private Map Data;
+    private Map<String, Object> Data;
 
     public String toJson() {
         final Gson gson = new Gson();
