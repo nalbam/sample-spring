@@ -3,9 +3,9 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ include "fullname" . }}
 spec:
-  host: {{ template "fullname" . }}
+  host: {{ include "fullname" . }}
   trafficPolicy:
     connectionPool:
       tcp:
@@ -20,8 +20,8 @@ spec:
       baseEjectionTime: 30s
       maxEjectionPercent: 10
   subsets:
-  - name: master
+  - name: stable
     labels:
-      version: master
+      version: stable
 {{ end }}
 {{ end }}

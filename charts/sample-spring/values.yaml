@@ -1,21 +1,28 @@
 replicaCount: 1
+
 profile: default
+
 image:
   repository: docker-registry.127.0.0.1.nip.io:30500/sample-spring
   tag: latest
   pullPolicy: Always
+
 labels: {}
 annotations: {}
+
 pod:
   labels: {}
   annotations: {}
+
 pdb: {}
+
 service:
   type: ClusterIP
   externalPort: 80
   internalPort: 8080
   annotations: {}
   labels: {}
+
 ingress:
   enabled: true
   subdomain: sample-spring
@@ -27,12 +34,14 @@ ingress:
     kubernetes.io/ingress.class: nginx
     # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   labels: {}
+
 hpa:
   enabled: true
   min: 1
   max: 5
   cpu: 80
   mem: 80
+
 resources:
   requests:
     cpu: 500m
@@ -40,12 +49,14 @@ resources:
   limits:
     cpu: 600m
     memory: 1252Mi
+
 readinessProbe:
   httpGet:
     path: /
     port: 8080
   initialDelaySeconds: 15
   periodSeconds: 10
+
 livenessProbe:
   httpGet:
     path: /
@@ -64,7 +75,15 @@ livenessProbe:
 #     port: 8080
 #   initialDelaySeconds: 15
 #   periodSeconds: 10
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
 configmap:
   enabled: false
+
 secret:
   enabled: false

@@ -3,14 +3,14 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ include "fullname" . }}
 spec:
   hosts:
-    - {{ template "fullname" . }}
+    - {{ include "fullname" . }}
   http:
   - route:
     - destination:
-        host: {{ template "fullname" . }}
-        subset: master
+        host: {{ include "fullname" . }}
+        subset: stable
 {{ end }}
 {{ end }}
