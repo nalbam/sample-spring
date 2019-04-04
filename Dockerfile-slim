@@ -5,9 +5,8 @@ COPY . /data/src/
 RUN mvn -f /data/src/pom.xml package -DskipTests
 
 FROM openjdk:8-jre-slim
-ENV TZ Asia/Seoul
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 EXPOSE 8080
+WORKDIR /data
 COPY --from=BUILD /data/src/target/*.jar /data/ROOT.jar
-WORKDIR data
 CMD ["java", "-jar", "ROOT.jar"]
