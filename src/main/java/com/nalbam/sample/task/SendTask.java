@@ -21,8 +21,18 @@ public class SendTask {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Scheduled(fixedRate = 3245)
-    public void call_sample_node() {
+    @Scheduled(fixedRate = 1000)
+    public void call_spring() {
+        call("http://sample-spring-" + profile + "/spring");
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void call_dealy() {
+        call("http://sample-spring-" + profile + "/dealy/1");
+    }
+
+    // @Scheduled(fixedRate = 325)
+    public void call_node() {
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
 
         Random random = new Random();
@@ -30,19 +40,13 @@ public class SendTask {
         call("http://sample-node-" + profile + commands.get(random.nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 2168)
-    public void call_sample_spring() {
-        call("http://sample-spring-" + profile + "/spring");
-    }
+    // @Scheduled(fixedRate = 102)
+    public void call_stress() {
+        List<String> commands = Arrays.asList("sample-spring", "sample-node");
 
-    @Scheduled(fixedRate = 5312)
-    public void call_sample_stress() {
-        call("http://sample-spring-" + profile + "/stress");
-    }
+        Random random = new Random();
 
-    @Scheduled(fixedRate = 3156)
-    public void call_sample_dealy() {
-        call("http://sample-spring-" + profile + "/dealy/1");
+        call("http://" + commands.get(random.nextInt(commands.size())) + "-" + profile + "/stress");
     }
 
     private void call(String url) {

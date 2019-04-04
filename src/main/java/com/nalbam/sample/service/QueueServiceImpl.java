@@ -42,7 +42,9 @@ public class QueueServiceImpl implements QueueService {
         } else if (delay > this.maxDelay) {
             delay = this.maxDelay;
         }
-        final SendMessageRequest req = new SendMessageRequest().withQueueUrl(getQueueUrl()).withMessageBody(body)
+        final SendMessageRequest req = new SendMessageRequest()
+                .withQueueUrl(getQueueUrl())
+                .withMessageBody(body)
                 .withDelaySeconds(delay);
         return CompletableFuture.completedFuture(this.amazonSQS.sendMessage(req).getMessageId());
     }
@@ -50,7 +52,8 @@ public class QueueServiceImpl implements QueueService {
     @Async
     @Override
     public CompletableFuture<List<Message>> receive() {
-        final ReceiveMessageRequest req = new ReceiveMessageRequest().withMaxNumberOfMessages(10)
+        final ReceiveMessageRequest req = new ReceiveMessageRequest()
+                .withMaxNumberOfMessages(10)
                 .withQueueUrl(getQueueUrl());
         return CompletableFuture.completedFuture(this.amazonSQS.receiveMessage(req).getMessages());
     }

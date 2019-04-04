@@ -8,12 +8,6 @@
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%-21.21thread] %-35.35logger{35} : %m%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="ROLLIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>spring.${product}.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -37,16 +31,16 @@
         </filter>
     </appender>
 
-    <!-- <springProfile name="default">
+    <springProfile name="default">
         <root level="INFO">
-            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ROLLIN"/>
         </root>
-    </springProfile> -->
+    </springProfile>
 
-    <!-- <springProfile name="dev, prod">
+    <springProfile name="dev, prod">
         <root level="INFO">
             <appender-ref ref="Logstash"/>
             <appender-ref ref="Logzio"/>
         </root>
-    </springProfile> -->
+    </springProfile>
 </configuration>
