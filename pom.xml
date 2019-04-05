@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.213</version>
+            <version>1.11.533</version>
         </dependency>
 
         <!-- push -->
