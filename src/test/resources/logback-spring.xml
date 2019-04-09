@@ -8,6 +8,25 @@
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>
+                {
+                    "severity": "%level",
+                    "service": "${springAppName:-}",
+                    "trace": "%X{X-B3-TraceId:-}",
+                    "span": "%X{X-B3-SpanId:-}",
+                    "parent": "%X{X-B3-ParentSpanId:-}",
+                    "exportable": "%X{X-Span-Export:-}",
+                    "pid": "${PID:-}",
+                    "thread": "%thread",
+                    "class": "%logger{40}",
+                    "rest": "%message"
+                }
+            </customFields>
+        </encoder>
+    </appender>
+
     <appender name="ROLLIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>spring.${product}.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -33,14 +52,14 @@
 
     <springProfile name="default">
         <root level="INFO">
-            <appender-ref ref="ROLLIN"/>
+            <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
 
-    <springProfile name="dev, prod">
+    <!-- <springProfile name="dev, prod">
         <root level="INFO">
             <appender-ref ref="Logstash"/>
             <appender-ref ref="Logzio"/>
         </root>
-    </springProfile>
+    </springProfile> -->
 </configuration>
