@@ -12,43 +12,29 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>
                 {
-                    "severity": "%level",
-                    "service": "${springAppName:-}",
                     "trace": "%X{X-B3-TraceId:-}",
                     "span": "%X{X-B3-SpanId:-}",
                     "parent": "%X{X-B3-ParentSpanId:-}",
                     "exportable": "%X{X-Span-Export:-}",
-                    "pid": "${PID:-}",
-                    "thread": "%thread",
-                    "class": "%logger{40}",
-                    "rest": "%message"
+                    "pid": "${PID:-}"
                 }
             </customFields>
         </encoder>
     </appender>
 
-    <appender name="ROLLIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>spring.${product}.%d{yyyy-MM-dd}.log</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%-21.21thread] %-35.35logger{35} : %m%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="Logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    <!-- <appender name="Logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>dev-sre-elasticsearch.opsnow.io</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"product":"${product}","profile":"${profile}"}</customFields>
         </encoder>
-    </appender>
+    </appender> -->
 
-    <appender name="Logzio" class="io.logz.logback.LogzioLogbackAppender">
+    <!-- <appender name="Logzio" class="io.logz.logback.LogzioLogbackAppender">
         <token>${token}</token>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
-    </appender>
+    </appender> -->
 
     <springProfile name="default">
         <root level="INFO">
