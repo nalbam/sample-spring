@@ -8,5 +8,5 @@ FROM openjdk:8-jre-slim
 ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 EXPOSE 8080
 WORKDIR /data
+ENTRYPOINT exec java $JAVA_OPTS -jar ROOT.jar
 COPY --from=BUILD /data/src/target/*.jar /data/ROOT.jar
-CMD ["java", "-jar", "ROOT.jar"]
