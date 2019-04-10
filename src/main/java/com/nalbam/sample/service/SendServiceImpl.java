@@ -3,11 +3,10 @@ package com.nalbam.sample.service;
 import com.google.android.gcm.server.*;
 import com.nalbam.sample.domain.Queue;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,8 +18,11 @@ import java.util.concurrent.CompletableFuture;
 @Service
 class SendServiceImpl implements SendService {
 
-    @Autowired
-    private AsyncRestTemplate asyncRestTemplate;
+    private final RestTemplate restTemplate;
+
+    public SendServiceImpl(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     @Async
     @Override
@@ -112,27 +114,33 @@ class SendServiceImpl implements SendService {
         }
     }
 
-    private void sendCallback(final Queue queue) {
+    private CompletableFuture<String> sendCallback(final Queue queue) {
         final String url;
 
         try {
             url = queue.getData().get("url").toString();
         } catch (final Exception e) {
             log.error("Send sendCallback : URI is null");
-            return;
+            return null;
         }
 
-        log.info("Send sendCallback [{}]", url);
+        log.info("Send sendCallback req : {}", url);
 
-        toFuture(this.asyncRestTemplate.getForEntity(url, String.class))
-                .exceptionally(e -> {
-                    log.error("Send sendCallback : {}", e.getMessage());
-                    return null;
-                })
-                .thenApply(r -> {
-                    log.info("Send sendCallback : {}", r.getStatusCode());
-                    return r;
-                });
+        String res = restTemplate.getForObject(url, String.class);
+
+        log.info("Send sendCallback res : {}", res);
+
+        return CompletableFuture.completedFuture(res);
+
+        // toFuture(this.asyncRestTemplate.getForEntity(url, String.class))
+        //         .exceptionally(e -> {
+        //             log.error("Send sendCallback : {}", e.getMessage());
+        //             return null;
+        //         })
+        //         .thenApply(r -> {
+        //             log.info("Send sendCallback : {}", r.getStatusCode());
+        //             return r;
+        //         });
     }
 
     private void sendTest(final Queue queue) {
@@ -145,10 +153,10 @@ class SendServiceImpl implements SendService {
         }
     }
 
-    private <T> CompletableFuture<T> toFuture(final ListenableFuture<T> lf) {
-        final CompletableFuture<T> cf = new CompletableFuture<>();
-        lf.addCallback(cf::complete, cf::completeExceptionally);
-        return cf;
-    }
+    // private <T> CompletableFuture<T> toFuture(final ListenableFuture<T> lf) {
+    //     final CompletableFuture<T> cf = new CompletableFuture<>();
+    //     lf.addCallback(cf::complete, cf::completeExceptionally);
+    //     return cf;
+    // }
 
 }

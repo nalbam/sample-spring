@@ -1,8 +1,9 @@
 package com.nalbam.sample.task;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -24,11 +26,14 @@ public class SendTask {
     @Value("${server.port}")
     private Integer port;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    public SendTask(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     @Scheduled(fixedRate = 1000)
-    public void call_spring() {
+    public void spring() {
         if ("default".equals(namespace)) {
             call("http://localhost:" + port + "/spring");
         } else {
@@ -36,17 +41,17 @@ public class SendTask {
         }
     }
 
-    @Scheduled(fixedRate = 3000)
-    public void call_dealy() {
+    @Scheduled(fixedRate = 10000)
+    public void dealy() {
         if ("default".equals(namespace)) {
-            call("http://localhost:" + port + "/dealy/1");
+            call("http://localhost:" + port + "/dealy/3");
         } else {
-            call("http://" + service + "-" + namespace + "/dealy/1");
+            call("http://" + service + "-" + namespace + "/dealy/3");
         }
     }
 
-    @Scheduled(fixedRate = 325)
-    public void call_node() {
+    @Scheduled(fixedRate = 567)
+    public void node() {
         if ("default".equals(namespace)) {
             return;
         }
@@ -58,8 +63,8 @@ public class SendTask {
         call("http://sample-node-" + namespace + commands.get(random.nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 102)
-    public void call_stress() {
+    @Scheduled(fixedRate = 234)
+    public void stress() {
         if ("default".equals(namespace)) {
             return;
         }
@@ -71,10 +76,15 @@ public class SendTask {
         call("http://" + commands.get(random.nextInt(commands.size())) + "-" + namespace + "/stress");
     }
 
-    private void call(String url) {
+    @Async
+    private CompletableFuture<String> call(String url) {
         log.info("req: {}", url);
+
         String res = restTemplate.getForObject(url, String.class);
+
         log.info("res: {}", res);
+
+        return CompletableFuture.completedFuture(res);
     }
 
 }
