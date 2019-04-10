@@ -2,6 +2,8 @@ replicaCount: 1
 
 profile: default
 
+namespace: development
+
 image:
   repository: docker-registry.127.0.0.1.nip.io:30500/sample-spring
   tag: latest
@@ -35,7 +37,7 @@ ingress:
     # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   labels: {}
 
-hpa:
+autoscaling:
   enabled: true
   min: 1
   max: 5
@@ -54,15 +56,18 @@ readinessProbe:
   httpGet:
     path: /
     port: 8080
-  initialDelaySeconds: 15
+  initialDelaySeconds: 30
   periodSeconds: 10
+  failureThreshold: 3
 
 livenessProbe:
   httpGet:
     path: /
     port: 8080
-  initialDelaySeconds: 15
+  initialDelaySeconds: 30
   periodSeconds: 10
+  failureThreshold: 3
+
 # livenessProbe:
 #   exec:
 #     command:
@@ -75,6 +80,9 @@ livenessProbe:
 #     port: 8080
 #   initialDelaySeconds: 15
 #   periodSeconds: 10
+
+# hostNetwork: true
+# dnsPolicy: Default
 
 nodeSelector: {}
 

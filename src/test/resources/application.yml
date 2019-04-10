@@ -11,6 +11,8 @@ spring:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
+namespace: ${NAMESPACE:default}
+
 slack:
   webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
   channel: ${SLACK_CHANNEL:sandbox}

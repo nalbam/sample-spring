@@ -15,11 +15,11 @@ import java.util.Random;
 @Component
 public class SendTask {
 
+    @Value("${namespace}")
+    private String namespace;
+
     @Value("${spring.application.name}")
     private String service;
-
-    @Value("${spring.profiles.active}")
-    private String profile;
 
     @Value("${server.port}")
     private Integer port;
@@ -29,25 +29,25 @@ public class SendTask {
 
     @Scheduled(fixedRate = 1000)
     public void call_spring() {
-        if ("default".equals(profile)) {
+        if ("default".equals(namespace)) {
             call("http://localhost:" + port + "/spring");
         } else {
-            call("http://" + service + "-" + profile + "/spring");
+            call("http://" + service + "-" + namespace + "/spring");
         }
     }
 
     @Scheduled(fixedRate = 3000)
     public void call_dealy() {
-        if ("default".equals(profile)) {
+        if ("default".equals(namespace)) {
             call("http://localhost:" + port + "/dealy/1");
         } else {
-            call("http://" + service + "-" + profile + "/dealy/1");
+            call("http://" + service + "-" + namespace + "/dealy/1");
         }
     }
 
     @Scheduled(fixedRate = 325)
     public void call_node() {
-        if ("default".equals(profile)) {
+        if ("default".equals(namespace)) {
             return;
         }
 
@@ -55,12 +55,12 @@ public class SendTask {
 
         Random random = new Random();
 
-        call("http://sample-node-" + profile + commands.get(random.nextInt(commands.size())));
+        call("http://sample-node-" + namespace + commands.get(random.nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 102)
     public void call_stress() {
-        if ("default".equals(profile)) {
+        if ("default".equals(namespace)) {
             return;
         }
 
@@ -68,7 +68,7 @@ public class SendTask {
 
         Random random = new Random();
 
-        call("http://" + commands.get(random.nextInt(commands.size())) + "-" + profile + "/stress");
+        call("http://" + commands.get(random.nextInt(commands.size())) + "-" + namespace + "/stress");
     }
 
     private void call(String url) {

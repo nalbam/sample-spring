@@ -9,17 +9,6 @@
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>
-                {
-                    "trace": "%X{X-B3-TraceId:-}",
-                    "span": "%X{X-B3-SpanId:-}",
-                    "parent": "%X{X-B3-ParentSpanId:-}",
-                    "exportable": "%X{X-Span-Export:-}",
-                    "pid": "${PID:-}"
-                }
-            </customFields>
-        </encoder> -->
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
 			<providers>
 				<timestamp>
@@ -60,7 +49,7 @@
         </filter>
     </appender> -->
 
-    <springProfile name="default, dev">
+    <springProfile name="dev, stage, prod">
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>

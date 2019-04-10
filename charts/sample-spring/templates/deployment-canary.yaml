@@ -58,6 +58,8 @@ spec:
         env:
           - name: PROFILE
             value: {{ .Values.profile }}
+          - name: NAMESPACE
+            value: {{ .Values.namespace }}
 {{ if or .Values.configmap.enabled .Values.secret.enabled }}
         envFrom:
 {{ end }}

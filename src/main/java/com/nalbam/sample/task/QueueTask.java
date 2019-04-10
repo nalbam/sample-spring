@@ -16,8 +16,8 @@ import java.util.*;
 @Component
 public class QueueTask {
 
-    @Value("${spring.profiles.active}")
-    private String profile;
+    @Value("${namespace}")
+    private String namespace;
 
     @Value("${aws.region}")
     private String region;
@@ -31,7 +31,7 @@ public class QueueTask {
     // @Scheduled(fixedRate = 10000)
     public void counter() {
         Map<String, Object> data = new HashMap<>();
-        data.put("url", "http://sample-node-" + profile + "/counter/up");
+        data.put("url", "http://sample-node-" + namespace + "/counter/up");
 
         Queue queue = new Queue();
         queue.setType('2');
