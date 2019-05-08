@@ -105,19 +105,18 @@ _release() {
 }
 
 _slack() {
-    NAME=${1}
-    REPO=${2}
-    CURR=${3}
-
     if [ -z ${SLACK_TOKEN} ]; then
         return
     fi
 
+    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
     curl -sL opspresso.com/tools/slack | bash -s -- \
         --token="${SLACK_TOKEN}" --username="${USERNAME}" \
-        --footer="<https://github.com/${REPO}/releases/tag/${CURR}|${REPO}>" \
+        --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
         --footer_icon="https://repo.opspresso.com/favicon/github.png" \
-        --color="good" --title="${NAME} updated" "\`${CURR}\`"
+        --color="good" --title="${REPONAME} updated" "\`${VERSION}\`"
 }
 
 _get_version() {
