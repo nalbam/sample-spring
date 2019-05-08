@@ -62,6 +62,11 @@ spec:
             value: {{ .Values.profile }}
           - name: NAMESPACE
             value: {{ .Values.namespace }}
+          - name: IMAGE_TAG
+            value: {{ .Values.image.tag }}
+{{- with .Values.env }}
+{{ toYaml . | indent 10 }}
+{{- end }}
 {{ if or .Values.configmap.enabled .Values.secret.enabled }}
         envFrom:
 {{ end }}

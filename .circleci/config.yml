@@ -3,46 +3,58 @@
 #
 version: 2
 jobs:
-  build:
+  package:
     docker:
-      - image: circleci/openjdk:8-jdk
-    working_directory: ~/repo
+      - image: circleci/python
+    working_directory: /tmp/works
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          - v1-dependencies-
-      - run: mvn package -Dthis.version=1.1.1
-      - run: cp pom.xml target/${CIRCLE_PROJECT_REPONAME}-1.1.1.pom
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-      - store_test_results:
-          path: ~/repo/target/surefire-reports
-      - store_artifacts:
-          path: ~/repo/target
+      - run:
+          name: Package
+          command: |
+            chmod 755 ./build.sh
+            ./build.sh package
       - persist_to_workspace:
-          root: ~/repo
+          root: /tmp/works
           paths:
-            - target/*.pom
-            - target/*.jar
-            - target/*.war
+            - target/*
+            - build.sh
   release:
     docker:
-      - image: opspresso/builder
+      - image: circleci/golang
     steps:
-      - checkout
       - attach_workspace:
-          at: /tmp
-      - run: aws s3 sync /tmp/target/ s3://repo.nalbam.com/maven2/com/nalbam/${CIRCLE_PROJECT_REPONAME}/1.1.1/
+          at: works
+      - run:
+          name: Release
+          command: |
+            chmod 755 ./works/build.sh
+            ./works/build.sh release
+  slack:
+    docker:
+      - image: circleci/python
+    steps:
+      - attach_workspace:
+          at: works
+      - run:
+          name: Slack
+          command: |
+            chmod 755 ./works/build.sh
+            ./works/build.sh slack
+
+# Advanced Settings
+# - Build forked pull requests
+# - Pass secrets to builds from forked pull requests
+# - Only build pull requests
 
 workflows:
   version: 2
-  maven:
+  apply:
     jobs:
-      - build
+      - package
       - release:
           requires:
-            - build
+            - package
+      - slack:
+          requires:
+            - release

@@ -19,10 +19,10 @@ spec:
   metrics:
     - type: Resource
       resource:
-        name: cpu
-        targetAverageUtilization: {{ .Values.autoscaling.cpu }}
-    - type: Resource
-      resource:
         name: memory
         targetAverageUtilization: {{ .Values.autoscaling.mem }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.autoscaling.cpu }}
 {{ end }}
