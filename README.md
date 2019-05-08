@@ -1,11 +1,10 @@
 # sample-spring
 
+[![GitHub release](https://img.shields.io/github/release/nalbam/sample-spring.svg)](https://github.com/nalbam/sample-spring/releases)
+[![DockerHub Badge](http://dockeri.co/image/nalbam/sample-spring)](https://hub.docker.com/r/nalbam/sample-spring/)
+
 ## Docker
 
 ```bash
-docker pull nalbam/sample-spring:latest # 200MB
-docker pull nalbam/sample-spring:slim   #  96MB
-docker pull nalbam/sample-spring:alpine #  73MB
+docker pull nalbam/sample-spring
 ```
-
-* <https://hub.docker.com/r/nalbam/sample-spring/>
