@@ -162,7 +162,7 @@ _slack() {
         --token="${SLACK_TOKEN}" --username="${USERNAME}" \
         --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
         --footer_icon="https://repo.opspresso.com/favicon/github.png" \
-        --color="good" --title="${REPONAME} released" "\`${VERSION}\`"
+        --color="good" --title="${REPONAME}" "\`${VERSION}\`"
 }
 
 ################################################################################
