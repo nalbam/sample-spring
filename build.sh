@@ -66,85 +66,29 @@ _prepare() {
 }
 
 _package() {
-    _get_version
-
-    _gen_version
-
-    _result "VERSION=${VERSION}"
-}
-
-_release() {
-    if [ -z ${GITHUB_TOKEN} ]; then
-        return
-    fi
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
-        _error "not found ./VERSION"
-    fi
-
-    if [ -f ${SHELL_DIR}/target/PRE ]; then
-        GHR_PARAM="-delete -prerelease"
-    else
-        GHR_PARAM="-delete"
-    fi
-
-    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
-    _result "VERSION=${VERSION}"
-
-    echo "${VERSION}" > ${SHELL_DIR}/target/dist/${VERSION}
-
-    _command "go get github.com/tcnksm/ghr"
-    go get github.com/tcnksm/ghr
-
-    _command "ghr ${VERSION} ${SHELL_DIR}/target/dist/"
-    ghr -t ${GITHUB_TOKEN:-EMPTY} \
-        -u ${USERNAME} \
-        -r ${REPONAME} \
-        -c ${CIRCLE_SHA1} \
-        ${GHR_PARAM} \
-        ${VERSION} ${SHELL_DIR}/target/dist/
-}
-
-_slack() {
-    if [ -z ${SLACK_TOKEN} ]; then
-        return
-    fi
-
-    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
-    _result "VERSION=${VERSION}"
-
-    curl -sL opspresso.com/tools/slack | bash -s -- \
-        --token="${SLACK_TOKEN}" --username="${USERNAME}" \
-        --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
-        --footer_icon="https://repo.opspresso.com/favicon/github.png" \
-        --color="good" --title="${REPONAME} updated" "\`${VERSION}\`"
-}
-
-_get_version() {
-    # latest versions
-    VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
-
-    if [ -z ${VERSION} ]; then
-        VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
-    fi
-}
-
-_gen_version() {
-    # release version
-    MAJOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f1)
-    MINOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f2)
-
-    LATEST_MAJOR=$(echo ${VERSION} | cut -d'.' -f1)
-    LATEST_MINOR=$(echo ${VERSION} | cut -d'.' -f2)
-
-    if [ "${MAJOR}" != "${LATEST_MAJOR}" ] || [ "${MINOR}" != "${LATEST_MINOR}" ]; then
-        VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
+    if [ ! -f ${SHELL_DIR}/VERSION ]; then
+        _error "not found VERSION"
     fi
 
     _result "BRANCH=${BRANCH}"
     _result "PR_NUM=${PR_NUM}"
     _result "PR_URL=${PR_URL}"
 
-    # version
+    # release version
+    MAJOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f1)
+    MINOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f2)
+
+    SIMILAR="${MAJOR}.${MINOR}."
+
+    # latest versions
+    GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
+    VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${SIMILAR}" | sort -r | head -1 | cut -d'"' -f4 | xargs)
+
+    if [ -z ${VERSION} ]; then
+        VERSION="v0.0.0"
+    fi
+
+    # new version
     if [ "${BRANCH}" == "master" ]; then
         VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
@@ -162,7 +106,60 @@ _gen_version() {
         VERSION="${VERSION}-${PR_NUM}"
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     fi
+
+    _result "VERSION=${VERSION}"
 }
+
+_release() {
+    if [ -z ${GITHUB_TOKEN} ]; then
+        return
+    fi
+    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+        return
+    fi
+
+    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
+    echo "${VERSION}" > ${SHELL_DIR}/target/dist/${VERSION}
+
+    if [ -f ${SHELL_DIR}/target/PRE ]; then
+        GHR_PARAM="-delete -prerelease"
+    else
+        GHR_PARAM="-delete"
+    fi
+
+    _command "go get github.com/tcnksm/ghr"
+    go get github.com/tcnksm/ghr
+
+    _command "ghr ${VERSION} ${SHELL_DIR}/target/dist/"
+    ghr -t ${GITHUB_TOKEN:-EMPTY} \
+        -u ${USERNAME} \
+        -r ${REPONAME} \
+        -c ${CIRCLE_SHA1} \
+        ${GHR_PARAM} \
+        ${VERSION} ${SHELL_DIR}/target/dist/
+}
+
+_slack() {
+    if [ -z ${SLACK_TOKEN} ]; then
+        return
+    fi
+    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+        return
+    fi
+
+    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
+    curl -sL opspresso.com/tools/slack | bash -s -- \
+        --token="${SLACK_TOKEN}" --username="${USERNAME}" \
+        --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
+        --footer_icon="https://repo.opspresso.com/favicon/github.png" \
+        --color="good" --title="${REPONAME} released" "\`${VERSION}\`"
+}
+
+################################################################################
 
 _prepare
 
