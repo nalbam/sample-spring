@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.538</version>
+            <version>1.11.547</version>
         </dependency>
 
         <!-- push -->
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.35.Final</version>
+            <version>4.1.36.Final</version>
         </dependency>
 
         <!-- logstash -->
