@@ -19,6 +19,17 @@ jobs:
           paths:
             - target/*
             - build.sh
+  publish:
+    docker:
+      - image: opspresso/awscli
+    steps:
+      - attach_workspace:
+          at: works
+      - run:
+          name: Publish
+          command: |
+            chmod 755 ./works/build.sh
+            ./works/build.sh publish
   release:
     docker:
       - image: circleci/golang
@@ -52,6 +63,9 @@ workflows:
   apply:
     jobs:
       - package
+      - publish:
+          requires:
+            - package
       - release:
           requires:
             - package

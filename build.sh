@@ -11,6 +11,8 @@ REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
 
+# BUCKET="repo.opspresso.com"
+
 GIT_USERNAME="bot"
 GIT_USEREMAIL="bot@nalbam.com"
 
@@ -80,11 +82,13 @@ _package() {
 
     # latest versions
     GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
-    VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | sort -r | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
+    VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
 
     if [ -z ${VERSION} ]; then
         VERSION="${MAJOR}.${MINOR}.0"
     fi
+
+    _result "VERSION=${VERSION}"
 
     # new version
     if [ "${BRANCH}" == "master" ]; then
@@ -114,6 +118,22 @@ _package() {
     fi
 
     _result "VERSION=${VERSION}"
+}
+
+_publish() {
+    if [ -z ${BUCKET} ]; then
+        return
+    fi
+    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+        return
+    fi
+    if [ -f ${SHELL_DIR}/target/PR ]; then
+        return
+    fi
+
+    _s3_sync "${SHELL_DIR}/target/" "${BUCKET}/${REPONAME}"
+
+    _cf_reset "${BUCKET}"
 }
 
 _release() {
@@ -147,6 +167,18 @@ _release() {
         ${VERSION} ${SHELL_DIR}/target/dist/
 }
 
+_s3_sync() {
+    _command "aws s3 sync ${1} s3://${2}/ --acl public-read"
+    aws s3 sync ${1} s3://${2}/ --acl public-read
+}
+
+_cf_reset() {
+    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${1}')] | [0]" | jq -r '.Id')
+    if [ "${CFID}" != "" ]; then
+        aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
+    fi
+}
+
 _slack() {
     if [ -z ${SLACK_TOKEN} ]; then
         return
@@ -172,6 +204,9 @@ _prepare
 case ${CMD} in
     package)
         _package
+        ;;
+    publish)
+        _publish
         ;;
     release)
         _release
