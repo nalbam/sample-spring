@@ -12,13 +12,14 @@ jobs:
       - run:
           name: Package
           command: |
-            chmod 755 ./build.sh
-            ./build.sh package
+            mkdir target
+            curl -sLo target/builder.sh toast.sh/build
+            chmod 755 target/builder.sh
+            ./target/builder.sh package
       - persist_to_workspace:
           root: /tmp/works
           paths:
             - target/*
-            - build.sh
   publish:
     docker:
       - image: opspresso/awscli
@@ -28,8 +29,8 @@ jobs:
       - run:
           name: Publish
           command: |
-            chmod 755 ./works/build.sh
-            ./works/build.sh publish
+            chmod 755 ./works/target/builder.sh
+            ./works/target/builder.sh publish ./works
   release:
     docker:
       - image: circleci/golang
@@ -39,8 +40,8 @@ jobs:
       - run:
           name: Release
           command: |
-            chmod 755 ./works/build.sh
-            ./works/build.sh release
+            chmod 755 ./works/target/builder.sh
+            ./works/target/builder.sh release ./works
   slack:
     docker:
       - image: circleci/python
@@ -50,8 +51,8 @@ jobs:
       - run:
           name: Slack
           command: |
-            chmod 755 ./works/build.sh
-            ./works/build.sh slack
+            chmod 755 ./works/target/builder.sh
+            ./works/target/builder.sh slack ./works
 
 # Advanced Settings
 # - Build forked pull requests
