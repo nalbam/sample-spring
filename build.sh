@@ -63,8 +63,9 @@ _prepare() {
     # target
     mkdir -p ${SHELL_DIR}/target/dist
 
-    # 755
-    find ./** | grep [.]sh | xargs chmod 755
+    if [ -f ${SHELL_DIR}/target/circleci-stop ]; then
+        _success "circleci-stop"
+    fi
 }
 
 _package() {
