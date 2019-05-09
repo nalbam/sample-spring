@@ -13,7 +13,7 @@ jobs:
           name: Package
           command: |
             mkdir target
-            curl -sLo target/builder.sh toast.sh/build
+            curl -sLo target/builder.sh toast.sh/builder
             bash ./target/builder.sh package
       - persist_to_workspace:
           root: /tmp/works
