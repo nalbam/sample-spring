@@ -11,10 +11,12 @@ REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
 
-# BUCKET="repo.opspresso.com"
-
 GIT_USERNAME="bot"
 GIT_USEREMAIL="bot@nalbam.com"
+
+# GITHUB_TOKEN=
+# PUBLISH_PATH=
+# SLACK_TOKEN=
 
 ################################################################################
 
@@ -102,16 +104,20 @@ _package() {
             printf "${PR}" > ${SHELL_DIR}/target/PR
 
             if [ "${PR_NUM}" == "" ]; then
-                if [ "${PR_URL}" != "" ]; then
-                    PR_NUM=$(echo $PR_URL | cut -d'/' -f7)
-                elif [ "${CIRCLE_BUILD_NUM}" != "" ]; then
-                    PR_NUM=${CIRCLE_BUILD_NUM}
-                fi
+                PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
+            fi
+            if [ "${PR_NUM}" == "" ] && [ "${PR_URL}" != "" ]; then
+                PR_NUM=$(echo "${PR_URL}" | cut -d'/' -f7)
+            fi
+            if [ "${PR_NUM}" == "" ]; then
+                PR_NUM=${CIRCLE_BUILD_NUM}
             fi
 
             if [ "${PR_NUM}" != "" ]; then
                 VERSION="${VERSION}-${PR_NUM}"
                 printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+            else
+                VERSION=
             fi
         else
             VERSION=
@@ -122,7 +128,10 @@ _package() {
 }
 
 _publish() {
-    if [ -z ${BUCKET} ]; then
+    if [ "${BRANCH}" != "master" ]; then
+        return
+    fi
+    if [ -z ${PUBLISH_PATH} ]; then
         return
     fi
     if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
@@ -132,9 +141,17 @@ _publish() {
         return
     fi
 
-    _s3_sync "${SHELL_DIR}/target/" "${BUCKET}/${REPONAME}"
+    BUCKET="$(echo "${PUBLISH_PATH}" | cut -d'/' -f1)"
 
-    _cf_reset "${BUCKET}"
+    # aws s3 sync
+    _command "aws s3 sync ${SHELL_DIR}/target/ s3://${PUBLISH_PATH}/ --acl public-read"
+    aws s3 sync ${SHELL_DIR}/target/ s3://${PUBLISH_PATH}/ --acl public-read
+
+    # aws cf reset
+    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id,Origin:Origins.Items[0].DomainName}[?contains(Origin,'${BUCKET}')] | [0]" | grep 'Id' | cut -d'"' -f4)
+    if [ "${CFID}" != "" ]; then
+        aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
+    fi
 }
 
 _release() {
@@ -159,6 +176,7 @@ _release() {
     _command "go get github.com/tcnksm/ghr"
     go get github.com/tcnksm/ghr
 
+    # github release
     _command "ghr ${VERSION} ${SHELL_DIR}/target/dist/"
     ghr -t ${GITHUB_TOKEN:-EMPTY} \
         -u ${USERNAME} \
@@ -166,18 +184,6 @@ _release() {
         -c ${CIRCLE_SHA1} \
         ${GHR_PARAM} \
         ${VERSION} ${SHELL_DIR}/target/dist/
-}
-
-_s3_sync() {
-    _command "aws s3 sync ${1} s3://${2}/ --acl public-read"
-    aws s3 sync ${1} s3://${2}/ --acl public-read
-}
-
-_cf_reset() {
-    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${1}')] | [0]" | jq -r '.Id')
-    if [ "${CFID}" != "" ]; then
-        aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
-    fi
 }
 
 _slack() {
@@ -191,6 +197,7 @@ _slack() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    # send slack
     curl -sL opspresso.com/tools/slack | bash -s -- \
         --token="${SLACK_TOKEN}" --username="${USERNAME}" \
         --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
