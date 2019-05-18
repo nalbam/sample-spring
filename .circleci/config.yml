@@ -18,7 +18,7 @@ jobs:
             mkdir target
             curl -sLo target/builder.sh toast.sh/builder
             bash ./target/builder.sh
-            mvn package
+            mvn package -Dthis.version=${cat ./target/VERSION}
       - save_cache:
           paths:
             - ~/.m2
