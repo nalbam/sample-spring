@@ -9,13 +9,24 @@ jobs:
     working_directory: ~/works
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - circleci-cache-{{ checksum "pom.xml" }}
       - run:
           name: Build
           command: |
             mkdir target
             curl -sLo target/builder.sh toast.sh/builder
             bash ./target/builder.sh
-            man packate
+            mvn package
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: circleci-cache-{{ checksum "pom.xml" }}
+      - store_artifacts:
+          path: ./target
+      - store_test_results:
+          path: ./target/surefire-reports
       - persist_to_workspace:
           root: ~/works
           paths:
