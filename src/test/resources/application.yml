@@ -13,6 +13,8 @@ spring:
 
 namespace: ${NAMESPACE:default}
 
+version: ${IMAGE_TAG:v0.0.0}
+
 slack:
   webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
   channel: ${SLACK_CHANNEL:sandbox}

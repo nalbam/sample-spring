@@ -37,20 +37,20 @@ public class SendTask {
         if ("default".equals(namespace)) {
             call("http://localhost:" + port + "/spring");
         } else {
-            call("http://" + service + "-" + namespace + "/spring");
+            call("http://" + service + "/spring");
         }
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 1300)
     public void dealy() {
         if ("default".equals(namespace)) {
             call("http://localhost:" + port + "/dealy/3");
         } else {
-            call("http://" + service + "-" + namespace + "/dealy/3");
+            call("http://" + service + "/dealy/3");
         }
     }
 
-    @Scheduled(fixedRate = 567)
+    @Scheduled(fixedRate = 1345)
     public void node() {
         if ("default".equals(namespace)) {
             return;
@@ -60,10 +60,10 @@ public class SendTask {
 
         Random random = new Random();
 
-        call("http://sample-node-" + namespace + commands.get(random.nextInt(commands.size())));
+        call("http://sample-node" + commands.get(random.nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 234)
+    @Scheduled(fixedRate = 1234)
     public void stress() {
         if ("default".equals(namespace)) {
             return;
@@ -73,7 +73,7 @@ public class SendTask {
 
         Random random = new Random();
 
-        call("http://" + commands.get(random.nextInt(commands.size())) + "-" + namespace + "/stress");
+        call("http://" + commands.get(random.nextInt(commands.size())) + "/stress");
     }
 
     @Async

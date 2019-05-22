@@ -20,6 +20,9 @@ public class HomeController {
     @Value("${message}")
     private String message;
 
+    @Value("${version}")
+    private String version;
+
     @GetMapping("/")
     public String index(Map<String, Object> model) {
         String host;
@@ -38,6 +41,9 @@ public class HomeController {
 
         // message
         model.put("message", message);
+
+        // version
+        model.put("version", version);
 
         // host
         model.put("host", host);

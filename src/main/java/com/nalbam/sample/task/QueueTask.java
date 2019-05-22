@@ -7,7 +7,6 @@ import com.nalbam.sample.service.QueueService;
 import com.nalbam.sample.service.SendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -15,12 +14,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class QueueTask {
-
-    @Value("${namespace}")
-    private String namespace;
-
-    @Value("${aws.region}")
-    private String region;
 
     @Autowired
     private QueueService queueService;
@@ -31,7 +24,7 @@ public class QueueTask {
     // @Scheduled(fixedRate = 10000)
     public void counter() {
         Map<String, Object> data = new HashMap<>();
-        data.put("url", "http://sample-node-" + namespace + "/counter/up");
+        data.put("url", "http://sample-node/counter/up");
 
         Queue queue = new Queue();
         queue.setType('2');

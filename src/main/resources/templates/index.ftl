@@ -15,6 +15,8 @@
             <h1><img src="https://cdn.nalbam.com/logo/spring-boot.png"></h1>
             <h3>${host}</h3>
             <p>${date}</p>
+            <p>${message}</p>
+            <p>${version}</p>
             <p>
                 <button class="btn btn-primary btn-thumbs-up"><i class="far fa-thumbs-up"></i> <span id="thumbs-up-count">0</span></button>
                 <button class="btn btn-danger btn-thumbs-down"><i class="far fa-thumbs-down"></i> <span id="thumbs-down-count">0</span></button>
@@ -22,9 +24,6 @@
         </div>
     </section>
 </main>
-
-<!-- ${profile} -->
-<!-- ${message} -->
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
