@@ -16,7 +16,7 @@ namespace: ${NAMESPACE:default}
 version: ${IMAGE_TAG:v0.0.0}
 
 slack:
-  webhook: ${SLACK_WEBHOOK:https://hooks.slack.com/services/web/hook/token}
+  webhook: ${SLACK_WEBHOOK:/slack/token}
   channel: ${SLACK_CHANNEL:sandbox}
 
 message: ${MESSAGE:Refreshed}
@@ -45,6 +45,12 @@ message: ":tada: Server UP"
 
 spring:
   profiles: dev
+  jmx:
+    unique-names: true
+management:
+  endpoints:
+    jmx:
+      domain: com.nalbam.sample
 message: ":tada: Development UP"
 
 ---

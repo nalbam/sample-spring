@@ -40,7 +40,7 @@ ingress:
   labels: {}
 
 autoscaling:
-  enabled: true
+  enabled: false
   min: 1
   max: 5
   cpu: 80
@@ -48,17 +48,17 @@ autoscaling:
 
 resources:
   requests:
-    cpu: 250m
-    memory: 1024Mi
-  limits:
-    cpu: 300m
-    memory: 1252Mi
+    cpu: 1000m
+    memory: 2048Mi
+  # limits:
+  #   cpu: 800m
+  #   memory: 1252Mi
 
 readinessProbe:
   httpGet:
     path: /
     port: 8080
-  initialDelaySeconds: 60
+  initialDelaySeconds: 150
   periodSeconds: 10
   failureThreshold: 3
 
@@ -66,7 +66,7 @@ livenessProbe:
   httpGet:
     path: /
     port: 8080
-  initialDelaySeconds: 60
+  initialDelaySeconds: 150
   periodSeconds: 10
   failureThreshold: 3
 
@@ -92,16 +92,37 @@ tolerations: []
 
 affinity: {}
 
-env: {}
-  # - name: MESSAGE
-  #   value: "hello world"
+env:
+  - name: MESSAGE
+    value: "hello world"
+  - name: DD_SERVICE_NAME
+    value: "sample-spring"
+  - name: DD_SERVICE_MAPPING
+    value: "cluster_name:seoul-dev-okc1-eks"
+  - name: DD_AGENT_HOST
+    value: "datadog.monitor.svc.cluster.local"
+  - name: DD_TRACE_ANALYTICS_ENABLED
+    value: "true"
+  - name: DD_TRACE_AGENT_PORT
+    value: "8126"
+  - name: DD_JMXFETCH_ENABLED
+    value: "true"
+  - name: DD_JMXFETCH_STATSD_PORT
+    value: "8125"
+  - name: NEW_RELIC_APP_NAME
+    value: "sample-spring"
+  - name: POD_NAME
+    valueFrom: {fieldRef: {fieldPath: metadata.name}}
+  - name: NODE_NAME
+    valueFrom: {fieldRef: {fieldPath: spec.nodeName}}
 
 configmap:
-  enabled: false
-  data: {}
-    # MESSAGE: "hello world"
+  enabled: true
+  data:
+    MESSAGE: "hello dev world"
 
 secret:
-  enabled: false
-  data: {}
-    # SECRET: "c2VjcmV0IHdvcmxkCg=="
+  enabled: true
+  data:
+    SECRET: "c2VjcmV0IHdvcmxkCg=="
+    NEW_RELIC_LICENSE_KEY: "OGYwODMxZGZmMWRhNGNjYTAzYTEwNTU3NTcwNWIxYzVjNzRhM2E3ZQo="

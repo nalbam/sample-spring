@@ -54,26 +54,26 @@ podTemplate(label: label, containers: [
         }
       }
     }
-    stage("Tests") {
-      container("maven") {
-        try {
-          butler.mvn_test()
-        } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Tests")
-          throw e
-        }
-      }
-    }
-    stage("Code Analysis") {
-      container("maven") {
-        try {
-          butler.mvn_sonar()
-        } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Code Analysis")
-          throw e
-        }
-      }
-    }
+    // stage("Tests") {
+    //   container("maven") {
+    //     try {
+    //       butler.mvn_test()
+    //     } catch (e) {
+    //       butler.failure(SLACK_TOKEN_DEV, "Tests")
+    //       throw e
+    //     }
+    //   }
+    // }
+    // stage("Code Analysis") {
+    //   container("maven") {
+    //     try {
+    //       butler.mvn_sonar()
+    //     } catch (e) {
+    //       butler.failure(SLACK_TOKEN_DEV, "Code Analysis")
+    //       throw e
+    //     }
+    //   }
+    // }
     if (BRANCH_NAME == "master") {
       stage("Build Image") {
         parallel(

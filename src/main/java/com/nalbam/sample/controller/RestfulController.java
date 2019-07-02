@@ -101,10 +101,12 @@ public class RestfulController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
 
-        try {
-            Thread.sleep(sec * 1000);
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
+        if (sec > 0) {
+            try {
+                Thread.sleep(sec * 1000);
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         Map<String, Object> map = new HashMap<>();

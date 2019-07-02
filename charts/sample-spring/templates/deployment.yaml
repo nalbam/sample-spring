@@ -34,7 +34,7 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
       annotations:
-        buildID: {{ .Values.buildID }}
+        buildID: "{{ .Values.image.tag }}-{{ .Values.buildID }}"
 {{- with .Values.pod.annotations }}
 {{ toYaml . | indent 8 }}
 {{- end }}

@@ -32,7 +32,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 345)
     public void spring() {
         if ("default".equals(namespace)) {
             call("http://localhost:" + port + "/spring");
@@ -41,16 +41,20 @@ public class SendTask {
         }
     }
 
-    @Scheduled(fixedRate = 1300)
+    @Scheduled(fixedRate = 456)
     public void dealy() {
+        Random random = new Random();
+
+        Integer dealy = random.nextInt(5);
+
         if ("default".equals(namespace)) {
-            call("http://localhost:" + port + "/dealy/3");
+            call("http://localhost:" + port + "/dealy/" + dealy);
         } else {
-            call("http://" + service + "/dealy/3");
+            call("http://" + service + "/dealy/" + dealy);
         }
     }
 
-    @Scheduled(fixedRate = 1345)
+    @Scheduled(fixedRate = 567)
     public void node() {
         if ("default".equals(namespace)) {
             return;
@@ -63,7 +67,7 @@ public class SendTask {
         call("http://sample-node" + commands.get(random.nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 1234)
+    @Scheduled(fixedRate = 678)
     public void stress() {
         if ("default".equals(namespace)) {
             return;
