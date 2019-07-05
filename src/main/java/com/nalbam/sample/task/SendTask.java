@@ -80,6 +80,15 @@ public class SendTask {
         call("http://" + commands.get(random.nextInt(commands.size())) + "/stress");
     }
 
+    @Scheduled(fixedRate = 789)
+    public void fault() {
+        if ("default".equals(namespace)) {
+            return;
+        }
+
+        call("http://" + service + "/fault/5");
+    }
+
     @Async
     private CompletableFuture<String> call(String url) {
         log.info("req: {}", url);
