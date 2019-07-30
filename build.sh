@@ -7,10 +7,11 @@ SHELL_DIR=$(dirname $0)
 RUN_PATH="."
 
 if [ ! -f ${RUN_PATH}/target/VERSION ]; then
-    return
+    return 1
 fi
 
 VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
-_result "VERSION=${VERSION}"
+
+echo "VERSION=${VERSION}"
 
 mvn package -Dthis.version=${VERSION}
