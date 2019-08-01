@@ -14,4 +14,8 @@ VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
 
 echo "VERSION=${VERSION}"
 
+if [ "${VERSION}" == "" ]; then
+    return 1
+fi
+
 mvn package -Dthis.version=${VERSION}
