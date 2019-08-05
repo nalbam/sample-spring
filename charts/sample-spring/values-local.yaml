@@ -52,7 +52,7 @@ livenessProbe:
 
 env:
   - name: MESSAGE
-    value: "hello world"
+    value: "hello local world"
 
 configmap:
   enabled: false
