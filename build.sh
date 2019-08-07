@@ -6,16 +6,10 @@ SHELL_DIR=$(dirname $0)
 
 RUN_PATH="."
 
-if [ ! -f ${RUN_PATH}/target/VERSION ]; then
-    exit 0
+if [ -f ${RUN_PATH}/target/VERSION ]; then
+    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
+
+    echo "VERSION=${VERSION}"
+
+    mvn package -Dthis.version=${VERSION}
 fi
-
-VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
-
-echo "VERSION=${VERSION}"
-
-if [ "${VERSION}" == "" ]; then
-    exit 0
-fi
-
-mvn package -Dthis.version=${VERSION}
