@@ -91,6 +91,10 @@ workflows:
       - publish:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
       - release:
           requires:
             - build
