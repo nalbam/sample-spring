@@ -2,10 +2,7 @@
 
 FROM openjdk:8-jre-alpine
 
-RUN apk add --no-cache bash curl
-
-EXPOSE 8080
-WORKDIR /data
+# RUN apk add --no-cache bash curl
 
 ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 
@@ -23,5 +20,8 @@ ENV TRACER_OPTS=""
 # COPY ./tracer/whatap.conf /data/whatap.conf
 
 COPY ./target/*.jar /data/ROOT.jar
+
+EXPOSE 8080
+WORKDIR /data
 
 ENTRYPOINT exec java $JAVA_OPTS $TRACER_OPTS -jar ROOT.jar
