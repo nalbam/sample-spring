@@ -1,0 +1,19 @@
+{{ if .Values.pdb }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "fullname" . }}
+  labels:
+    app: {{ include "fullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "fullname" . }}
+    helm.sh/chart: {{ include "chart" . }}
+spec:
+{{ toYaml .Values.pdb | indent 2 }}
+  selector:
+    matchLabels:
+      app: {{ include "fullname" . }}
+      # app.kubernetes.io/instance: {{ .Release.Name }}
+      # app.kubernetes.io/name: {{ include "fullname" . }}
+{{ end }}

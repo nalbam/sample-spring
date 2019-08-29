@@ -1,0 +1,107 @@
+fullnameOverride: sample-spring
+
+replicaCount: 1
+
+profile: default
+
+namespace: development
+
+image:
+  repository: sample-spring
+  tag: latest
+  pullPolicy: Always
+
+labels: {}
+annotations: {}
+
+pod:
+  labels: {}
+  annotations: {}
+
+pdb: {}
+
+service:
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 8080
+  annotations: {}
+  labels: {}
+
+ingress:
+  enabled: true
+  subdomain: sample-spring
+  basedomain: 127.0.0.1.nip.io
+  hosts: {}
+  # hosts:
+  #   - sample-spring.opsnow.com
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels: {}
+
+autoscaling:
+  enabled: true
+  min: 1
+  max: 5
+  cpu: 80
+  mem: 80
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 1024Mi
+  limits:
+    cpu: 300m
+    memory: 1252Mi
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  failureThreshold: 3
+
+# livenessProbe:
+#   exec:
+#     command:
+#     - cat
+#     - /tmp/healthy
+#   initialDelaySeconds: 15
+#   periodSeconds: 10
+# livenessProbe:
+#   tcpSocket:
+#     port: 8080
+#   initialDelaySeconds: 15
+#   periodSeconds: 10
+
+# hostNetwork: true
+# dnsPolicy: Default
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env: {}
+  # - name: MESSAGE
+  #   value: "hello world"
+
+configmap:
+  enabled: false
+  data: {}
+    # MESSAGE: "hello world"
+
+secret:
+  enabled: false
+  data: {}
+    # SECRET: "c2VjcmV0IHdvcmxkCg=="
