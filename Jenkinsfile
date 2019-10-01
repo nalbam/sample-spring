@@ -14,8 +14,7 @@ properties([
   buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
 ])
 podTemplate(label: label, containers: [
-  containerTemplate(name: "builder", image: "opspresso/builder", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "deployer", image: "opspresso/deployer", command: "cat", ttyEnabled: true, alwaysPullImage: true),
+  containerTemplate(name: "builder", image: "opspresso/deployer", command: "cat", ttyEnabled: true, alwaysPullImage: true),
   containerTemplate(name: "maven", image: "maven:3.5.4-jdk-8-alpine", command: "cat", ttyEnabled: true)
 ], volumes: [
   hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
@@ -79,7 +78,7 @@ podTemplate(label: label, containers: [
       stage("Build Image") {
         parallel(
           "Build Docker": {
-            container("deployer") {
+            container("builder") {
               try {
                 builder.build_image()
               } catch (e) {
@@ -89,7 +88,7 @@ podTemplate(label: label, containers: [
             }
           },
           "Build Charts": {
-            container("deployer") {
+            container("builder") {
               try {
                 builder.build_chart()
               } catch (e) {
@@ -101,7 +100,7 @@ podTemplate(label: label, containers: [
         )
       }
       stage("Deploy DEV") {
-        container("deployer") {
+        container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
             builder.deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
@@ -113,7 +112,7 @@ podTemplate(label: label, containers: [
         }
       }
       stage("Request STAGE") {
-        container("deployer") {
+        container("builder") {
           builder.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
           timeout(time: 60, unit: "MINUTES") {
             input(message: "${builder.name} ${builder.version} to stage")
@@ -121,7 +120,7 @@ podTemplate(label: label, containers: [
         }
       }
       stage("Proceed STAGE") {
-        container("deployer") {
+        container("builder") {
           builder.proceed(SLACK_TOKEN_DQA, "Deploy STAGE", "stage")
           timeout(time: 60, unit: "MINUTES") {
             input(message: "${builder.name} ${builder.version} to stage")
@@ -129,7 +128,7 @@ podTemplate(label: label, containers: [
         }
       }
       stage("Deploy STAGE") {
-        container("deployer") {
+        container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
             builder.deploy("dev", "${SERVICE_GROUP}-stage", "${IMAGE_NAME}-stage", "stage")
@@ -141,7 +140,7 @@ podTemplate(label: label, containers: [
         }
       }
       stage("Proceed PROD") {
-        container("deployer") {
+        container("builder") {
           builder.proceed(SLACK_TOKEN_DQA, "Deploy PROD", "prod")
           timeout(time: 60, unit: "MINUTES") {
             input(message: "${builder.name} ${builder.version} to prod")
@@ -149,7 +148,7 @@ podTemplate(label: label, containers: [
         }
       }
       stage("Deploy PROD") {
-        container("deployer") {
+        container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
             builder.deploy("prod", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
