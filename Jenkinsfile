@@ -17,9 +17,8 @@ podTemplate(label: label, containers: [
   containerTemplate(name: "builder", image: "opspresso/builder:kube", command: "cat", ttyEnabled: true, alwaysPullImage: true),
   containerTemplate(name: "maven", image: "maven:3.5.4-jdk-8-alpine", command: "cat", ttyEnabled: true)
 ], volumes: [
-  hostPathVolume(mountPath: "/home/jenkins/.m2", hostPath: "/home/jenkins/.m2"),
-  hostPathVolume(mountPath: "/home/jenkins/.helm", hostPath: "/home/jenkins/.helm"),
-  hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock")
+  hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
+  hostPathVolume(mountPath: "/home/jenkins/.m2", hostPath: "/home/jenkins/.m2")
 ]) {
   node(label) {
     stage("Prepare") {
