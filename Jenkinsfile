@@ -7,7 +7,7 @@ def SLACK_TOKEN_DEV = ""
 def SLACK_TOKEN_DQA = ""
 
 @Library("github.com/opspresso/builder")
-def builder = new com.opspresso.builder.Builder()
+def butler = new com.opspresso.builder.Butler()
 def label = "worker-${UUID.randomUUID().toString()}"
 
 properties([
@@ -23,7 +23,7 @@ podTemplate(label: label, containers: [
   node(label) {
     stage("Prepare") {
       container("builder") {
-        builder.prepare(IMAGE_NAME)
+        butler.prepare(IMAGE_NAME)
       }
     }
     stage("Checkout") {
@@ -35,20 +35,20 @@ podTemplate(label: label, containers: [
             git(url: REPOSITORY_URL, branch: BRANCH_NAME)
           }
         } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Checkout")
+          butler.failure(SLACK_TOKEN_DEV, "Checkout")
           throw e
         }
 
-        builder.scan("java")
+        butler.scan("java")
       }
     }
     stage("Build") {
       container("maven") {
         try {
-          builder.mvn_build()
-          builder.success(SLACK_TOKEN_DEV, "Build")
+          butler.mvn_build()
+          butler.success(SLACK_TOKEN_DEV, "Build")
         } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Build")
+          butler.failure(SLACK_TOKEN_DEV, "Build")
           throw e
         }
       }
@@ -56,9 +56,9 @@ podTemplate(label: label, containers: [
     stage("Tests") {
       container("maven") {
         try {
-          builder.mvn_test()
+          butler.mvn_test()
         } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Tests")
+          butler.failure(SLACK_TOKEN_DEV, "Tests")
           throw e
         }
       }
@@ -66,9 +66,9 @@ podTemplate(label: label, containers: [
     // stage("Code Analysis") {
     //   container("maven") {
     //     try {
-    //       builder.mvn_sonar()
+    //       butler.mvn_sonar()
     //     } catch (e) {
-    //       builder.failure(SLACK_TOKEN_DEV, "Code Analysis")
+    //       butler.failure(SLACK_TOKEN_DEV, "Code Analysis")
     //       throw e
     //     }
     //   }
@@ -79,9 +79,9 @@ podTemplate(label: label, containers: [
           "Build Docker": {
             container("builder") {
               try {
-                builder.build_image()
+                butler.build_image()
               } catch (e) {
-                builder.failure(SLACK_TOKEN_DEV, "Build Docker")
+                butler.failure(SLACK_TOKEN_DEV, "Build Docker")
                 throw e
               }
             }
@@ -89,9 +89,9 @@ podTemplate(label: label, containers: [
           "Build Charts": {
             container("builder") {
               try {
-                builder.build_chart()
+                butler.build_chart()
               } catch (e) {
-                builder.failure(SLACK_TOKEN_DEV, "Build Charts")
+                butler.failure(SLACK_TOKEN_DEV, "Build Charts")
                 throw e
               }
             }
@@ -102,27 +102,27 @@ podTemplate(label: label, containers: [
         container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            builder.deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
-            builder.success(SLACK_TOKEN_DEV, "Deploy DEV")
+            butler.deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
+            butler.success(SLACK_TOKEN_DEV, "Deploy DEV")
           } catch (e) {
-            builder.failure(SLACK_TOKEN_DEV, "Deploy DEV")
+            butler.failure(SLACK_TOKEN_DEV, "Deploy DEV")
             throw e
           }
         }
       }
       stage("Request STAGE") {
         container("builder") {
-          builder.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
+          butler.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
           timeout(time: 60, unit: "MINUTES") {
-            input(message: "${builder.name} ${builder.version} to stage")
+            input(message: "${butler.name} ${butler.version} to stage")
           }
         }
       }
       stage("Proceed STAGE") {
         container("builder") {
-          builder.proceed(SLACK_TOKEN_DQA, "Deploy STAGE", "stage")
+          butler.proceed(SLACK_TOKEN_DQA, "Deploy STAGE", "stage")
           timeout(time: 60, unit: "MINUTES") {
-            input(message: "${builder.name} ${builder.version} to stage")
+            input(message: "${butler.name} ${butler.version} to stage")
           }
         }
       }
@@ -130,19 +130,19 @@ podTemplate(label: label, containers: [
         container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            builder.deploy("dev", "${SERVICE_GROUP}-stage", "${IMAGE_NAME}-stage", "stage")
-            builder.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
+            butler.deploy("dev", "${SERVICE_GROUP}-stage", "${IMAGE_NAME}-stage", "stage")
+            butler.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
           } catch (e) {
-            builder.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
+            butler.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
             throw e
           }
         }
       }
       stage("Proceed PROD") {
         container("builder") {
-          builder.proceed(SLACK_TOKEN_DQA, "Deploy PROD", "prod")
+          butler.proceed(SLACK_TOKEN_DQA, "Deploy PROD", "prod")
           timeout(time: 60, unit: "MINUTES") {
-            input(message: "${builder.name} ${builder.version} to prod")
+            input(message: "${butler.name} ${butler.version} to prod")
           }
         }
       }
@@ -150,10 +150,10 @@ podTemplate(label: label, containers: [
         container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            builder.deploy("prod", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
-            builder.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
+            butler.deploy("prod", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
+            butler.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
           } catch (e) {
-            builder.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
+            butler.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
             throw e
           }
         }
