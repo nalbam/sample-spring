@@ -32,24 +32,19 @@ public class AmazonConfig {
 
     @Bean
     public AmazonS3 amazonS3() {
-        return AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.fromName(this.region))
-                .withCredentials(this.awsCredentialsProvider)
-                .build();
+        return AmazonS3ClientBuilder.standard().withRegion(Regions.fromName(this.region))
+                .withCredentials(this.awsCredentialsProvider).build();
     }
 
     @Bean
     public AmazonRekognition amazonRekognition() {
-        return AmazonRekognitionClientBuilder.standard()
-                .withRegion(Regions.fromName(this.region))
-                .withCredentials(this.awsCredentialsProvider)
-                .build();
+        return AmazonRekognitionClientBuilder.standard().withRegion(Regions.fromName(this.region))
+                .withCredentials(this.awsCredentialsProvider).build();
     }
 
     @Bean
     public AmazonSQS amazonSQS() {
-        return AmazonSQSClientBuilder.standard()
-                .withCredentials(this.awsCredentialsProvider)
+        return AmazonSQSClientBuilder.standard().withCredentials(this.awsCredentialsProvider)
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(this.endPoint, this.region))
                 .build();
     }

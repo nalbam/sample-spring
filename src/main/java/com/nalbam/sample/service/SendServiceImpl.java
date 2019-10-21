@@ -30,17 +30,17 @@ class SendServiceImpl implements SendService {
         log.info("Send send [{}]", queue.getType());
 
         switch (queue.getType()) {
-            case '1':
-                sendPush(queue);
-                break;
-            case '2':
-                sendCallback(queue);
-                break;
-            case '9':
-                sendTest(queue);
-                break;
-            default:
-                log.error("Not support type.");
+        case '1':
+            sendPush(queue);
+            break;
+        case '2':
+            sendCallback(queue);
+            break;
+        case '9':
+            sendTest(queue);
+            break;
+        default:
+            log.error("Not support type.");
         }
     }
 
@@ -51,19 +51,12 @@ class SendServiceImpl implements SendService {
 
         // Notification 생략 - 안드로이드
         if (!data.get("device").equals('1')) {
-            notification = new Notification.Builder(data.get("icon").toString())
-                    .color(data.get("color").toString())
-                    .title(data.get("title").toString())
-                    .body(data.get("body").toString())
-                    .build();
+            notification = new Notification.Builder(data.get("icon").toString()).color(data.get("color").toString())
+                    .title(data.get("title").toString()).body(data.get("body").toString()).build();
         }
 
-        final Message message = new Message.Builder()
-                .priority(Message.Priority.HIGH)
-                .notification(notification)
-                .addData("title", data.get("title").toString())
-                .addData("body", data.get("body").toString())
-                .build();
+        final Message message = new Message.Builder().priority(Message.Priority.HIGH).notification(notification)
+                .addData("title", data.get("title").toString()).addData("body", data.get("body").toString()).build();
 
         // NotRegistered : 등록되지 않은 기기
         // MismatchSenderId : 일치하지 않는 발신자
@@ -75,7 +68,8 @@ class SendServiceImpl implements SendService {
 
             final MulticastResult multicastResult = sender.send(message, queue.getTokens(), 3);
 
-            log.info("Send sendPush [device:{}] [total:{}] [success:{}] [failure:{}]", data.get("device"), multicastResult.getTotal(), multicastResult.getSuccess(), multicastResult.getFailure());
+            log.info("Send sendPush [device:{}] [total:{}] [success:{}] [failure:{}]", data.get("device"),
+                    multicastResult.getTotal(), multicastResult.getSuccess(), multicastResult.getFailure());
 
             if (multicastResult.getFailure() == 0) {
                 return;
@@ -92,7 +86,7 @@ class SendServiceImpl implements SendService {
                     result = multicastResult.getResults().get(i);
 
                     if (result.getErrorCodeName() == null) {
-                        //log.info("Send sendPush [{}]", r.getMessageId());
+                        // log.info("Send sendPush [{}]", r.getMessageId());
                         continue;
                     }
 
@@ -133,14 +127,14 @@ class SendServiceImpl implements SendService {
         return CompletableFuture.completedFuture(res);
 
         // toFuture(this.asyncRestTemplate.getForEntity(url, String.class))
-        //         .exceptionally(e -> {
-        //             log.error("Send sendCallback : {}", e.getMessage());
-        //             return null;
-        //         })
-        //         .thenApply(r -> {
-        //             log.info("Send sendCallback : {}", r.getStatusCode());
-        //             return r;
-        //         });
+        // .exceptionally(e -> {
+        // log.error("Send sendCallback : {}", e.getMessage());
+        // return null;
+        // })
+        // .thenApply(r -> {
+        // log.info("Send sendCallback : {}", r.getStatusCode());
+        // return r;
+        // });
     }
 
     private void sendTest(final Queue queue) {
@@ -154,9 +148,9 @@ class SendServiceImpl implements SendService {
     }
 
     // private <T> CompletableFuture<T> toFuture(final ListenableFuture<T> lf) {
-    //     final CompletableFuture<T> cf = new CompletableFuture<>();
-    //     lf.addCallback(cf::complete, cf::completeExceptionally);
-    //     return cf;
+    // final CompletableFuture<T> cf = new CompletableFuture<>();
+    // lf.addCallback(cf::complete, cf::completeExceptionally);
+    // return cf;
     // }
 
 }

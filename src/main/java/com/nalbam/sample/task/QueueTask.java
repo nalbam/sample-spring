@@ -33,29 +33,25 @@ public class QueueTask {
         queue.setTokens(new ArrayList<>());
         queue.setRegistered(new Date());
 
-        this.queueService.send(queue)
-                .exceptionally(e -> {
-                    log.error("Queue send : {}", e.getMessage());
-                    return null;
-                })
-                .thenApply(r -> {
-                    //log.info("Queue send : {}", r.size());
-                    return r;
-                });
+        this.queueService.send(queue).exceptionally(e -> {
+            log.error("Queue send : {}", e.getMessage());
+            return null;
+        }).thenApply(r -> {
+            // log.info("Queue send : {}", r.size());
+            return r;
+        });
     }
 
     // @Scheduled(fixedRate = 1000)
     public void receive() {
-        this.queueService.receive()
-                .exceptionally(e -> {
-                    log.error("Queue receive : {}", e.getMessage());
-                    return null;
-                })
-                .thenApply(r -> {
-                    //log.info("Queue receive : {}", r.size());
-                    receive(r);
-                    return r;
-                });
+        this.queueService.receive().exceptionally(e -> {
+            log.error("Queue receive : {}", e.getMessage());
+            return null;
+        }).thenApply(r -> {
+            // log.info("Queue receive : {}", r.size());
+            receive(r);
+            return r;
+        });
     }
 
     private void receive(final List<Message> list) {
