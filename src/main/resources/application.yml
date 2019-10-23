@@ -13,7 +13,7 @@ spring:
 
 namespace: ${NAMESPACE:default}
 
-version: ${IMAGE_TAG:v0.0.0}
+version: ${VERSION:v0.0.0}
 
 slack:
   webhook: ${SLACK_WEBHOOK:/slack/token}
@@ -36,13 +36,11 @@ logzio:
   token: ${LOGZIO_TOKEN:STRING}
 
 ---
-
 spring:
   profiles: default
 message: ":tada: Server UP"
 
 ---
-
 spring:
   profiles: dev
   jmx:
@@ -54,13 +52,11 @@ management:
 message: ":tada: Development UP"
 
 ---
-
 spring:
   profiles: stage
 message: ":tada: Staging UP"
 
 ---
-
 spring:
   profiles: prod
 message: ":tada: Production UP"
