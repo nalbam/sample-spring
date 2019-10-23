@@ -12,7 +12,7 @@
 <main role="main">
     <section class="jumbotron text-center">
         <div class="container">
-            <h1><img src="https://cdn.nalbam.com/logo/spring-boot.png"></h1>
+            <h1><img src="https://nalbam.com/static/logo/spring-boot.png"></h1>
             <h3>${host}</h3>
             <p>${date}</p>
             <p>${message}</p>
