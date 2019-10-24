@@ -64,7 +64,7 @@ resources:
 
 readinessProbe:
   httpGet:
-    path: /
+    path: /read
     port: 8080
   initialDelaySeconds: 60
   periodSeconds: 10
@@ -72,7 +72,7 @@ readinessProbe:
 
 livenessProbe:
   httpGet:
-    path: /
+    path: /live
     port: 8080
   initialDelaySeconds: 60
   periodSeconds: 10
