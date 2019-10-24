@@ -56,10 +56,10 @@ autoscaling:
 
 resources:
   requests:
-    cpu: 250m
+    cpu: 500m
     memory: 1024Mi
   limits:
-    cpu: 300m
+    cpu: 600m
     memory: 1252Mi
 
 readinessProbe:
