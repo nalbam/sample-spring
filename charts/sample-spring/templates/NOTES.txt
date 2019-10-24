@@ -1,7 +1,10 @@
 1. Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
+{{- if and .Values.ingress.subdomain .Values.ingress.basedomain }}
+  http://{{ .Values.ingress.subdomain }}.{{ .Values.ingress.basedomain }}
+{{- end }}
 {{- range .Values.ingress.hosts }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .name }}
 {{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "fullname" . }})
