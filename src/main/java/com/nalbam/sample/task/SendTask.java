@@ -17,8 +17,8 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class SendTask {
 
-    @Value("${namespace}")
-    private String namespace;
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @Value("${spring.application.name}")
     private String service;
@@ -34,7 +34,11 @@ public class SendTask {
 
     @Scheduled(fixedRate = 345)
     public void spring() {
-        if ("default".equals(namespace)) {
+        if ("test".equals(profile)) {
+            return;
+        }
+
+        if ("default".equals(profile)) {
             call("http://localhost:" + port + "/spring");
         } else {
             call("http://" + service + "/spring");
@@ -43,11 +47,15 @@ public class SendTask {
 
     @Scheduled(fixedRate = 456)
     public void dealy() {
+        if ("test".equals(profile)) {
+            return;
+        }
+
         Random random = new Random();
 
         Integer dealy = random.nextInt(5);
 
-        if ("default".equals(namespace)) {
+        if ("default".equals(profile)) {
             call("http://localhost:" + port + "/dealy/" + dealy);
         } else {
             call("http://" + service + "/dealy/" + dealy);
@@ -56,7 +64,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 567)
     public void node() {
-        if ("default".equals(namespace)) {
+        if ("default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -69,7 +77,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 678)
     public void stress() {
-        if ("default".equals(namespace)) {
+        if ("default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -82,7 +90,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 789)
     public void fault() {
-        if ("default".equals(namespace)) {
+        if ("default".equals(profile) || "test".equals(profile)) {
             return;
         }
 

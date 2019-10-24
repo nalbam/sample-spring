@@ -2,8 +2,6 @@ package com.nalbam.sample.controller;
 
 import com.nalbam.sample.util.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
-import com.nalbam.sample.service.AmazonService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,9 +19,6 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @RestController
 public class RestfulController {
-
-    @Autowired
-    private AmazonService amazonService;
 
     @GetMapping("/live")
     public Map<String, Object> live() {
@@ -47,14 +42,9 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/package")
-    public Map<String, Object> health() {
-        return PackageUtil.getData(this.getClass());
-    }
-
     @GetMapping("/spring")
     public Map<String, Object> spring() {
-        log.info("spring check");
+        log.info("spring");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -63,15 +53,9 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/buckets")
-    public Map<String, Object> buckets() {
-        log.info("aws s3 buckets");
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("result", "OK");
-        map.put("buckets", amazonService.listBuckets());
-
-        return map;
+    @GetMapping("/package")
+    public Map<String, Object> health() {
+        return PackageUtil.getData(this.getClass());
     }
 
     @GetMapping("/stress")

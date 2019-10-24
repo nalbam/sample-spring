@@ -5,7 +5,7 @@ spring:
   application:
     name: sample-spring
   profiles:
-    active: ${PROFILE:test}
+    active: ${PROFILE:default}
   jackson:
     time-zone: Asia/Seoul
     serialization:
@@ -13,27 +13,13 @@ spring:
 
 namespace: ${NAMESPACE:default}
 
+message: ${MESSAGE:Refreshed}
+
 version: ${VERSION:v0.0.0}
 
 slack:
   webhook: ${SLACK_WEBHOOK:/slack/token}
   channel: ${SLACK_CHANNEL:sandbox}
-
-message: ${MESSAGE:Refreshed}
-
-aws:
-  region: ${AWS_REGION:ap-northeast-2}
-  key:
-    access: ${AWS_ACCESS_KEY:STRING}
-    secret: ${AWS_SECRET_KEY:STRING}
-  sqs:
-    queueName: sample
-    maxTimeout: ${AWS_SQS_MAX_TIMEOUT:36000}
-    maxDelay: ${AWS_SQS_MAX_DELAY:900}
-    endPoint: sqs.${AWS_REGION:ap-northeast-2}.amazonaws.com
-
-logzio:
-  token: ${LOGZIO_TOKEN:STRING}
 
 ---
 spring:
