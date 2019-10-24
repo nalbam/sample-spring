@@ -30,12 +30,25 @@ spec:
           servicePort: {{ $servicePort }}
 {{ end }}
 {{ range .Values.ingress.hosts }}
-  - host: {{ . }}
+  - host: {{ .name }}
     http:
       paths:
-      - path: /
+      - path: {{ .path }}
         backend:
           serviceName: {{ $fullName }}
           servicePort: {{ $servicePort }}
+{{ end }}
+  tls:
+{{ if and .Values.ingress.subdomain .Values.ingress.basedomain }}
+  - hosts:
+      - {{ .Values.ingress.subdomain }}.{{ .Values.ingress.basedomain }}
+    secretName: {{ .Values.ingress.subdomain }}-tls
+{{ end }}
+{{ range .Values.ingress.hosts }}
+{{ if .tls }}
+  - hosts:
+      - {{ .name }}
+    secretName: {{ .tlsSecret }}
+{{ end }}
 {{ end }}
 {{ end }}

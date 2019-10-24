@@ -36,7 +36,7 @@
     </appender>
 
     <!-- <appender name="Logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>dev-sre-elasticsearch.opsnow.io</destination>
+        <destination>dev-sre-elasticsearch.nalbam.com</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"product":"${product}","profile":"${profile}"}</customFields>
         </encoder>

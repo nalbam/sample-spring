@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
 
-    <springProperty scope="context" name="product" source="spring.application.name"/>
-    <springProperty scope="context" name="profile" source="spring.profiles.active"/>
-    <springProperty scope="context" name="token" source="logzio.token"/>
+    <springProperty scope="context" name="product" source="spring.application.name" />
+    <springProperty scope="context" name="profile" source="spring.profiles.active" />
+    <springProperty scope="context" name="token" source="logzio.token" />
 
-    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-			<providers>
-				<timestamp>
-					<timeZone>UTC</timeZone>
-				</timestamp>
-				<pattern>
-					<pattern>
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <pattern>
+                    <pattern>
 						{
                             "severity": "%level",
                             "service": "${product:-}",
@@ -30,13 +30,13 @@
                             "rest": "%message"
 						}
 					</pattern>
-				</pattern>
-			</providers>
-		</encoder>
+                </pattern>
+            </providers>
+        </encoder>
     </appender>
 
     <!-- <appender name="Logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>dev-sre-elasticsearch.opsnow.io</destination>
+        <destination>dev-sre-elasticsearch.nalbam.com</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"product":"${product}","profile":"${profile}"}</customFields>
         </encoder>
@@ -51,7 +51,7 @@
 
     <springProfile name="dev, stage, prod">
         <root level="INFO">
-            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="STDOUT" />
         </root>
     </springProfile>
 
