@@ -151,7 +151,7 @@ podTemplate(label: label, containers: [
         container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            builder.deploy("local", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
+            builder.deploy("demo", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
             builder.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
           } catch (e) {
             builder.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
