@@ -103,7 +103,7 @@ podTemplate(label: label, containers: [
         container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            builder.deploy("spot", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
+            builder.deploy("local", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
             builder.success(SLACK_TOKEN_DEV, "Deploy DEV")
           } catch (e) {
             builder.failure(SLACK_TOKEN_DEV, "Deploy DEV")
