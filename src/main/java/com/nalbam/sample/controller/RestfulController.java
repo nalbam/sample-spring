@@ -78,6 +78,7 @@ public class RestfulController {
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
+        map.put("type", "stress");
         map.put("sum", sum);
         map.put("date", sdf.format(new Date()));
 
@@ -101,6 +102,7 @@ public class RestfulController {
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
+        map.put("type", "dealy");
         map.put("date", sdf.format(new Date()));
 
         return map;
@@ -123,10 +125,8 @@ public class RestfulController {
     }
 
     @GetMapping("/fault/{rate}")
-    public String fault(@PathVariable Integer rate) {
+    public Map<String, Object> fault(@PathVariable Integer rate) {
         log.info("fault {}", rate);
-
-        List<String> greetings = Arrays.asList("Hi there", "Greetings", "Lok'tar");
 
         Random random = new Random();
 
@@ -136,11 +136,11 @@ public class RestfulController {
             e.printStackTrace();
         }
 
-        if (rate < random.nextInt(100)) {
-            return greetings.get(random.nextInt(greetings.size()));
-        }
+        Map<String, Object> map = PackageUtil.getData(this.getClass());
+        map.put("result", "OK");
+        map.put("type", "fault");
 
-        return greetings.get(greetings.size());
+        return map;
     }
 
 }
