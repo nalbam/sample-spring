@@ -53,9 +53,15 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/package")
+    @GetMapping("/health")
     public Map<String, Object> health() {
-        return PackageUtil.getData(this.getClass());
+        log.info("health");
+
+        Map<String, Object> map = PackageUtil.getData(this.getClass());
+        map.put("result", "OK");
+        map.put("type", "health");
+
+        return map;
     }
 
     @GetMapping("/stress")
