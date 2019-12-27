@@ -32,20 +32,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 345)
-    public void spring() {
-        if ("test".equals(profile)) {
-            return;
-        }
-
-        if ("default".equals(profile)) {
-            call("http://localhost:" + port + "/spring");
-        } else {
-            call("http://" + service + "/spring");
-        }
-    }
-
-    @Scheduled(fixedRate = 456)
+    @Scheduled(fixedRate = 567)
     public void dealy() {
         if ("test".equals(profile)) {
             return;
@@ -62,20 +49,20 @@ public class SendTask {
         }
     }
 
-    @Scheduled(fixedRate = 567)
-    public void node() {
+    @Scheduled(fixedRate = 345)
+    public void spring() {
         if ("default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
-        List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
+        List<String> commands = Arrays.asList("sample-spring", "sample-node");
 
         Random random = new Random();
 
-        call("http://sample-node" + commands.get(random.nextInt(commands.size())));
+        call("http://" + commands.get(random.nextInt(commands.size())) + "/spring");
     }
 
-    @Scheduled(fixedRate = 678)
+    @Scheduled(fixedRate = 456)
     public void stress() {
         if ("default".equals(profile) || "test".equals(profile)) {
             return;
