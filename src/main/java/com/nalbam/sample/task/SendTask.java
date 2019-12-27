@@ -49,6 +49,19 @@ public class SendTask {
         }
     }
 
+    @Scheduled(fixedRate = 456)
+    public void node() {
+        if ("default".equals(profile) || "test".equals(profile)) {
+            return;
+        }
+
+        List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
+
+        Random random = new Random();
+
+        call("http://sample-node" + commands.get(random.nextInt(commands.size())));
+    }
+
     @Scheduled(fixedRate = 567)
     public void stress() {
         if ("default".equals(profile) || "test".equals(profile)) {
