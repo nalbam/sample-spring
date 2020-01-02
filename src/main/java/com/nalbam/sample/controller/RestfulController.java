@@ -112,7 +112,7 @@ public class RestfulController {
             url = "http://sample-spring/loop/" + count;
         }
 
-        String res = restTemplate.getForObject(url, String.class);
+        Map<String, Object> res = restTemplate.getForObject(url, Map.class);
 
         map.put("data", res);
 
