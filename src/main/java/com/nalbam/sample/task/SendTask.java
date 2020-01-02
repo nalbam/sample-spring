@@ -27,7 +27,7 @@ public class SendTask {
     private Integer port;
 
     // @Value("${task.scheduled}")
-    private Boolean scheduled = false;
+    private Boolean scheduled = true;
 
     private final RestTemplate restTemplate;
 
