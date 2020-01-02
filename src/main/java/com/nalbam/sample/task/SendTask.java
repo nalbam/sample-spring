@@ -35,16 +35,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 60000)
-    public void pulse() {
-        if (!scheduled && "test".equals(profile)) {
-            return;
-        }
-
-        log.debug("bit");
-    }
-
-    @Scheduled(fixedRate = 890)
+    // @Scheduled(fixedRate = 890)
     public void dealy() {
         if (!scheduled && "test".equals(profile)) {
             return;
@@ -59,7 +50,7 @@ public class SendTask {
         }
     }
 
-    @Scheduled(fixedRate = 789)
+    // @Scheduled(fixedRate = 789)
     public void fault() {
         if (!scheduled && "test".equals(profile)) {
             return;
@@ -74,21 +65,6 @@ public class SendTask {
         }
     }
 
-    @Scheduled(fixedRate = 876)
-    public void loop() {
-        if (!scheduled && "test".equals(profile)) {
-            return;
-        }
-
-        Integer count = 5;
-
-        if ("default".equals(profile)) {
-            call("http://localhost:" + port + "/loop/" + count);
-        } else {
-            call("http://" + service + "/loop/" + count);
-        }
-    }
-
     @Scheduled(fixedRate = 1234)
     public void bookinfo() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
@@ -99,19 +75,17 @@ public class SendTask {
     }
 
     @Scheduled(fixedRate = 456)
-    public void node() {
+    public void redis() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
 
-        Random random = new Random();
-
-        call("http://sample-node" + commands.get(random.nextInt(commands.size())));
+        call("http://sample-node" + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 567)
+    // @Scheduled(fixedRate = 567)
     public void stress() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
@@ -119,22 +93,20 @@ public class SendTask {
 
         List<String> commands = Arrays.asList("sample-spring", "sample-node");
 
-        Random random = new Random();
-
-        call("http://" + commands.get(random.nextInt(commands.size())) + "/stress");
+        call("http://" + commands.get((new Random()).nextInt(commands.size())) + "/stress");
     }
 
-    @Scheduled(fixedRate = 678)
-    public void spring() {
+    @Scheduled(fixedRate = 876)
+    public void loop() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
         List<String> commands = Arrays.asList("sample-spring", "sample-node");
 
-        Random random = new Random();
+        Integer count = 5;
 
-        call("http://" + commands.get(random.nextInt(commands.size())) + "/spring");
+        call("http://" + commands.get((new Random()).nextInt(commands.size())) + "/loop/" + count);
     }
 
     @Async
