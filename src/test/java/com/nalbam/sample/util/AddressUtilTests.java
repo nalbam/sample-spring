@@ -10,7 +10,6 @@ public class AddressUtilTests {
 
     @Test
     public void testAddress() {
-
         final String ip = AddressUtil.getAddress();
 
         log.info("# address : {}", ip);
