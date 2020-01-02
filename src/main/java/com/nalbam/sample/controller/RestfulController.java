@@ -91,6 +91,34 @@ public class RestfulController {
         return res;
     }
 
+    @GetMapping("/loop/{count}")
+    public Map<String, Object> loop(@PathVariable Integer count) {
+        log.debug("loop {}", count);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", "OK");
+
+        if (count <= 0) {
+            return map;
+        }
+
+        count--;
+
+        String url;
+
+        if ("default".equals(profile)) {
+            url = "http://localhost:8080/loop/" + count;
+        } else {
+            url = "http://sample-spring/loop/" + count;
+        }
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        map.put("data", res);
+
+        return map;
+    }
+
     @GetMapping("/stress")
     public Map<String, Object> stress() {
         log.debug("stress check");
