@@ -2,21 +2,33 @@ package com.nalbam.sample.controller;
 
 import com.nalbam.sample.util.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeoutException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RestController
 public class RestfulController {
+
+    @Value("${spring.profiles.active}")
+    private String profile;
+
+    private final RestTemplate restTemplate;
+
+    public RestfulController(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     @GetMapping("/live")
     public Map<String, Object> live() {
@@ -40,6 +52,17 @@ public class RestfulController {
         return map;
     }
 
+    @GetMapping("/health")
+    public Map<String, Object> health() {
+        log.info("health");
+
+        Map<String, Object> map = PackageUtil.getData(this.getClass());
+        map.put("result", "OK");
+        map.put("type", "health");
+
+        return map;
+    }
+
     @GetMapping("/spring")
     public Map<String, Object> spring() {
         log.info("spring");
@@ -51,15 +74,21 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/health")
-    public Map<String, Object> health() {
-        log.info("health");
+    @GetMapping("/node")
+    public String node() {
+        log.info("node");
 
-        Map<String, Object> map = PackageUtil.getData(this.getClass());
-        map.put("result", "OK");
-        map.put("type", "health");
+        String url;
 
-        return map;
+        if ("default".equals(profile)) {
+            url = "http://localhost:3000/spring";
+        } else {
+            url = "http://sample-node/spring";
+        }
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        return res;
     }
 
     @GetMapping("/stress")
