@@ -32,7 +32,16 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 890)
+    @Scheduled(fixedRate = 60000)
+    public void pulse() {
+        if ("test".equals(profile)) {
+            return;
+        }
+
+        log.info("pulse");
+    }
+
+    // @Scheduled(fixedRate = 890)
     public void dealy() {
         if ("test".equals(profile)) {
             return;
