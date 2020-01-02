@@ -32,7 +32,7 @@ public class RestfulController {
 
     @GetMapping("/live")
     public Map<String, Object> live() {
-        log.info("live check");
+        log.debug("live check");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -43,7 +43,7 @@ public class RestfulController {
 
     @GetMapping("/read")
     public Map<String, Object> read() {
-        log.info("read check");
+        log.debug("read check");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -54,7 +54,7 @@ public class RestfulController {
 
     @GetMapping("/health")
     public Map<String, Object> health() {
-        log.info("health");
+        log.debug("health");
 
         Map<String, Object> map = PackageUtil.getData(this.getClass());
         map.put("result", "OK");
@@ -65,7 +65,7 @@ public class RestfulController {
 
     @GetMapping("/spring")
     public Map<String, Object> spring() {
-        log.info("spring");
+        log.debug("spring");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -76,7 +76,7 @@ public class RestfulController {
 
     @GetMapping("/node")
     public String node() {
-        log.info("node");
+        log.debug("node");
 
         String url;
 
@@ -93,7 +93,7 @@ public class RestfulController {
 
     @GetMapping("/stress")
     public Map<String, Object> stress() {
-        log.info("stress check");
+        log.debug("stress check");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -114,7 +114,7 @@ public class RestfulController {
 
     @GetMapping("/dealy/{sec}")
     public Map<String, Object> dealy(@PathVariable Integer sec) {
-        log.info("dealy {}", sec);
+        log.debug("dealy {}", sec);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -137,7 +137,7 @@ public class RestfulController {
 
     @GetMapping("/timeout/{sec}")
     public Map<String, Object> timeout(@PathVariable Integer sec) throws TimeoutException {
-        log.info("timeout {}", sec);
+        log.debug("timeout {}", sec);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -153,7 +153,7 @@ public class RestfulController {
 
     @GetMapping("/fault/{rate}")
     public Map<String, Object> fault(@PathVariable Integer rate) {
-        log.info("fault {}", rate);
+        log.debug("fault {}", rate);
 
         Random random = new Random();
 

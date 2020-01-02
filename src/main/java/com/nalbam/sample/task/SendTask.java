@@ -38,7 +38,7 @@ public class SendTask {
             return;
         }
 
-        log.info("pulse");
+        log.debug("bit");
     }
 
     @Scheduled(fixedRate = 890)
@@ -69,6 +69,15 @@ public class SendTask {
         } else {
             call("http://" + service + "/fault/" + fault);
         }
+    }
+
+    @Scheduled(fixedRate = 1234)
+    public void bookinfo() {
+        if ("default".equals(profile) || "test".equals(profile)) {
+            return;
+        }
+
+        call("http://productpage.default.svc.cluster.local:9080/productpage");
     }
 
     @Scheduled(fixedRate = 456)
@@ -112,11 +121,11 @@ public class SendTask {
 
     @Async
     private CompletableFuture<String> call(String url) {
-        log.info("req: {}", url);
+        log.debug("req: {}", url);
 
         String res = restTemplate.getForObject(url, String.class);
 
-        log.info("res: {}", res);
+        log.debug("res: {}", res);
 
         return CompletableFuture.completedFuture(res);
     }
