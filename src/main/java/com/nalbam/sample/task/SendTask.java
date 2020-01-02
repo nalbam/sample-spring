@@ -32,15 +32,13 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    // @Scheduled(fixedRate = 890)
+    @Scheduled(fixedRate = 890)
     public void dealy() {
         if ("test".equals(profile)) {
             return;
         }
 
-        Random random = new Random();
-
-        Integer dealy = random.nextInt(5);
+        Integer dealy = (new Random()).nextInt(5);
 
         if ("default".equals(profile)) {
             call("http://localhost:" + port + "/dealy/" + dealy);
@@ -49,7 +47,22 @@ public class SendTask {
         }
     }
 
-    // @Scheduled(fixedRate = 456)
+    @Scheduled(fixedRate = 789)
+    public void fault() {
+        if ("test".equals(profile)) {
+            return;
+        }
+
+        Integer fault = 5;
+
+        if ("default".equals(profile)) {
+            call("http://localhost:" + port + "/fault/" + fault);
+        } else {
+            call("http://" + service + "/fault/" + fault);
+        }
+    }
+
+    @Scheduled(fixedRate = 456)
     public void node() {
         if ("default".equals(profile) || "test".equals(profile)) {
             return;
@@ -62,7 +75,7 @@ public class SendTask {
         call("http://sample-node" + commands.get(random.nextInt(commands.size())));
     }
 
-    // @Scheduled(fixedRate = 567)
+    @Scheduled(fixedRate = 567)
     public void stress() {
         if ("default".equals(profile) || "test".equals(profile)) {
             return;
@@ -86,15 +99,6 @@ public class SendTask {
         Random random = new Random();
 
         call("http://" + commands.get(random.nextInt(commands.size())) + "/spring");
-    }
-
-    // @Scheduled(fixedRate = 789)
-    public void fault() {
-        if ("default".equals(profile) || "test".equals(profile)) {
-            return;
-        }
-
-        call("http://" + service + "/fault/5");
     }
 
     @Async
