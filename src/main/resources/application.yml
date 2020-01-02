@@ -24,6 +24,15 @@ slack:
   webhook: ${SLACK_WEBHOOK:/slack/token}
   channel: ${SLACK_CHANNEL:sandbox}
 
+opentracing:
+  jaeger:
+    enable-b3-propagation: true
+    # http-sender:
+    #   url: ${JAEGER_HTTP_SENDER_URL}
+    udp-sender:
+      host: ${JAEGER_UDP_SENDER_HOST:localhost}
+      port: ${JAEGER_UDP_SENDER_PORT:6831}
+
 ---
 spring:
   profiles: default
