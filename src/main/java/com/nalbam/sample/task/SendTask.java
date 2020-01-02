@@ -26,6 +26,9 @@ public class SendTask {
     @Value("${server.port}")
     private Integer port;
 
+    // @Value("${task.scheduled}")
+    private Boolean scheduled = false;
+
     private final RestTemplate restTemplate;
 
     public SendTask(RestTemplateBuilder restTemplateBuilder) {
@@ -34,16 +37,16 @@ public class SendTask {
 
     @Scheduled(fixedRate = 60000)
     public void pulse() {
-        if ("test".equals(profile)) {
+        if (!scheduled && "test".equals(profile)) {
             return;
         }
 
         log.debug("bit");
     }
 
-    // @Scheduled(fixedRate = 890)
+    @Scheduled(fixedRate = 890)
     public void dealy() {
-        if ("test".equals(profile)) {
+        if (!scheduled && "test".equals(profile)) {
             return;
         }
 
@@ -56,9 +59,9 @@ public class SendTask {
         }
     }
 
-    // @Scheduled(fixedRate = 789)
+    @Scheduled(fixedRate = 789)
     public void fault() {
-        if ("test".equals(profile)) {
+        if (!scheduled && "test".equals(profile)) {
             return;
         }
 
@@ -71,18 +74,33 @@ public class SendTask {
         }
     }
 
+    @Scheduled(fixedRate = 876)
+    public void loop() {
+        if (!scheduled && "test".equals(profile)) {
+            return;
+        }
+
+        Integer count = 5;
+
+        if ("default".equals(profile)) {
+            call("http://localhost:" + port + "/loop/" + count);
+        } else {
+            call("http://" + service + "/loop/" + count);
+        }
+    }
+
     @Scheduled(fixedRate = 1234)
     public void bookinfo() {
-        if ("default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
         call("http://productpage.default.svc.cluster.local:9080/productpage");
     }
 
-    // @Scheduled(fixedRate = 456)
+    @Scheduled(fixedRate = 456)
     public void node() {
-        if ("default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
@@ -93,9 +111,9 @@ public class SendTask {
         call("http://sample-node" + commands.get(random.nextInt(commands.size())));
     }
 
-    // @Scheduled(fixedRate = 567)
+    @Scheduled(fixedRate = 567)
     public void stress() {
-        if ("default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
@@ -106,9 +124,9 @@ public class SendTask {
         call("http://" + commands.get(random.nextInt(commands.size())) + "/stress");
     }
 
-    // @Scheduled(fixedRate = 678)
+    @Scheduled(fixedRate = 678)
     public void spring() {
-        if ("default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 

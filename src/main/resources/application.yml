@@ -33,6 +33,9 @@ opentracing:
       host: ${JAEGER_UDP_SENDER_HOST:localhost}
       port: ${JAEGER_UDP_SENDER_PORT:6831}
 
+task:
+  scheduled: ${TASK_SCHEDULED:false}
+
 ---
 spring:
   profiles: default
