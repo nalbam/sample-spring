@@ -34,7 +34,7 @@ public class RestfulController {
 
     @GetMapping("/live")
     public Map<String, Object> live() {
-        log.debug("live check");
+        log.debug("live");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -45,7 +45,7 @@ public class RestfulController {
 
     @GetMapping("/read")
     public Map<String, Object> read() {
-        log.debug("read check");
+        log.debug("read");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -67,7 +67,7 @@ public class RestfulController {
 
     @GetMapping("/stress")
     public Map<String, Object> stress() {
-        log.debug("stress check");
+        log.debug("stress");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -182,6 +182,8 @@ public class RestfulController {
 
     @GetMapping("/fault/{rate}")
     public Map<String, Object> fault(@PathVariable Integer rate) throws RuntimeException {
+        log.debug("fault {}", rate);
+
         Integer random = (new Random()).nextInt(100);
 
         if (random > rate) {
