@@ -29,6 +29,8 @@ public class SendTask {
     // @Value("${task.scheduled}")
     private Boolean scheduled = true;
 
+    private List<String> servers = Arrays.asList("sample-spring", "sample-node", "sample-tomcat");
+
     private final RestTemplate restTemplate;
 
     public SendTask(RestTemplateBuilder restTemplateBuilder) {
@@ -85,15 +87,13 @@ public class SendTask {
         call("http://sample-node" + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    // @Scheduled(fixedRate = 567)
+    @Scheduled(fixedRate = 567)
     public void stress() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
-        List<String> commands = Arrays.asList("sample-spring", "sample-node");
-
-        call("http://" + commands.get((new Random()).nextInt(commands.size())) + "/stress");
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
     }
 
     @Scheduled(fixedRate = 876)
@@ -102,11 +102,9 @@ public class SendTask {
             return;
         }
 
-        List<String> commands = Arrays.asList("sample-spring", "sample-node");
-
         Integer count = 5;
 
-        call("http://" + commands.get((new Random()).nextInt(commands.size())) + "/loop/" + count);
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
     @Async
