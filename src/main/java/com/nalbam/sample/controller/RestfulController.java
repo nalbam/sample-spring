@@ -1,5 +1,7 @@
 package com.nalbam.sample.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nalbam.sample.util.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,7 +124,17 @@ public class RestfulController {
             url = "http://sample-spring/loop/" + count;
         }
 
-        Map<String, Object> res = restTemplate.getForObject(url, Map.class);
+        String json = restTemplate.getForObject(url, String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> res = null;
+
+        try {
+            res = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            });
+        } catch (Exception e) {
+            log.info("Exception converting {} to map", json, e);
+        }
 
         map.put("data", res);
 
