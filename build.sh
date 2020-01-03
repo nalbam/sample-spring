@@ -13,8 +13,10 @@ if [ "${1}" == "docker" ] || [ "${1}" == "run" ]; then
     mvn clean
 fi
 
-echo "$ mvn package -Dthis.version=${VERSION}"
-mvn package -Dthis.version=${VERSION}
+if [ "${1}" != "stop" ]; then
+    echo "$ mvn package -Dthis.version=${VERSION}"
+    mvn package -Dthis.version=${VERSION}
+fi
 
 if [ "${1}" == "docker" ] || [ "${1}" == "run" ]; then
     echo "$ docker build -t nalbam/sample-spring:local ."
