@@ -25,7 +25,7 @@ if [ "${1}" == "stop" ] || [ "${1}" == "run" ]; then
     echo "$ docker ps -a"
     docker ps -a
 
-    CNT="$(docker ps -a | grep 'nalbam/sample-spring' | wc -l | xargs)"
+    CNT="$(docker ps -a | grep 'sample-spring' | wc -l | xargs)"
     if [ "x${CNT}" != "x0" ]; then
         docker stop sample-spring
         docker rm sample-spring
