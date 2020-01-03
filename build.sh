@@ -8,8 +8,8 @@ fi
 
 echo "VERSION=${VERSION}"
 
-echo "$ mvn clean package"
-mvn clean package -Dthis.version=${VERSION}
+echo "$ mvn package"
+mvn package -Dthis.version=${VERSION}
 
 if [ "${1}" == "docker" ] || [ "${1}" == "run" ]; then
     docker build -t nalbam/sample-spring .
