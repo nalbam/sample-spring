@@ -49,6 +49,16 @@ get_version() {
     _result "VERSION=${VERSION}"
 }
 
+npm_build() {
+    _command "npm run build"
+    npm run build
+}
+
+npm_start() {
+    _command "npm run start"
+    npm run start
+}
+
 mvn_clean() {
     _command "mvn clean"
     mvn clean
@@ -95,28 +105,39 @@ docker_stop() {
 
         _command "docker rm ${REPONAME}"
         docker rm ${REPONAME}
-    fi
 
-    docker_ps
+        docker_ps
+    fi
 }
 
 _build() {
+    if [ -f ./package.json ]; then
+        npm_build
+    fi
+    if [ -f ./pom.xml ]; then
+        if [ "${CMD}" == "start" ]; then
+            mvn_clean
+        fi
+        mvn_build
+    fi
+}
+
+_run() {
     case ${CMD} in
         start)
-            mvn_clean
-            mvn_build
+            _build
+            docker_stop
             docker_build
             docker_run
             ;;
         stop)
-            mvn_clean
             docker_stop
             ;;
         *)
-            mvn_build
+            _build
     esac
 }
 
-_build
+_run
 
 _success
