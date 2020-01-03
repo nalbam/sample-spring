@@ -63,13 +63,23 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/spring")
-    public Map<String, Object> spring() {
-        log.debug("spring");
+    @GetMapping("/stress")
+    public Map<String, Object> stress() {
+        log.debug("stress check");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        Double sum = 0d;
+        for (int i = 0; i < 1000000; i++) {
+            sum += Math.sqrt(i);
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
-        map.put("type", "spring");
+        map.put("type", "stress");
+        map.put("sum", sum);
+        map.put("date", sdf.format(new Date()));
 
         return map;
     }
@@ -119,27 +129,6 @@ public class RestfulController {
         return map;
     }
 
-    @GetMapping("/stress")
-    public Map<String, Object> stress() {
-        log.debug("stress check");
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-
-        Double sum = 0d;
-        for (int i = 0; i < 1000000; i++) {
-            sum += Math.sqrt(i);
-        }
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("result", "OK");
-        map.put("type", "stress");
-        map.put("sum", sum);
-        map.put("date", sdf.format(new Date()));
-
-        return map;
-    }
-
     @GetMapping("/dealy/{sec}")
     public Map<String, Object> dealy(@PathVariable Integer sec) {
         log.debug("dealy {}", sec);
@@ -180,18 +169,14 @@ public class RestfulController {
     }
 
     @GetMapping("/fault/{rate}")
-    public Map<String, Object> fault(@PathVariable Integer rate) {
-        log.debug("fault {}", rate);
+    public Map<String, Object> fault(@PathVariable Integer rate) throws RuntimeException {
+        Integer random = (new Random()).nextInt(100);
 
-        Random random = new Random();
-
-        try {
-            Thread.sleep(random.nextInt(500) + 100);
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
+        if (random > rate) {
+            throw new RuntimeException("Fault! " + random);
         }
 
-        Map<String, Object> map = PackageUtil.getData(this.getClass());
+        Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "fault");
 
