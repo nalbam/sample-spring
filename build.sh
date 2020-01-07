@@ -118,6 +118,8 @@ docker_stop() {
 }
 
 _build() {
+    mkdir -p target
+
     if [ -f ./package.json ]; then
         npm_build
     fi
@@ -126,6 +128,9 @@ _build() {
             mvn_clean
         fi
         mvn_build
+    fi
+    if [ -f ./entrypoint.sh ]; then
+        cp ./entrypoint.sh target/entrypoint.sh
     fi
 }
 
