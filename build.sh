@@ -74,6 +74,13 @@ mvn_build() {
         _command "mvn package -Dthis.version=${VERSION}"
         mvn package -Dthis.version=${VERSION}
     fi
+
+    # jmx
+    if [ -f jmx/config.yaml ]; then
+        mkdir -p target/jmx
+        cp jmx/config.yaml target/jmx/config.yaml
+        cp jmx/*.jar target/jmx/jmx_javaagent.jar
+    fi
 }
 
 docker_ps() {
