@@ -79,7 +79,7 @@ mvn_build() {
     if [ -f jmx/config.yaml ]; then
         mkdir -p target/jmx
         cp jmx/config.yaml target/jmx/config.yaml
-        cp jmx/*.jar target/jmx/jmx_javaagent.jar
+        cp jmx/jmx_prometheus_javaagent-* target/jmx/jmx_javaagent.jar
     fi
 }
 
@@ -120,15 +120,20 @@ docker_stop() {
 _build() {
     mkdir -p target
 
+    # npm
     if [ -f ./package.json ]; then
         npm_build
     fi
+
+    # mvn
     if [ -f ./pom.xml ]; then
         if [ "${CMD}" == "start" ]; then
             mvn_clean
         fi
         mvn_build
     fi
+
+    # entrypoint.sh
     if [ -f ./entrypoint.sh ]; then
         cp ./entrypoint.sh target/entrypoint.sh
     fi
