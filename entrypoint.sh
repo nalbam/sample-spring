@@ -1,13 +1,11 @@
 #!/bin/bash
 
-if [ "${JMX_ENABLED}" == "true" ]; then
-    JMX_PATH=${JMX_PATH:-"/data/jmx_javaagent.jar"}
-    JMX_PORT=${JMX_PORT:-8081}
-    JMX_CONFIG=${JMX_CONFIG:-"/data/config.yaml"}
+if [ "${JAVA_AGENT_ENABLED}" == "true" ]; then
+    export JAVA_AGENT_PATH=${JAVA_AGENT_PATH:-"/data/jmx_javaagent.jar"}
+    export JAVA_AGENT_PORT=${JAVA_AGENT_PORT:-8081}
+    export JAVA_AGENT_CONFIG=${JAVA_AGENT_CONFIG:-"/data/config.yaml"}
 
-    JMX_OPTS="-javaagent:${JMX_PATH}=${JMX_PORT}:${JMX_CONFIG}"
+    export JAVA_OPTS="${JAVA_OPTS} -javaagent:${JAVA_AGENT_PATH}=${JAVA_AGENT_PORT}:${JAVA_AGENT_CONFIG}"
 fi
 
-JAR_PATH=${JAR_PATH:-"/data/ROOT.jar"}
-
-java ${JAVA_OPTS} ${JMX_OPTS} -jar ${JAR_PATH}
+java ${JAVA_OPTS} -jar /data/ROOT.jar
