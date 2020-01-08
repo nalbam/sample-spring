@@ -5,7 +5,7 @@ FROM openjdk:8-jre-alpine
 RUN apk add --no-cache bash curl
 
 EXPOSE 8080
-EXPOSE 8088
+EXPOSE 8081
 
 WORKDIR /data
 
