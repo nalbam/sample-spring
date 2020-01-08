@@ -2,16 +2,18 @@
 
 FROM openjdk:8-jre-alpine
 
-# RUN apk add --no-cache bash curl
+RUN apk add --no-cache bash curl
 
 EXPOSE 8080
 EXPOSE 8088
 
-ENTRYPOINT ["/entrypoint.sh"]
+WORKDIR /data
 
-COPY target/entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/data/entrypoint.sh"]
 
-COPY target/jmx/*.jar /jmx_javaagent.jar
-COPY target/jmx/config.yaml /config.yaml
+COPY target/entrypoint.sh /data/entrypoint.sh
 
-COPY target/*.jar /ROOT.jar
+COPY target/jmx/*.jar /data/jmx_javaagent.jar
+COPY target/jmx/config.yaml /data/config.yaml
+
+COPY target/*.jar /data/ROOT.jar
