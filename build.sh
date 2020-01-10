@@ -85,8 +85,8 @@ mvn_build() {
     # jmx
     if [ -f jmx/config.yaml ]; then
         mkdir -p target/jmx
-        cp -rf jmx/config.yaml target/jmx/config.yaml
-        cp -rf jmx/jmx_javaagent.jar.zip target/jmx/jmx_javaagent.jar
+        cp jmx/config.yaml target/jmx/config.yaml
+        cp jmx/jmx_javaagent.jar.zip target/jmx/jmx_javaagent.jar
     fi
 }
 
@@ -151,7 +151,7 @@ _build() {
 
     # entrypoint.sh
     if [ -f ./entrypoint.sh ]; then
-        cp -rf ./entrypoint.sh target/entrypoint.sh
+        cp ./entrypoint.sh target/entrypoint.sh
     fi
 }
 
@@ -162,6 +162,7 @@ _run() {
             docker_stop
             ;;
         start)
+            _build
             docker_stop
             docker_build
             docker_run
