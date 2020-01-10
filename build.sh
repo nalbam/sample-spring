@@ -2,8 +2,10 @@
 
 CMD=$1
 
+BASENAME="$(basename ${PWD})"
+
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
-REPONAME=${CIRCLE_PROJECT_REPONAME:-sample-spring}
+REPONAME=${CIRCLE_PROJECT_REPONAME:-$BASENAME}
 
 PORT=8080
 
@@ -59,6 +61,11 @@ npm_start() {
     npm run start
 }
 
+npm_clean() {
+    _command "npm run clean"
+    npm run clean
+}
+
 mvn_clean() {
     _command "mvn clean"
     mvn clean
@@ -78,8 +85,8 @@ mvn_build() {
     # jmx
     if [ -f jmx/config.yaml ]; then
         mkdir -p target/jmx
-        cp jmx/config.yaml target/jmx/config.yaml
-        cp jmx/jmx_javaagent.jar.zip target/jmx/jmx_javaagent.jar
+        cp -rf jmx/config.yaml target/jmx/config.yaml
+        cp -rf jmx/jmx_javaagent.jar.zip target/jmx/jmx_javaagent.jar
     fi
 }
 
@@ -117,6 +124,18 @@ docker_stop() {
     fi
 }
 
+_clean() {
+    # npm
+    if [ -f ./package.json ]; then
+        npm_clean
+    fi
+
+    # mvn
+    if [ -f ./pom.xml ]; then
+        mvn_clean
+    fi
+}
+
 _build() {
     mkdir -p target
 
@@ -127,22 +146,22 @@ _build() {
 
     # mvn
     if [ -f ./pom.xml ]; then
-        if [ "${CMD}" == "start" ]; then
-            mvn_clean
-        fi
         mvn_build
     fi
 
     # entrypoint.sh
     if [ -f ./entrypoint.sh ]; then
-        cp ./entrypoint.sh target/entrypoint.sh
+        cp -rf ./entrypoint.sh target/entrypoint.sh
     fi
 }
 
 _run() {
     case ${CMD} in
+        clean)
+            _clean
+            docker_stop
+            ;;
         start)
-            _build
             docker_stop
             docker_build
             docker_run
