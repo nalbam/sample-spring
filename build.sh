@@ -7,7 +7,7 @@ BASENAME="$(basename ${PWD})"
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-$BASENAME}
 
-PORT=8080
+PORT=3000
 
 command -v tput > /dev/null && TPUT=true
 
@@ -162,7 +162,6 @@ _run() {
             docker_stop
             ;;
         start)
-            _build
             docker_stop
             docker_build
             docker_run
