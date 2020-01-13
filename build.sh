@@ -7,7 +7,7 @@ BASENAME="$(basename ${PWD})"
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-$BASENAME}
 
-PORT=3000
+PORT=8080
 
 command -v tput > /dev/null && TPUT=true
 

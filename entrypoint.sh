@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ "${JAVA_AGENT_ENABLED}" == "true" ]; then
     export JAVA_AGENT_PATH=${JAVA_AGENT_PATH:-"/data/jmx_javaagent.jar"}

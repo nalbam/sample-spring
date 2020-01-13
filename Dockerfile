@@ -9,7 +9,7 @@ EXPOSE 8081
 
 WORKDIR /data
 
-ENTRYPOINT ["/data/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/data/entrypoint.sh"]
 
 COPY target/entrypoint.sh /data/entrypoint.sh
 
