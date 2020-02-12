@@ -124,12 +124,12 @@
     <distributionManagement>
         <repository>
             <id>nexus-releases</id>
-            <url>http://sonatype-nexus.devops.svc.cluster.local:8080/repository/maven-releases/</url>
+            <url>https://sonatype-nexus.devops.svc.cluster.local:8080/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
             <id>nexus-snapshots</id>
-            <url>http://sonatype-nexus.devops.svc.cluster.local:8080/repository/maven-snapshots/</url>
+            <url>https://sonatype-nexus.devops.svc.cluster.local:8080/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
