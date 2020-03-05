@@ -38,24 +38,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Trigger for GitOps
-      #   uses: opspresso/action-builder@master
-      #   with:
-      #     args: --dispatch
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     GITOPS_REPO: "nalbam/argocd-env-demo"
-      #     EVENT_TYPE: "build"
-      #     TARGET_ID: "deepracer-timer"
+      - name: Trigger for GitOps
+        uses: opspresso/action-builder@master
+        with:
+          args: --dispatch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITOPS_REPO: "opspresso/argocd-env-demo"
+          EVENT_TYPE: "build"
+          TARGET_ID: "sample-spring"
 
-      # - name: Build & Push to Docker Hub
-      #   uses: opspresso/action-builder@master
-      #   with:
-      #     args: --docker
-      #   env:
-      #     # USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      #     PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      #     LATEST: "true"
+      - name: Build & Push to Docker Hub
+        uses: opspresso/action-builder@master
+        with:
+          args: --docker
+        env:
+          # USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          LATEST: "true"
 
       - name: Build & Push to GitHub Package
         uses: opspresso/action-builder@master
