@@ -10,5 +10,3 @@
 ```bash
 docker pull nalbam/sample-spring
 ```
-
-bump
