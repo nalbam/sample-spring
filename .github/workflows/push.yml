@@ -44,7 +44,7 @@ jobs:
           args: --dispatch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITOPS_REPO: "opspresso/argocd-env-demo"
+          GITOPS_REPO: "nalbam/argocd-env-demo"
           EVENT_TYPE: "build"
           TARGET_ID: "sample-spring"
 
