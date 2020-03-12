@@ -43,7 +43,7 @@
         <dependency>
             <groupId>io.opentracing.contrib</groupId>
             <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.1</version>
         </dependency>
 
         <!-- zipkin -->
