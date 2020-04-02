@@ -13,7 +13,7 @@ ENTRYPOINT ["/bin/sh", "/data/entrypoint.sh"]
 
 COPY ./entrypoint.sh /data/entrypoint.sh
 
-COPY target/jmx/*.jar /data/jmx_javaagent.jar
-COPY target/jmx/config.yaml /data/config.yaml
+COPY ./jmx/*.jar /data/jmx_javaagent.jar
+COPY ./jmx/config.yaml /data/config.yaml
 
 COPY target/*.jar /data/ROOT.jar
