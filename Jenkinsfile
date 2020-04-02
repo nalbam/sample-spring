@@ -8,7 +8,7 @@ def SLACK_TOKEN_DQA = ""
 
 def label = "worker-${UUID.randomUUID().toString()}"
 
-@Library("github.com/opspresso/jenkinsfiles")
+@Library("github.com/nalbam/jenkinsfiles")
 def builder = new com.opspresso.Builder()
 
 properties([
