@@ -99,18 +99,30 @@ podTemplate(label: label, containers: [
           }
         )
       }
-      stage("Deploy DEV") {
+      stage("Deploy LOCAL") {
         container("builder") {
           try {
-            // deploy(cluster, namespace, sub_domain, profile)
-            builder.deploy("local", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
-            builder.success(SLACK_TOKEN_DEV, "Deploy DEV")
+            // deploy(cluster, namespace, sub_domain, profile, values_path)
+            builder.deploy("local", "${SERVICE_GROUP}", "${IMAGE_NAME}", "dev")
+            builder.success(SLACK_TOKEN_DEV, "Deploy LOCAL")
           } catch (e) {
-            builder.failure(SLACK_TOKEN_DEV, "Deploy DEV")
+            builder.failure(SLACK_TOKEN_DEV, "Deploy LOCAL")
             throw e
           }
         }
       }
+      // stage("Deploy DEV") {
+      //   container("builder") {
+      //     try {
+      //       // deploy(cluster, namespace, sub_domain, profile)
+      //       builder.deploy("local", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
+      //       builder.success(SLACK_TOKEN_DEV, "Deploy DEV")
+      //     } catch (e) {
+      //       builder.failure(SLACK_TOKEN_DEV, "Deploy DEV")
+      //       throw e
+      //     }
+      //   }
+      // }
       // stage("Request STAGE") {
       //   container("builder") {
       //     builder.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
