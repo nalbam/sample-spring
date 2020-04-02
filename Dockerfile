@@ -11,7 +11,7 @@ WORKDIR /data
 
 ENTRYPOINT ["/bin/sh", "/data/entrypoint.sh"]
 
-COPY target/entrypoint.sh /data/entrypoint.sh
+COPY ./entrypoint.sh /data/entrypoint.sh
 
 COPY target/jmx/*.jar /data/jmx_javaagent.jar
 COPY target/jmx/config.yaml /data/config.yaml
