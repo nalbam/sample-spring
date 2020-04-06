@@ -2,20 +2,21 @@
 
 image: docker:stable
 
-services:
-  - docker:dind
+stages:
+  - package
+  - docker_build
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 
-stages:
-  - build
-
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-
-build:
-  stage: build
+package:
+  image: maven:3.5.4-jdk-8-alpine
+  stage: package
   script:
-    - docker build -f Dockerfile-alpine -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - mvn package
+
+docker_build:
+  image: opspresso/builder:v0.7.69
+  stage: docker_build
+  script:
+    - docker build -f Dockerfile -t $IMAGE_TAG .
