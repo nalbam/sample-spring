@@ -2,11 +2,34 @@
 
 CMD=$1
 
-BASENAME="$(basename ${PWD})"
+RUNNER=
 
-USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
-REPONAME=${CIRCLE_PROJECT_REPONAME:-$BASENAME}
+USERNAME="nalbam"
+REPONAME="$(basename ${PWD})"
 
+REGISTRY="${REPONAME}"
+
+if [ "${CIRCLE_PROJECT_USERNAME}" != "" ]; then
+    # circle-ci
+    RUNNER="circle-ci"
+
+    USERNAME=${CIRCLE_PROJECT_USERNAME:-$USERNAME}
+    REPONAME=${CIRCLE_PROJECT_REPONAME:-$REPONAME}
+
+    REGISTRY="${USERNAME}/${REPONAME}"
+fi
+
+if [ "${GITLAB_USER_ID}" != "" ]; then
+    # gitlab
+    RUNNER="gitlab"
+
+    USERNAME=${GITLAB_USER_ID:-$USERNAME}
+    REPONAME=${CI_PROJECT_NAME:-$REPONAME}
+
+    REGISTRY="${REPONAME}"
+fi
+
+# default port
 PORT=8080
 
 command -v tput > /dev/null && TPUT=true
@@ -90,19 +113,54 @@ mvn_build() {
     fi
 }
 
+chart_build() {
+    get_version
+
+    pushd charts/${REPONAME}
+
+    sed -i -e \"s/name: .*/name: ${REPONAME}/\" Chart.yaml
+    sed -i -e \"s/appVersion: .*/appVersion: ${VERSION}/\" Chart.yaml
+    sed -i -e \"s/version: .*/version: ${VERSION}/\" Chart.yaml
+    sed -i -e \"s/tag: .*/tag: ${VERSION}/g\" values.yaml
+
+    sed -i -e \"s|repository: .*|repository: ${REGISTRY}|\" values.yaml
+
+    helm lint .
+
+    helm push . chartmuseum
+
+    popd
+}
+
+chart_push() {
+    get_version
+
+}
+
 docker_ps() {
     _command "docker ps -a"
     docker ps -a
 }
 
 docker_build() {
-    _command "docker build -t ${USERNAME}/${REPONAME}:local ."
-    docker build -t ${USERNAME}/${REPONAME}:local .
+    get_version
+
+    _command "docker build -t ${REGISTRY}:${VERSION} ."
+    docker build -t ${REGISTRY}:${VERSION} .
+}
+
+docker_push() {
+    get_version
+
+    _command "docker push ${REGISTRY}:${VERSION}"
+    docker push ${REGISTRY}:${VERSION}
 }
 
 docker_run() {
-    _command "docker run --name ${REPONAME} -p ${PORT}:${PORT} -d ${USERNAME}/${REPONAME}:local"
-    docker run --name ${REPONAME} -p ${PORT}:${PORT} -d ${USERNAME}/${REPONAME}:local
+    get_version
+
+    _command "docker run --name ${REPONAME} -p ${PORT}:${PORT} -d ${REGISTRY}:${VERSION}"
+    docker run --name ${REPONAME} -p ${PORT}:${PORT} -d ${REGISTRY}:${VERSION}
 
     docker_ps
 
@@ -168,6 +226,14 @@ _run() {
             ;;
         stop)
             docker_stop
+            ;;
+        docker)
+            docker_build
+            docker_push
+            ;;
+        chart)
+            chart_build
+            chart_push
             ;;
         *)
             _build

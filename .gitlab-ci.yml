@@ -10,27 +10,25 @@ stages:
   - docker_build
 
 variables:
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
 cache:
   paths:
-    - ~/.m2/repository
+    - node_modules/
 
 package:
-  image: maven:3.5.4-jdk-8-alpine
+  image: node:13
   stage: package
   script:
-    - mvn package
+    - ./build.sh build
   artifacts:
     paths:
-      - target/
+      - node_modules/
 
 docker_build:
   image: opspresso/builder:v0.7.69
   stage: docker_build
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker build -f Dockerfile -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - ./build.sh docker
