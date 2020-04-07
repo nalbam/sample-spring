@@ -11,11 +11,18 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
+cache:
+  paths:
+    - .m2/repository
+
 package:
   image: maven:3.5.4-jdk-8-alpine
   stage: package
   script:
     - mvn package
+  artifacts:
+    paths:
+      - target/
 
 docker_build:
   image: opspresso/builder:v0.7.69
