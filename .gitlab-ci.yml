@@ -2,6 +2,9 @@
 
 image: docker:stable
 
+services:
+  - docker:dind
+
 stages:
   - package
   - docker_build
@@ -26,8 +29,6 @@ package:
 
 docker_build:
   image: opspresso/builder:v0.7.69
-  services:
-    - docker:dind
   stage: docker_build
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
