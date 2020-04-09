@@ -6,8 +6,8 @@ services:
   - docker:dind
 
 stages:
+  - build
   - package
-  - docker_build
 
 variables:
   DOCKER_HOST: tcp://docker:2375
@@ -17,18 +17,25 @@ cache:
   paths:
     - node_modules/
 
-package:
+build:
   image: node:13
-  stage: package
+  stage: build
   script:
     - ./build.sh build
   artifacts:
     paths:
       - node_modules/
 
-docker_build:
+docker:
   image: opspresso/builder:v0.7.69
-  stage: docker_build
+  stage: package
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - ./build.sh docker
+
+helm:
+  image: opspresso/builder:v0.7.69
+  stage: package
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - ./build.sh helm
