@@ -180,13 +180,30 @@ public class RestfulController {
         throw new TimeoutException("Timeout");
     }
 
+    @GetMapping("/success/{rate}")
+    public Map<String, Object> success(@PathVariable Integer rate) throws RuntimeException {
+        log.debug("success {}", rate);
+
+        Integer random = (new Random()).nextInt(100);
+
+        if (random >= rate) {
+            throw new RuntimeException("Success! " + random);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", "OK");
+        map.put("type", "success");
+
+        return map;
+    }
+
     @GetMapping("/fault/{rate}")
     public Map<String, Object> fault(@PathVariable Integer rate) throws RuntimeException {
         log.debug("fault {}", rate);
 
         Integer random = (new Random()).nextInt(100);
 
-        if (random < rate) {
+        if (random <= rate) {
             throw new RuntimeException("Fault! " + random);
         }
 
