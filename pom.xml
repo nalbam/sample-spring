@@ -123,13 +123,13 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus-releases</id>
-            <url>https://sonatype-nexus.devops.svc.cluster.local:8080/repository/maven-releases/</url>
+            <id>archiva-releases</id>
+            <url>https://archiva.closed.mzdev.be/repository/internal/</url>
         </repository>
         <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
-            <id>nexus-snapshots</id>
-            <url>https://sonatype-nexus.devops.svc.cluster.local:8080/repository/maven-snapshots/</url>
+            <id>archiva-snapshots</id>
+            <url>https://archiva.closed.mzdev.be/repository/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
