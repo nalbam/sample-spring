@@ -1,5 +1,6 @@
 package com.nalbam.sample.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
+@Slf4j
 @Controller
 public class HomeController {
 
@@ -52,13 +54,17 @@ public class HomeController {
         // date
         model.put("date", sdf.format(new Date()));
 
+        log.debug("index {}", model);
+
         return "index";
     }
 
     @GetMapping("/drop/{rate}")
-    public String drop(Map<String, Object> model) {
+    public String drop(Map<String, Object> model, @PathVariable Integer rate) {
         // rate
-        model.put("rate", 99);
+        model.put("rate", rate);
+
+        log.debug("drop {}", model);
 
         return "drop";
     }
