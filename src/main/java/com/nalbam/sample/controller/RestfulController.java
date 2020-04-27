@@ -26,6 +26,9 @@ public class RestfulController {
     @Value("${spring.profiles.active}")
     private String profile;
 
+    @Value("${version}")
+    private String version;
+
     private final RestTemplate restTemplate;
 
     public RestfulController(RestTemplateBuilder restTemplateBuilder) {
@@ -61,6 +64,9 @@ public class RestfulController {
         Map<String, Object> map = PackageUtil.getData(this.getClass());
         map.put("result", "OK");
         map.put("type", "health");
+
+        // version
+        map.put("version", version);
 
         return map;
     }
@@ -194,6 +200,9 @@ public class RestfulController {
         map.put("result", "OK");
         map.put("type", "success");
 
+        // version
+        map.put("version", version);
+
         return map;
     }
 
@@ -210,6 +219,9 @@ public class RestfulController {
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "fault");
+
+        // version
+        map.put("version", version);
 
         return map;
     }

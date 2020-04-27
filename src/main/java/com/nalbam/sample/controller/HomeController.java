@@ -3,6 +3,7 @@ package com.nalbam.sample.controller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -52,6 +53,14 @@ public class HomeController {
         model.put("date", sdf.format(new Date()));
 
         return "index";
+    }
+
+    @GetMapping("/drop/{rate}")
+    public String drop(Map<String, Object> model) {
+        // rate
+        model.put("rate", 99);
+
+        return "drop";
     }
 
 }
