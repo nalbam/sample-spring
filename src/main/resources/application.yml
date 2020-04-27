@@ -16,6 +16,8 @@ spring:
   mvc:
     static-path-pattern: /static/**
 
+management.endpoints.web.exposure.include: info, health, prometheus
+
 namespace: ${NAMESPACE:default}
 
 message: ${MESSAGE:Refreshed}
