@@ -2,6 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+nameOverride: "sample-spring"
+fullnameOverride: "sample-spring"
+
 namespace: ""
 
 profile: ""
@@ -15,8 +18,6 @@ image:
   tag: "latest"
 
 imagePullSecrets: []
-nameOverride: "sample-spring"
-fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
