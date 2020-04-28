@@ -1,97 +1,84 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "fullname" . }}
+  name: {{ include "sample.fullname" . }}
   labels:
-    app: {{ include "fullname" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    app.kubernetes.io/name: {{ include "fullname" . }}
-    helm.sh/chart: {{ include "chart" . }}
-{{- with .Values.labels }}
-{{ toYaml . | indent 4 }}
-{{- end }}
-{{- with .Values.annotations }}
-  annotations:
-{{ toYaml . | indent 4 }}
-{{- end }}
+    {{- include "sample.labels" . | nindent 4 }}
 spec:
+{{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+{{- end }}
   selector:
     matchLabels:
-      app: {{ include "fullname" . }}
-      # app.kubernetes.io/instance: {{ .Release.Name }}
-      # app.kubernetes.io/name: {{ include "fullname" . }}
+      {{- include "sample.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      labels:
-        app: {{ include "fullname" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/name: {{ include "fullname" . }}
-        version: stable
-{{- with .Values.pod.labels }}
-{{ toYaml . | indent 8 }}
-{{- end }}
+    {{- with .Values.podAnnotations }}
       annotations:
-        buildID: "{{ .Values.image.tag }}-{{ .Values.buildID }}"
-{{- with .Values.pod.annotations }}
-{{ toYaml . | indent 8 }}
-{{- end }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "sample.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sample.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - containerPort: {{ .Values.service.internalPort }}
-{{ if .Values.hostNetwork }}
-        hostNetwork: {{ .Values.hostNetwork }}
-{{ end }}
-{{ if .Values.dnsPolicy }}
-        dnsPolicy: {{ .Values.dnsPolicy }}
-{{ end }}
-        resources:
-{{ toYaml .Values.resources | indent 10 }}
-        readinessProbe:
-{{ toYaml .Values.readinessProbe | indent 10 }}
-        livenessProbe:
-{{ toYaml .Values.livenessProbe | indent 10 }}
-        env:
-          - name: PROFILE
-            value: {{ .Values.profile }}
-          - name: NAMESPACE
-            value: {{ .Values.namespace }}
-          - name: VERSION
-            value: {{ .Values.image.tag }}
-{{- with .Values.env }}
-{{ toYaml . | indent 10 }}
-{{- end }}
-{{ if or .Values.configmap.enabled .Values.secret.enabled }}
-        envFrom:
-{{ end }}
-{{ if .Values.configmap.enabled }}
-          - configMapRef:
-              name: {{ include "fullname" . }}
-{{ end }}
-{{ if .Values.secret.enabled }}
-          - secretRef:
-              name: {{ include "fullname" . }}
-{{ end }}
-{{- with .Values.nodeSelector }}
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- with .Values.hostNetwork }}
+          hostNetwork: {{ .Values.hostNetwork }}
+        {{ end }}
+        {{- with .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy }}
+        {{ end }}
+          env:
+            - name: PROFILE
+              value: {{ .Values.profile }}
+            - name: NAMESPACE
+              value: {{ .Values.namespace }}
+            - name: VERSION
+              value: {{ .Values.image.tag }}
+        {{- with .Values.env }}
+          {{ toYaml . | indent 12 }}
+        {{- end }}
+        {{ if or .Values.configmap.enabled .Values.secret.enabled }}
+          envFrom:
+        {{ end }}
+        {{ if .Values.configmap.enabled }}
+            - configMapRef:
+                name: {{ include "sample.fullname" . }}
+        {{ end }}
+        {{ if .Values.secret.enabled }}
+            - secretRef:
+                name: {{ include "sample.fullname" . }}
+        {{ end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | nindent 8 }}
-{{- end }}
-{{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | nindent 8 }}
-{{- end }}
-{{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | nindent 8 }}
-{{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
