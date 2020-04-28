@@ -65,7 +65,7 @@ livenessProbe:
   httpGet:
     path: /live
     port: 8080
-  initialDelaySeconds: 3
+  initialDelaySeconds: 30
   periodSeconds: 10
   failureThreshold: 3
 
@@ -73,7 +73,7 @@ readinessProbe:
   httpGet:
     path: /read
     port: 8080
-  initialDelaySeconds: 3
+  initialDelaySeconds: 30
   periodSeconds: 10
   failureThreshold: 3
 
