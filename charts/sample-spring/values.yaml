@@ -116,15 +116,3 @@ secret:
   enabled: false
   data: {}
     # SECRET: "c2VjcmV0IHdvcmxkCg=="
-
-## Configuration values for the Redis dependency.
-## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/README.md
-redis:
-  enabled: true
-
-  master:
-    persistence:
-      enabled: false
-
-  cluster:
-    enabled: false
