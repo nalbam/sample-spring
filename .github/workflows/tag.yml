@@ -34,7 +34,7 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #     GITOPS_REPO: "nalbam/argocd-env-demo"
       #     EVENT_TYPE: "build"
-      #     TARGET_ID: "sample-node"
+      #     TARGET_ID: ${{ github.event.repository.name }}
 
       # - name: Build & Push to Docker Hub
       #   uses: opspresso/action-builder@master
