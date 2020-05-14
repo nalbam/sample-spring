@@ -101,7 +101,7 @@ public class RestfulController {
         if ("default".equals(profile)) {
             url = "http://localhost:3000/spring";
         } else {
-            url = "http://sample-node/spring";
+            url = "http://sample-node:3000/spring";
         }
 
         String res = restTemplate.getForObject(url, String.class);
@@ -127,7 +127,7 @@ public class RestfulController {
         if ("default".equals(profile)) {
             url = "http://localhost:8080/loop/" + count;
         } else {
-            url = "http://sample-spring/loop/" + count;
+            url = "http://sample-spring:8080/loop/" + count;
         }
 
         String json = restTemplate.getForObject(url, String.class);
