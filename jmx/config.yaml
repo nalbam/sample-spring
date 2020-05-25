@@ -6,8 +6,8 @@ username:
 password:
 # jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:8080/jmxrmi
 ssl: false
-lowercaseOutputName: false
-lowercaseOutputLabelNames: false
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
 # whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
 # blacklistObjectNames: ["org.apache.cassandra.metrics:type=ColumnFamily,*"]
 rules:
