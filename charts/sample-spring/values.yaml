@@ -108,9 +108,9 @@ env: []
   #   value: "hello world"
 
 configmap:
-  enabled: false
+  enabled: true
   data:
-    MESSAGE: hello world
+    MESSAGE: "hello world"
     # DD_AGENT_ENABLED: "true"
     JAVA_AGENT_ENABLED: "true"
 
