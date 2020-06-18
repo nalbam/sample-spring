@@ -227,7 +227,8 @@ let dropper = new Dropper();
 dropper.start();
 
 function health() {
-    var url = `${location.protocol}//${location.host}/success/${rate}`;
+    var ms = Date.now();
+    var url = `${location.protocol}//${location.host}/success/${rate}?q=${ms}`;
     $.ajax({
         url: url,
         type: 'get',
