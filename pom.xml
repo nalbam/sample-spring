@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -125,17 +125,24 @@
                 </executions>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.springframework.build</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>5.0.0.RELEASE</version>
+            </extension>
+        </extensions>
     </build>
 
     <distributionManagement>
         <repository>
-            <id>archiva-releases</id>
-            <url>https://archiva.closed.mzdev.be/repository/internal/</url>
+            <id>releases</id>
+            <url>https://eks-demo-maven-repo-147748575754/releases</url>
         </repository>
         <snapshotRepository>
+            <id>snapshots</id>
+            <url>https://eks-demo-maven-repo-147748575754/snapshots</url>
             <uniqueVersion>true</uniqueVersion>
-            <id>archiva-snapshots</id>
-            <url>https://archiva.closed.mzdev.be/repository/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
