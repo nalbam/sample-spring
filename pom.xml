@@ -137,11 +137,11 @@
     <distributionManagement>
         <repository>
             <id>releases</id>
-            <url>https://eks-demo-maven-repo-147748575754/releases</url>
+            <url>s3://eks-demo-maven-repo-147748575754/releases</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>https://eks-demo-maven-repo-147748575754/snapshots</url>
+            <url>s3://eks-demo-maven-repo-147748575754/snapshots</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
