@@ -109,7 +109,7 @@ mvn_build() {
     if [ -f jmx/config.yaml ]; then
         mkdir -p target/jmx
         cp jmx/config.yaml target/jmx/config.yaml
-        cp jmx/jmx_javaagent.jar.zip target/jmx/jmx_javaagent.jar
+        cp jmx/jmx_* target/jmx/jmx_javaagent.jar
     fi
 }
 
