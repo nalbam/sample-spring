@@ -125,25 +125,25 @@
                 </executions>
             </plugin>
         </plugins>
-        <extensions>
+        <!-- <extensions>
             <extension>
                 <groupId>org.springframework.build</groupId>
                 <artifactId>aws-maven</artifactId>
                 <version>5.0.0.RELEASE</version>
             </extension>
-        </extensions>
+        </extensions> -->
     </build>
 
-    <distributionManagement>
+    <!-- <distributionManagement>
         <repository>
             <id>releases</id>
-            <url>s3://eks-demo-maven-repo-147748575754/releases</url>
+            <url>https://archiva.demo.spic.me/repository/internal</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>s3://eks-demo-maven-repo-147748575754/snapshots</url>
+            <url>https://archiva.demo.spic.me/repository/snapshots</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
-    </distributionManagement>
+    </distributionManagement> -->
 
 </project>
