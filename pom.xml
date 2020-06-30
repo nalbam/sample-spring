@@ -134,7 +134,7 @@
         </extensions> -->
     </build>
 
-    <!-- <distributionManagement>
+    <distributionManagement>
         <repository>
             <id>releases</id>
             <url>https://archiva.demo.spic.me/repository/internal</url>
@@ -144,6 +144,6 @@
             <url>https://archiva.demo.spic.me/repository/snapshots</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
-    </distributionManagement> -->
+    </distributionManagement>
 
 </project>
