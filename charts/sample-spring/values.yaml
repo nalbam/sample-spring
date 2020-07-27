@@ -12,7 +12,7 @@ profile: ""
 replicaCount: 1
 
 image:
-  repository: registry.closed.mzdev.be/sample-spring
+  repository: registry.demo.spic.me/sample-spring
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart version.
   tag: "latest"
