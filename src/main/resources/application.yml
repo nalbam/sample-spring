@@ -20,8 +20,8 @@ spring:
       ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    username: ${DARABASE_USERNAME:postgres}
+    password: ${DARABASE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
@@ -61,30 +61,32 @@ spring:
   jpa:
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    url: ${DARABASE_URL}
 
 message: ":tada: Local Server UP"
 
 ---
 spring:
   profiles: dev
+  jpa:
+    show-sql: true
   datasource:
-    url: jdbc:postgresql://database-1.cv2wx6mzzwbw.ap-northeast-2.rds.amazonaws.com:5432/postgres
-    username: postgres
-    password: 57mDOheGEZikug4DbIM2
+    url: ${DARABASE_URL}
 
 message: ":tada: Development Server UP"
 
 ---
 spring:
   profiles: stage
+  datasource:
+    url: ${DARABASE_URL}
 
 message: ":tada: Staging Server UP"
 
 ---
 spring:
   profiles: prod
+  datasource:
+    url: ${DARABASE_URL}
 
 message: ":tada: Production Server UP"
