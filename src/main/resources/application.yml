@@ -19,7 +19,7 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/${DARABASE_NAME:postgres}
     username: ${DARABASE_USERNAME:postgres}
     password: ${DARABASE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -60,8 +60,6 @@ spring:
   profiles: default
   jpa:
     show-sql: true
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
 
 message: ":tada: Local Server UP"
 
@@ -70,23 +68,17 @@ spring:
   profiles: dev
   jpa:
     show-sql: true
-  datasource:
-    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/postgres
 
 message: ":tada: Development Server UP"
 
 ---
 spring:
   profiles: stage
-  datasource:
-    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/postgres
 
 message: ":tada: Staging Server UP"
 
 ---
 spring:
   profiles: prod
-  datasource:
-    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/postgres
 
 message: ":tada: Production Server UP"
