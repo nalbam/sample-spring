@@ -1,0 +1,24 @@
+version: "2"
+services:
+  postgres:
+    image: postgres:10
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./target/postgres/data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pg_admin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=me@nalbam.com
+      - PGADMIN_DEFAULT_PASSWORD=postgres
+    ports:
+      - "5555:80"
+    volumes:
+      - ./target/pgadmin/data:/var/lib/pgadmin
+#
+# docker-compose up -d
+#

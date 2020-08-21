@@ -15,6 +15,19 @@ spring:
     suffix: .html
   mvc:
     static-path-pattern: /static/**
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      maximum-pool-size: 10
 
 management:
   endpoints:
@@ -45,19 +58,33 @@ task:
 ---
 spring:
   profiles: default
-message: ":tada: Server UP"
+  jpa:
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+
+message: ":tada: Local Server UP"
 
 ---
 spring:
   profiles: dev
-message: ":tada: Development UP"
+  datasource:
+    url: jdbc:postgresql://database-1.cv2wx6mzzwbw.ap-northeast-2.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: 57mDOheGEZikug4DbIM2
+
+message: ":tada: Development Server UP"
 
 ---
 spring:
   profiles: stage
-message: ":tada: Staging UP"
+
+message: ":tada: Staging Server UP"
 
 ---
 spring:
   profiles: prod
-message: ":tada: Production UP"
+
+message: ":tada: Production Server UP"

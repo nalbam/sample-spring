@@ -39,7 +39,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 234)
     public void loop() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -50,7 +50,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 345)
     public void stress() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -59,7 +59,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 456)
     public void redis() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -70,7 +70,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 567)
     public void dealy() {
-        if (!scheduled && "test".equals(profile)) {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -85,7 +85,7 @@ public class SendTask {
 
     // @Scheduled(fixedRate = 678)
     public void fault() {
-        if (!scheduled && "test".equals(profile)) {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
@@ -100,7 +100,7 @@ public class SendTask {
 
     // @Scheduled(fixedRate = 789)
     public void bookinfo() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
