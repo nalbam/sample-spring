@@ -37,7 +37,38 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    // @Scheduled(fixedRate = 890)
+    @Scheduled(fixedRate = 234)
+    public void loop() {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+            return;
+        }
+
+        Integer count = 5;
+
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
+    }
+
+    @Scheduled(fixedRate = 345)
+    public void stress() {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+            return;
+        }
+
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
+    }
+
+    @Scheduled(fixedRate = 456)
+    public void redis() {
+        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
+            return;
+        }
+
+        List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
+
+        call("http://sample-node:3000" + commands.get((new Random()).nextInt(commands.size())));
+    }
+
+    // @Scheduled(fixedRate = 567)
     public void dealy() {
         if (!scheduled && "test".equals(profile)) {
             return;
@@ -52,7 +83,7 @@ public class SendTask {
         }
     }
 
-    // @Scheduled(fixedRate = 789)
+    // @Scheduled(fixedRate = 678)
     public void fault() {
         if (!scheduled && "test".equals(profile)) {
             return;
@@ -67,44 +98,13 @@ public class SendTask {
         }
     }
 
-    @Scheduled(fixedRate = 1234)
+    // @Scheduled(fixedRate = 1234)
     public void bookinfo() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
         }
 
         call("http://productpage.default.svc.cluster.local:9080/productpage");
-    }
-
-    @Scheduled(fixedRate = 456)
-    public void redis() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
-            return;
-        }
-
-        List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-
-        call("http://sample-node:3000" + commands.get((new Random()).nextInt(commands.size())));
-    }
-
-    @Scheduled(fixedRate = 567)
-    public void stress() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
-            return;
-        }
-
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
-    }
-
-    @Scheduled(fixedRate = 876)
-    public void loop() {
-        if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
-            return;
-        }
-
-        Integer count = 5;
-
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
     @Async
