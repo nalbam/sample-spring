@@ -68,7 +68,7 @@ public class SendTask {
         call("http://sample-node:3000" + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    // @Scheduled(fixedRate = 567)
+    @Scheduled(fixedRate = 567)
     public void dealy() {
         if (!scheduled && "test".equals(profile)) {
             return;
@@ -98,7 +98,7 @@ public class SendTask {
         }
     }
 
-    // @Scheduled(fixedRate = 1234)
+    // @Scheduled(fixedRate = 789)
     public void bookinfo() {
         if (!scheduled && ("default".equals(profile) || "test".equals(profile))) {
             return;
