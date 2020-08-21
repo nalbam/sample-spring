@@ -61,7 +61,7 @@ spring:
   jpa:
     show-sql: true
   datasource:
-    url: ${DARABASE_URL}
+    url: jdbc:postgresql://localhost:5432/postgres
 
 message: ":tada: Local Server UP"
 
@@ -71,7 +71,7 @@ spring:
   jpa:
     show-sql: true
   datasource:
-    url: ${DARABASE_URL}
+    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/postgres
 
 message: ":tada: Development Server UP"
 
@@ -79,7 +79,7 @@ message: ":tada: Development Server UP"
 spring:
   profiles: stage
   datasource:
-    url: ${DARABASE_URL}
+    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/postgres
 
 message: ":tada: Staging Server UP"
 
@@ -87,6 +87,6 @@ message: ":tada: Staging Server UP"
 spring:
   profiles: prod
   datasource:
-    url: ${DARABASE_URL}
+    url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/postgres
 
 message: ":tada: Production Server UP"
