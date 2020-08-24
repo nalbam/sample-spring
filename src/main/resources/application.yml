@@ -18,6 +18,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      dialect: org.hibernate.dialect.MySQLDialect
   datasource:
     url: jdbc:postgresql://${DARABASE_ADDRESS:localhost}:${DARABASE_PORT:5432}/${DARABASE_NAME:postgres}
     username: ${DARABASE_USERNAME:postgres}
