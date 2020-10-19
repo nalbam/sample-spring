@@ -29,7 +29,7 @@ public class SendTask {
     // @Value("${task.scheduled}")
     private Boolean scheduled = true;
 
-    private List<String> servers = Arrays.asList("sample-spring:8080", "sample-node:3000", "sample-tomcat:8080");
+    private List<String> servers = Arrays.asList("sample-node:3000");
 
     private final RestTemplate restTemplate;
 
