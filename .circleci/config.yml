@@ -115,6 +115,6 @@ workflows:
       - trigger:
           requires:
             - release
-      - slack:
-          requires:
-            - release
+      # - slack:
+      #     requires:
+      #       - release
