@@ -1,14 +1,15 @@
 package com.nalbam.sample.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+// import static org.junit.Assert.assertEquals;
+// import static org.junit.Assert.assertNotNull;
 
 @Slf4j
 public class TimeUtilTests {
