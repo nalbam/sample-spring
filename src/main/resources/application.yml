@@ -15,20 +15,6 @@ spring:
     suffix: .html
   mvc:
     static-path-pattern: /static/**
-  jpa:
-    hibernate:
-      ddl-auto: update
-      dialect: org.hibernate.dialect.MySQLDialect
-  datasource:
-    url: jdbc:postgresql://${DATABASE_ADDRESS:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:postgres}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-      maximum-pool-size: 10
 
 management:
   endpoints:
