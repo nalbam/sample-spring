@@ -98,10 +98,10 @@ mvn_build() {
     get_version
 
     if [ "${VERSION}" == "" ]; then
-        _command "mvn package"
+        _command "mvn package -DskipTests"
         mvn package
     else
-        _command "mvn package -Dthis.version=${VERSION}"
+        _command "mvn package -DskipTests -Dthis.version=${VERSION}"
         mvn package -Dthis.version=${VERSION}
     fi
 
