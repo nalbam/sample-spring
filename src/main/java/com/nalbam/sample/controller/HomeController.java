@@ -17,6 +17,9 @@ import java.util.TimeZone;
 @Controller
 public class HomeController {
 
+  @Value("${cluster}")
+  private String cluster;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -39,20 +42,12 @@ public class HomeController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
 
-        // profile
-        model.put("profile", profile);
-
-        // message
-        model.put("message", message);
-
-        // version
-        model.put("version", version);
-
-        // host
         model.put("host", host);
-
-        // date
         model.put("date", sdf.format(new Date()));
+        model.put("cluster", cluster);
+        model.put("profile", profile);
+        model.put("message", message);
+        model.put("version", version);
 
         log.debug("index {}", model);
 
