@@ -22,7 +22,7 @@ management:
 
 namespace: ${NAMESPACE:default}
 
-cluster: ${CLUSTER:local}
+cluster: ${CLUSTER_NAME:local}
 
 message: ${MESSAGE:Refreshed}
 
