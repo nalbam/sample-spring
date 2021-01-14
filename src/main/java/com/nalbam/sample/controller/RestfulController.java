@@ -109,6 +109,23 @@ public class RestfulController {
         return res;
     }
 
+    @GetMapping("/counter/{cmd}")
+    public String counter(@PathVariable String cmd) {
+        log.debug("counter");
+
+        String url;
+
+        if ("default".equals(profile)) {
+            url = "http://localhost:3000/counter/" + cmd;
+        } else {
+            url = "http://sample-node:3000/counter/" + cmd;
+        }
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        return res;
+    }
+
     @GetMapping("/loop/{count}")
     public Map<String, Object> loop(@PathVariable Integer count) {
         log.debug("loop {}", count);

@@ -29,7 +29,7 @@ public class SendTask {
     // @Value("${task.scheduled}")
     private Boolean scheduled = true;
 
-    private List<String> servers = Arrays.asList("sample-node:3000");
+    private List<String> servers = Arrays.asList("sample-spring:8080", "sample-node:3000");
 
     private final RestTemplate restTemplate;
 
@@ -65,7 +65,7 @@ public class SendTask {
 
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
 
-        call("http://sample-node:3000" + commands.get((new Random()).nextInt(commands.size())));
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + commands.get((new Random()).nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 567)
