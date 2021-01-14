@@ -74,16 +74,12 @@ public class SendTask {
             return;
         }
 
-        Integer dealy = (new Random()).nextInt(5);
+        Integer dealy = (new Random()).nextInt(5) + 1;
 
-        if ("default".equals(profile)) {
-            call("http://localhost:" + port + "/dealy/" + dealy);
-        } else {
-            call("http://" + service + "/dealy/" + dealy);
-        }
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/dealy/" + dealy);
     }
 
-    // @Scheduled(fixedRate = 678)
+    @Scheduled(fixedRate = 678)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -91,11 +87,7 @@ public class SendTask {
 
         Integer fault = 5;
 
-        if ("default".equals(profile)) {
-            call("http://localhost:" + port + "/fault/" + fault);
-        } else {
-            call("http://" + service + "/fault/" + fault);
-        }
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + dealy);
     }
 
     // @Scheduled(fixedRate = 789)
