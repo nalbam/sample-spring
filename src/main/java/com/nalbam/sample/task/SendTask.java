@@ -69,14 +69,14 @@ public class SendTask {
     }
 
     @Scheduled(fixedRate = 567)
-    public void dealy() {
+    public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
 
-        Integer dealy = (new Random()).nextInt(5) + 1;
+        Integer delay = (new Random()).nextInt(5) + 1;
 
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/dealy/" + dealy);
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/delay/" + delay);
     }
 
     @Scheduled(fixedRate = 678)
@@ -87,7 +87,7 @@ public class SendTask {
 
         Integer fault = 5;
 
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + dealy);
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + fault);
     }
 
     // @Scheduled(fixedRate = 789)
