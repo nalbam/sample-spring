@@ -57,7 +57,7 @@ public class HomeController {
     }
 
     @GetMapping("/drop")
-    public String google(Map<String, Object> model) {
+    public String drop_index(Map<String, Object> model) {
         Integer random = (new Random()).nextInt(100);
 
         return "forward:/drop/" + random;
