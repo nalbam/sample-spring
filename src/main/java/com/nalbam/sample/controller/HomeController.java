@@ -60,7 +60,7 @@ public class HomeController {
     public String google(Map<String, Object> model) {
         Integer random = (new Random()).nextInt(100);
 
-        return "redirect:/drop/" + random;
+        return "forward:/drop/" + random;
     }
 
     @GetMapping("/drop/{rate}")
@@ -73,9 +73,11 @@ public class HomeController {
         return "drop";
     }
 
-    @GetMapping("/re/billing")
+    @GetMapping("/re/drop")
     public RedirectView billing(Map<String, Object> model) {
-        return new RedirectView("/billing/transaction");
+        Integer random = (new Random()).nextInt(100);
+
+        return new RedirectView("/drop/" + random);
     }
 
 }
