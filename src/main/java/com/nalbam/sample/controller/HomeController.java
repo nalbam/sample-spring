@@ -66,13 +66,13 @@ public class HomeController {
     }
 
     @GetMapping("/re/billing")
-    public String re(Map<String, Object> model) {
+    public RedirectView billing(Map<String, Object> model) {
         return new RedirectView("/billing/transaction");
     }
 
-    @GetMapping("/re/naver")
-    public String re(Map<String, Object> model) {
-        return "redirect:http://www.naver.com";
+    @GetMapping("/re/google")
+    public String google(Map<String, Object> model) {
+        return "redirect:http://www.google.com";
     }
 
 }
