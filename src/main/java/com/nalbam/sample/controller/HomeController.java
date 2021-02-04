@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 
 @Slf4j
@@ -55,6 +56,13 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/drop")
+    public String google(Map<String, Object> model) {
+        Integer random = (new Random()).nextInt(100);
+
+        return "redirect:/drop/" + random;
+    }
+
     @GetMapping("/drop/{rate}")
     public String drop(Map<String, Object> model, @PathVariable Integer rate) {
         // rate
@@ -68,11 +76,6 @@ public class HomeController {
     @GetMapping("/re/billing")
     public RedirectView billing(Map<String, Object> model) {
         return new RedirectView("/billing/transaction");
-    }
-
-    @GetMapping("/re/google")
-    public String google(Map<String, Object> model) {
-        return "redirect:http://www.google.com";
     }
 
 }
