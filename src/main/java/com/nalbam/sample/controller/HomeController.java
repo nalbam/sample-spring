@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -62,6 +63,16 @@ public class HomeController {
         log.debug("drop {}", model);
 
         return "drop";
+    }
+
+    @GetMapping("/re/billing")
+    public String re(Map<String, Object> model) {
+        return new RedirectView("/billing/transaction");
+    }
+
+    @GetMapping("/re/naver")
+    public String re(Map<String, Object> model) {
+        return "redirect:http://www.naver.com";
     }
 
 }
