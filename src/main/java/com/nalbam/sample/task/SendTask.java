@@ -48,7 +48,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 345)
+    @Scheduled(fixedRate = 123)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
