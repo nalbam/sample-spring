@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ "${CG_AGENT_ENABLED}" == "true" ]; then
+    export JAVA_AGENT_PATH="/data/codeguru-profiler-java-agent.jar"
+    export JAVA_OPTS="${JAVA_OPTS} -javaagent:${JAVA_AGENT_PATH}"
+fi
+
 if [ "${DD_AGENT_ENABLED}" == "true" ]; then
     export JAVA_AGENT_PATH="/data/dd-java-agent.jar"
     export JAVA_OPTS="${JAVA_OPTS} -javaagent:${JAVA_AGENT_PATH}"
