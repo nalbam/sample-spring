@@ -29,7 +29,7 @@ public class SendTask {
     // @Value("${task.scheduled}")
     private Boolean scheduled = true;
 
-    private List<String> servers = Arrays.asList("sample-spring:8080", "sample-node:3000");
+    private List<String> servers = Arrays.asList("sample-node:3000");
 
     private final RestTemplate restTemplate;
 
@@ -37,7 +37,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 112)
+    @Scheduled(fixedRate = 12)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -45,7 +45,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
     }
 
-    @Scheduled(fixedRate = 123)
+    @Scheduled(fixedRate = 23)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -54,7 +54,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 145)
+    @Scheduled(fixedRate = 45)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -63,7 +63,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 156)
+    @Scheduled(fixedRate = 56)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -72,7 +72,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + fault);
     }
 
-    @Scheduled(fixedRate = 167)
+    @Scheduled(fixedRate = 67)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -81,7 +81,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 178)
+    // @Scheduled(fixedRate = 78)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
