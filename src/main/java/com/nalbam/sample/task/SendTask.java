@@ -37,76 +37,63 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 234)
-    public void loop() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
-            return;
-        }
-
-        Integer count = 5;
-
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
-    }
-
-    @Scheduled(fixedRate = 123)
+    @Scheduled(fixedRate = 12)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
     }
 
-    @Scheduled(fixedRate = 456)
+    @Scheduled(fixedRate = 23)
+    public void loop() {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+            return;
+        }
+        Integer count = 5;
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
+    }
+
+    @Scheduled(fixedRate = 45)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 567)
+    @Scheduled(fixedRate = 56)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-
         Integer delay = (new Random()).nextInt(5) + 1;
-
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/delay/" + delay);
     }
 
-    @Scheduled(fixedRate = 678)
+    @Scheduled(fixedRate = 67)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-
         Integer fault = 5;
-
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 789)
+    // @Scheduled(fixedRate = 78)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-
         call("http://productpage.default.svc.cluster.local:9080/productpage");
     }
 
     @Async
     private CompletableFuture<String> call(String url) {
         log.debug("req: {}", url);
-
         String res = restTemplate.getForObject(url, String.class);
-
         log.debug("res: {}", res);
-
         return CompletableFuture.completedFuture(res);
     }
 
