@@ -72,7 +72,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + fault);
     }
 
-    @Scheduled(fixedRate = 67)
+    // @Scheduled(fixedRate = 67)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
