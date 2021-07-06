@@ -37,7 +37,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 12)
+    @Scheduled(fixedRate = 112)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -45,7 +45,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
     }
 
-    @Scheduled(fixedRate = 23)
+    @Scheduled(fixedRate = 123)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -54,7 +54,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 45)
+    @Scheduled(fixedRate = 145)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -63,16 +63,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 56)
-    public void delay() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
-            return;
-        }
-        Integer delay = (new Random()).nextInt(5) + 1;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/delay/" + delay);
-    }
-
-    @Scheduled(fixedRate = 67)
+    @Scheduled(fixedRate = 156)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -81,7 +72,16 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 78)
+    @Scheduled(fixedRate = 167)
+    public void delay() {
+        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+            return;
+        }
+        Integer delay = (new Random()).nextInt(5) + 1;
+        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/delay/" + delay);
+    }
+
+    // @Scheduled(fixedRate = 178)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
