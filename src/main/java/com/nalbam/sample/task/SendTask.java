@@ -37,7 +37,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 12)
+    @Scheduled(fixedRate = 52)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -45,7 +45,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
     }
 
-    @Scheduled(fixedRate = 23)
+    @Scheduled(fixedRate = 53)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -54,7 +54,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 45)
+    @Scheduled(fixedRate = 54)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -63,7 +63,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 56)
+    @Scheduled(fixedRate = 55)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
