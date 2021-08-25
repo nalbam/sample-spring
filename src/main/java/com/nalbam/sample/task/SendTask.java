@@ -37,7 +37,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 52)
+    @Scheduled(fixedRate = 152)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -45,7 +45,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/stress");
     }
 
-    @Scheduled(fixedRate = 53)
+    @Scheduled(fixedRate = 153)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -54,7 +54,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 54)
+    @Scheduled(fixedRate = 154)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -63,7 +63,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 55)
+    @Scheduled(fixedRate = 155)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -72,7 +72,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 56)
+    // @Scheduled(fixedRate = 156)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -81,7 +81,7 @@ public class SendTask {
         call("http://" + servers.get((new Random()).nextInt(servers.size())) + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 57)
+    // @Scheduled(fixedRate = 157)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
