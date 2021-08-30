@@ -91,9 +91,9 @@ public class SendTask {
 
     @Async
     private CompletableFuture<String> call(String url) {
-        log.debug("req: {}", url);
+        log.info("req: {}", url);
         String res = restTemplate.getForObject(url, String.class);
-        log.debug("res: {}", res);
+        log.info("res: {}", res);
         return CompletableFuture.completedFuture(res);
     }
 
