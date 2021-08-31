@@ -53,7 +53,7 @@ jobs:
           name: Release
           command: |
             bash ./target/builder.sh
-  docker:
+  buildx:
     docker:
       - image: circleci/python
     working_directory: ~/works
@@ -65,6 +65,10 @@ jobs:
       - run:
           name: Docker
           command: |
+            mkdir -p ~/.docker/cli-plugins
+            url="https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64"
+            curl -sSL -o ~/.docker/cli-plugins/docker-buildx $url
+            chmod a+x ~/.docker/cli-plugins/docker-buildx
             bash ./target/builder.sh
   trigger:
     docker:
@@ -109,7 +113,7 @@ workflows:
       - release:
           requires:
             - build
-      - docker:
+      - buildx:
           requires:
             - release
       - trigger:
