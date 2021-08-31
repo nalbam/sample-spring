@@ -46,16 +46,6 @@ jobs:
       #     TAG_NAME: ${{ github.ref }}
       #     LATEST: "true"
 
-      - name: Build & Push to GitHub Package
-        uses: opspresso/action-builder@master
-        with:
-          args: --docker
-        env:
-          # USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          PASSWORD: ${{ secrets.GHP_TOKEN }}
-          REGISTRY: "docker.pkg.github.com"
-          TAG_NAME: ${{ github.ref }}
-
       - name: Build & Push to AWS ECR
         uses: opspresso/action-builder@master
         with:
@@ -66,3 +56,13 @@ jobs:
           AWS_REGION: "ap-northeast-2"
           TAG_NAME: ${{ github.ref }}
           LATEST: "true"
+
+      - name: Build & Push to GitHub Package
+        uses: opspresso/action-builder@master
+        with:
+          args: --docker
+        env:
+          # USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.GHP_TOKEN }}
+          REGISTRY: "docker.pkg.github.com"
+          TAG_NAME: ${{ github.ref }}
