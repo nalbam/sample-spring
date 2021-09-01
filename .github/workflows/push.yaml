@@ -71,7 +71,7 @@ jobs:
           # TAG_NAME: ${{ github.ref }}
           # LATEST: "true"
 
-      - name: Build & Push to AWS ECR
+      - name: Build & Push to AWS ECR Private
         uses: opspresso/action-builder@master
         with:
           args: --ecr
@@ -80,6 +80,20 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_BRUCE }}
           AWS_REGION: "ap-northeast-2"
           # REGISTRY: "public.ecr.aws/nalbam"
+          # TAG_NAME: ${{ github.ref }}
+          # PLATFORM: "linux/arm64,linux/amd64"
+          BUILDX: "true"
+          # LATEST: "true"
+
+      - name: Build & Push to AWS ECR Public
+        uses: opspresso/action-builder@master
+        with:
+          args: --ecr
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # AWS_REGION: "ap-northeast-2"
+          REGISTRY: "public.ecr.aws/nalbam"
           # TAG_NAME: ${{ github.ref }}
           # PLATFORM: "linux/arm64,linux/amd64"
           BUILDX: "true"
