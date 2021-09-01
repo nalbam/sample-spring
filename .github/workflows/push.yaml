@@ -79,6 +79,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-northeast-2"
+          # REGISTRY: "public.ecr.aws/nalbam"
           # TAG_NAME: ${{ github.ref }}
           # PLATFORM: "linux/arm64,linux/amd64"
           BUILDX: "true"
