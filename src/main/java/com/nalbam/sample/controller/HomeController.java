@@ -19,8 +19,8 @@ import java.util.TimeZone;
 @Controller
 public class HomeController {
 
-  @Value("${cluster}")
-  private String cluster;
+    @Value("${cluster}")
+    private String cluster;
 
     @Value("${spring.profiles.active}")
     private String profile;

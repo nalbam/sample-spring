@@ -20,13 +20,15 @@ management:
   endpoints:
     web.exposure.include: info, health, metrics, prometheus
 
-namespace: ${NAMESPACE:default}
-
 cluster: ${CLUSTER_NAME:local}
+
+namespace: ${NAMESPACE:default}
 
 message: ${MESSAGE:Refreshed}
 
 version: ${VERSION:v0.0.0}
+
+hostname: ${HOSTNAME:local}
 
 slack:
   webhook: ${SLACK_WEBHOOK:/slack/token}
