@@ -45,7 +45,7 @@ public class SendTask {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/stress");
+        call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/stress");
     }
 
     @Scheduled(fixedRate = 153)
@@ -54,7 +54,7 @@ public class SendTask {
             return;
         }
         Integer count = 5;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/loop/" + count);
+        call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/loop/" + count);
     }
 
     @Scheduled(fixedRate = 154)
@@ -63,7 +63,7 @@ public class SendTask {
             return;
         }
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + commands.get((new Random()).nextInt(commands.size())));
+        call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + commands.get((new Random()).nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 155)
@@ -72,7 +72,7 @@ public class SendTask {
             return;
         }
         Integer fault = 5;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/fault/" + fault);
+        call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/fault/" + fault);
     }
 
     // @Scheduled(fixedRate = 156)
@@ -81,7 +81,7 @@ public class SendTask {
             return;
         }
         Integer delay = (new Random()).nextInt(5) + 1;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/delay/" + delay);
+        call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/delay/" + delay);
     }
 
     // @Scheduled(fixedRate = 157)

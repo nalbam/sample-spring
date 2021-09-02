@@ -28,7 +28,7 @@ message: ${MESSAGE:Refreshed}
 
 version: ${VERSION:v0.0.0}
 
-hostname: ${HOSTNAME:local}
+hostname: ${HOSTNAME:default.svc.cluster.local}
 
 slack:
   webhook: ${SLACK_WEBHOOK:/slack/token}
