@@ -53,7 +53,7 @@ jobs:
         with:
           args: --docker
         env:
-          # USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           # TAG_NAME: ${{ github.ref }}
           # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
@@ -65,7 +65,7 @@ jobs:
         with:
           args: --docker
         env:
-          # USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          USERNAME: ${{ secrets.QUAY_USERNAME }}
           PASSWORD: ${{ secrets.QUAY_PASSWORD }}
           REGISTRY: "quay.io"
           # TAG_NAME: ${{ github.ref }}
@@ -78,7 +78,6 @@ jobs:
         with:
           args: --docker
         env:
-          # USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.GHP_TOKEN }}
           REGISTRY: "docker.pkg.github.com"
           # TAG_NAME: ${{ github.ref }}
@@ -107,7 +106,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # AWS_REGION: "ap-northeast-2"
+          AWS_REGION: "ap-northeast-2"
           REGISTRY: "public.ecr.aws/nalbam"
           # TAG_NAME: ${{ github.ref }}
           # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
