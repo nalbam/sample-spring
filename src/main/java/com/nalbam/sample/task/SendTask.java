@@ -40,7 +40,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 152)
+    @Scheduled(fixedRate = 102)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -48,7 +48,7 @@ public class SendTask {
         call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/stress");
     }
 
-    @Scheduled(fixedRate = 153)
+    @Scheduled(fixedRate = 103)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -57,7 +57,7 @@ public class SendTask {
         call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 154)
+    @Scheduled(fixedRate = 104)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -66,7 +66,7 @@ public class SendTask {
         call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 155)
+    @Scheduled(fixedRate = 105)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -75,7 +75,7 @@ public class SendTask {
         call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 156)
+    // @Scheduled(fixedRate = 106)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -84,7 +84,7 @@ public class SendTask {
         call("https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 157)
+    // @Scheduled(fixedRate = 107)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
