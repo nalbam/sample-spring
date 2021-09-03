@@ -32,15 +32,13 @@ public class SendTask {
     // @Value("${task.scheduled}")
     private Boolean scheduled = true;
 
-    private List<String> servers = Arrays.asList("sample-node");
-
     private final RestTemplate restTemplate;
 
     public SendTask(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 102)
+    @Scheduled(fixedRate = 82)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -48,7 +46,7 @@ public class SendTask {
         call(getHostname() + "/stress");
     }
 
-    @Scheduled(fixedRate = 103)
+    @Scheduled(fixedRate = 83)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -57,7 +55,7 @@ public class SendTask {
         call(getHostname() + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 104)
+    @Scheduled(fixedRate = 84)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -66,7 +64,7 @@ public class SendTask {
         call(getHostname() + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 105)
+    @Scheduled(fixedRate = 85)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -75,7 +73,7 @@ public class SendTask {
         call(getHostname() + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 106)
+    // @Scheduled(fixedRate = 86)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -84,7 +82,7 @@ public class SendTask {
         call(getHostname() + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 107)
+    // @Scheduled(fixedRate = 87)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -94,9 +92,9 @@ public class SendTask {
 
     private String getHostname() {
         if ("default".equals(profile)) {
-            return "http://" + servers.get((new Random()).nextInt(servers.size())) + ":3000";
+            return "http://sample-node:3000";
         } else {
-            return "https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname;
+            return "https://sample-node." + hostname;
         }
     }
 
