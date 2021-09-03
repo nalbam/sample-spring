@@ -45,7 +45,7 @@ public class SendTask {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call(getHostname() + "." + hostname + "/stress");
+        call(getHostname() + "/stress");
     }
 
     @Scheduled(fixedRate = 103)
@@ -54,7 +54,7 @@ public class SendTask {
             return;
         }
         Integer count = 5;
-        call(getHostname() + "." + hostname + "/loop/" + count);
+        call(getHostname() + "/loop/" + count);
     }
 
     @Scheduled(fixedRate = 104)
@@ -63,7 +63,7 @@ public class SendTask {
             return;
         }
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-        call(getHostname() + "." + hostname + commands.get((new Random()).nextInt(commands.size())));
+        call(getHostname() + commands.get((new Random()).nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 105)
@@ -72,7 +72,7 @@ public class SendTask {
             return;
         }
         Integer fault = 5;
-        call(getHostname() + "." + hostname + "/fault/" + fault);
+        call(getHostname() + "/fault/" + fault);
     }
 
     // @Scheduled(fixedRate = 106)
@@ -81,7 +81,7 @@ public class SendTask {
             return;
         }
         Integer delay = (new Random()).nextInt(5) + 1;
-        call(getHostname() + "." + hostname + "/delay/" + delay);
+        call(getHostname() + "/delay/" + delay);
     }
 
     // @Scheduled(fixedRate = 107)
