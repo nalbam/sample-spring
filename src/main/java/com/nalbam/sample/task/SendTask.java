@@ -45,7 +45,7 @@ public class SendTask {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/stress");
+        call(getHostname() + "." + hostname + "/stress");
     }
 
     @Scheduled(fixedRate = 103)
@@ -54,7 +54,7 @@ public class SendTask {
             return;
         }
         Integer count = 5;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/loop/" + count);
+        call(getHostname() + "." + hostname + "/loop/" + count);
     }
 
     @Scheduled(fixedRate = 104)
@@ -63,7 +63,7 @@ public class SendTask {
             return;
         }
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + commands.get((new Random()).nextInt(commands.size())));
+        call(getHostname() + "." + hostname + commands.get((new Random()).nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 105)
@@ -72,7 +72,7 @@ public class SendTask {
             return;
         }
         Integer fault = 5;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/fault/" + fault);
+        call(getHostname() + "." + hostname + "/fault/" + fault);
     }
 
     // @Scheduled(fixedRate = 106)
@@ -81,7 +81,7 @@ public class SendTask {
             return;
         }
         Integer delay = (new Random()).nextInt(5) + 1;
-        call("http://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname + "/delay/" + delay);
+        call(getHostname() + "." + hostname + "/delay/" + delay);
     }
 
     // @Scheduled(fixedRate = 107)
@@ -90,6 +90,14 @@ public class SendTask {
             return;
         }
         call("http://productpage.default.svc.cluster.local:9080/productpage");
+    }
+
+    private getHostname() {
+        if ("default".equals(profile)) {
+            return "http://" + servers.get((new Random()).nextInt(servers.size())) + ":3000";
+        } else {
+            return "https://" + servers.get((new Random()).nextInt(servers.size())) + "." + hostname;
+        }
     }
 
     @Async
