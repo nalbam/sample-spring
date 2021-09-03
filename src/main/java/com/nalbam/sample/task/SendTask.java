@@ -92,7 +92,7 @@ public class SendTask {
         call("http://productpage.default.svc.cluster.local:9080/productpage");
     }
 
-    private getHostname() {
+    private String getHostname() {
         if ("default".equals(profile)) {
             return "http://" + servers.get((new Random()).nextInt(servers.size())) + ":3000";
         } else {
