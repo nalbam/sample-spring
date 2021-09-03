@@ -38,7 +38,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 82)
+    @Scheduled(fixedRate = 52)
     public void stress() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -46,7 +46,7 @@ public class SendTask {
         call(getHostname() + "/stress");
     }
 
-    @Scheduled(fixedRate = 83)
+    @Scheduled(fixedRate = 53)
     public void loop() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -55,7 +55,7 @@ public class SendTask {
         call(getHostname() + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 84)
+    @Scheduled(fixedRate = 54)
     public void redis() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -64,7 +64,7 @@ public class SendTask {
         call(getHostname() + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 85)
+    @Scheduled(fixedRate = 55)
     public void fault() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -73,7 +73,7 @@ public class SendTask {
         call(getHostname() + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 86)
+    // @Scheduled(fixedRate = 56)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -82,7 +82,7 @@ public class SendTask {
         call(getHostname() + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 87)
+    // @Scheduled(fixedRate = 57)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
