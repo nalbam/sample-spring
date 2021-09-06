@@ -46,7 +46,7 @@ public class SendTask {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call(getHostname() + "/stress");
+        req(getHostname() + "/stress");
     }
 
     @Scheduled(fixedRate = 33)
@@ -55,7 +55,7 @@ public class SendTask {
             return;
         }
         Integer count = 5;
-        call(getHostname() + "/loop/" + count);
+        req(getHostname() + "/loop/" + count);
     }
 
     @Scheduled(fixedRate = 34)
@@ -64,7 +64,7 @@ public class SendTask {
             return;
         }
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-        call(getHostname() + commands.get((new Random()).nextInt(commands.size())));
+        req(getHostname() + commands.get((new Random()).nextInt(commands.size())));
     }
 
     @Scheduled(fixedRate = 35)
@@ -73,24 +73,24 @@ public class SendTask {
             return;
         }
         Integer fault = 5;
-        call(getHostname() + "/fault/" + fault);
+        req(getHostname() + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 36)
+    @Scheduled(fixedRate = 36)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
         Integer delay = (new Random()).nextInt(5) + 1;
-        call(getHostname() + "/delay/" + delay);
+        req(getHostname() + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 37)
+    @Scheduled(fixedRate = 37)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call(protocol + "://bookinfo." + hostname + "/productpage");
+        req(protocol + "://bookinfo." + hostname + "/productpage");
     }
 
     private String getHostname() {
@@ -102,10 +102,10 @@ public class SendTask {
     }
 
     @Async
-    private CompletableFuture<String> call(String url) {
+    private CompletableFuture<String> req(String url) {
         log.info("req: {}", url);
         String res = restTemplate.getForObject(url, String.class);
-        log.info("res: {}", res);
+        // log.info("res: {}", res);
         return CompletableFuture.completedFuture(res);
     }
 
