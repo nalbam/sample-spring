@@ -90,11 +90,12 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
-        if ("default".equals(profile)) {
-            req("http://productpage.default.svc.cluster.local:9080/productpage");
-        } else {
-            req(protocol + "://bookinfo." + hostname + "/productpage");
-        }
+        // if ("default".equals(profile)) {
+        //     req("http://productpage.default.svc.cluster.local:9080/productpage");
+        // } else {
+        //     req(protocol + "://bookinfo." + hostname + "/productpage");
+        // }
+        req("http://productpage.default.svc.cluster.local:9080/productpage");
     }
 
     private String getHostname() {
