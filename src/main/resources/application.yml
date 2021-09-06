@@ -28,6 +28,7 @@ message: ${MESSAGE:Refreshed}
 
 version: ${VERSION:v0.0.0}
 
+protocol: ${PROTOCOL:http}
 hostname: ${HOSTNAME:default.svc.cluster.local}
 
 slack:

@@ -23,6 +23,9 @@ public class SendTask {
     @Value("${spring.application.name}")
     private String service;
 
+    @Value("${protocol}")
+    private String protocol;
+
     @Value("${hostname}")
     private String hostname;
 
@@ -94,7 +97,7 @@ public class SendTask {
         if ("default".equals(profile)) {
             return "http://sample-node:3000";
         } else {
-            return "https://sample-node." + hostname;
+            return protocol + "://sample-node." + hostname;
         }
     }
 
