@@ -76,7 +76,7 @@ public class SendTask {
         call(getHostname() + "/fault/" + fault);
     }
 
-    @Scheduled(fixedRate = 36)
+    // @Scheduled(fixedRate = 36)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
