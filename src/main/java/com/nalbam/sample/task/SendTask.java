@@ -76,7 +76,7 @@ public class SendTask {
         call(getHostname() + "/fault/" + fault);
     }
 
-    // @Scheduled(fixedRate = 36)
+    @Scheduled(fixedRate = 36)
     public void delay() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
@@ -85,12 +85,12 @@ public class SendTask {
         call(getHostname() + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 37)
+    @Scheduled(fixedRate = 37)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call("http://productpage.default.svc.cluster.local:9080/productpage");
+        call("http://bookinfo." + hostname + "/productpage");
     }
 
     private String getHostname() {
