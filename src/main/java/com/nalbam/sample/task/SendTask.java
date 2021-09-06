@@ -85,7 +85,7 @@ public class SendTask {
         call(getHostname() + "/delay/" + delay);
     }
 
-    @Scheduled(fixedRate = 37)
+    // @Scheduled(fixedRate = 37)
     public void bookinfo() {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
