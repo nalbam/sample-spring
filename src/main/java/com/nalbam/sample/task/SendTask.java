@@ -84,7 +84,7 @@ public class SendTask {
         req(getHostname() + "/delay/" + delay);
     }
 
-    @Scheduled(fixedRate = 37)
+    // @Scheduled(fixedRate = 37)
     public void bookinfo() {
         if (!scheduled) {
             return;
