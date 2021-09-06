@@ -99,7 +99,7 @@ public class SendTask {
 
     private String getHostname() {
         if ("default".equals(profile)) {
-            return "http://sample-node:3000";
+            return "http://sample-node";
         } else {
             return protocol + "://sample-node." + hostname;
         }

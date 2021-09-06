@@ -133,7 +133,7 @@ public class RestfulController {
 
         count--;
 
-        String url = "http://sample-node:3000/loop/" + count;
+        String url = "http://sample-node/loop/" + count;
 
         String json = restTemplate.getForObject(url, String.class);
 
@@ -236,7 +236,7 @@ public class RestfulController {
 
     private String getHostname() {
         if ("default".equals(profile)) {
-            return "http://sample-node:3000";
+            return "http://sample-node";
         } else {
             return protocol + "://sample-node." + hostname;
         }
