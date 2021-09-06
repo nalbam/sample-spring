@@ -102,7 +102,7 @@ public class RestfulController {
     public String node() {
         log.debug("node");
 
-        String url = getHostname() + "/spring";
+        String url = getHostname() + "/health";
 
         String res = restTemplate.getForObject(url, String.class);
 
