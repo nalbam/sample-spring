@@ -43,7 +43,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 32)
     public void stress() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled) {
             return;
         }
         req(getHostname() + "/stress");
@@ -51,7 +51,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 33)
     public void loop() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled) {
             return;
         }
         Integer count = 5;
@@ -60,7 +60,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 34)
     public void redis() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled) {
             return;
         }
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
@@ -69,7 +69,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 35)
     public void fault() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled) {
             return;
         }
         Integer fault = 5;
@@ -78,7 +78,7 @@ public class SendTask {
 
     @Scheduled(fixedRate = 36)
     public void delay() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled) {
             return;
         }
         Integer delay = (new Random()).nextInt(5) + 1;
@@ -87,10 +87,14 @@ public class SendTask {
 
     @Scheduled(fixedRate = 37)
     public void bookinfo() {
-        if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
+        if (!scheduled) {
             return;
         }
-        req(protocol + "://bookinfo." + hostname + "/productpage");
+        if ("default".equals(profile)) {
+            req("http://productpage:9080/productpage");
+        } else {
+            req(protocol + "://bookinfo." + hostname + "/productpage");
+        }
     }
 
     private String getHostname() {
