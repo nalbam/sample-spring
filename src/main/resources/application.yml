@@ -31,6 +31,9 @@ version: ${VERSION:v0.0.0}
 protocol: ${PROTOCOL:http}
 hostname: ${HOSTNAME:default.svc.cluster.local}
 
+fault:
+  rate: ${FAULT_RATE:0}
+
 slack:
   webhook: ${SLACK_WEBHOOK:/slack/token}
   channel: ${SLACK_CHANNEL:sandbox}

@@ -20,8 +20,8 @@ public class SendTask {
     @Value("${spring.profiles.active}")
     private String profile;
 
-    @Value("${spring.application.name}")
-    private String service;
+    // @Value("${spring.application.name}")
+    // private String service;
 
     @Value("${protocol}")
     private String protocol;
@@ -29,8 +29,8 @@ public class SendTask {
     @Value("${hostname}")
     private String hostname;
 
-    @Value("${server.port}")
-    private Integer port;
+    @Value("${fault.rate}")
+    private Integer faultRate;
 
     // @Value("${task.scheduled}")
     private Boolean scheduled = true;
@@ -72,8 +72,7 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
-        Integer fault = 5;
-        req(getHostname() + "/fault/" + fault);
+        req(getHostname() + "/fault/" + faultRate);
     }
 
     @Scheduled(fixedRate = 36)
