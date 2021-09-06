@@ -90,7 +90,7 @@ public class SendTask {
         if (!scheduled || "default".equals(profile) || "test".equals(profile)) {
             return;
         }
-        call("http://bookinfo." + hostname + "/productpage");
+        call(protocol + "://bookinfo." + hostname + "/productpage");
     }
 
     private String getHostname() {
