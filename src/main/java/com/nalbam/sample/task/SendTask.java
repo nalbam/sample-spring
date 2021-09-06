@@ -75,7 +75,7 @@ public class SendTask {
         req(getHostname() + "/fault/" + faultRate);
     }
 
-    @Scheduled(fixedRate = 36)
+    // @Scheduled(fixedRate = 36)
     public void delay() {
         if (!scheduled) {
             return;
