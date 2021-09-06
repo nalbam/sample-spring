@@ -109,7 +109,7 @@ public class SendTask {
     private CompletableFuture<String> req(String url) {
         log.info("req: {}", url);
         String res = restTemplate.getForObject(url, String.class);
-        // log.info("res: {}", res);
+        log.info("res: {}", res);
         return CompletableFuture.completedFuture(res);
     }
 
