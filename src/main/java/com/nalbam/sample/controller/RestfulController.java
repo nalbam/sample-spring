@@ -170,6 +170,7 @@ public class RestfulController {
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "delay");
+        map.put("sec", sec);
         map.put("date", sdf.format(new Date()));
 
         return map;
@@ -204,6 +205,7 @@ public class RestfulController {
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "success");
+        map.put("rate", rate);
 
         // version
         map.put("version", version);
@@ -224,6 +226,7 @@ public class RestfulController {
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
         map.put("type", "fault");
+        map.put("rate", rate);
 
         // version
         map.put("version", version);
