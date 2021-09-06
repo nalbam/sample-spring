@@ -70,8 +70,6 @@ public class RestfulController {
         Map<String, Object> map = PackageUtil.getData(this.getClass());
         map.put("result", "OK");
         map.put("type", "health");
-
-        // version
         map.put("version", version);
 
         return map;
@@ -94,6 +92,7 @@ public class RestfulController {
         map.put("type", "stress");
         map.put("sum", sum);
         map.put("date", sdf.format(new Date()));
+        map.put("version", version);
 
         return map;
     }
@@ -126,6 +125,7 @@ public class RestfulController {
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
+        map.put("version", version);
 
         if (count <= 0) {
             return map;
@@ -172,6 +172,7 @@ public class RestfulController {
         map.put("type", "delay");
         map.put("sec", sec);
         map.put("date", sdf.format(new Date()));
+        map.put("version", version);
 
         return map;
     }
@@ -206,8 +207,6 @@ public class RestfulController {
         map.put("result", "OK");
         map.put("type", "success");
         map.put("rate", rate);
-
-        // version
         map.put("version", version);
 
         return map;
@@ -227,8 +226,6 @@ public class RestfulController {
         map.put("result", "OK");
         map.put("type", "fault");
         map.put("rate", rate);
-
-        // version
         map.put("version", version);
 
         return map;
