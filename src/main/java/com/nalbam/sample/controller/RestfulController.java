@@ -29,6 +29,12 @@ public class RestfulController {
     @Value("${version}")
     private String version;
 
+    @Value("${protocol}")
+    private String protocol;
+
+    @Value("${hostname}")
+    private String hostname;
+
     private final RestTemplate restTemplate;
 
     public RestfulController(RestTemplateBuilder restTemplateBuilder) {
@@ -96,13 +102,7 @@ public class RestfulController {
     public String node() {
         log.debug("node");
 
-        String url;
-
-        if ("default".equals(profile)) {
-            url = "http://localhost:3000/spring";
-        } else {
-            url = "http://sample-node:3000/spring";
-        }
+        String url = getHostname() + "/spring";
 
         String res = restTemplate.getForObject(url, String.class);
 
@@ -113,13 +113,7 @@ public class RestfulController {
     public String counter(@PathVariable String cmd) {
         log.debug("counter");
 
-        String url;
-
-        if ("default".equals(profile)) {
-            url = "http://localhost:3000/counter/" + cmd;
-        } else {
-            url = "http://sample-node:3000/counter/" + cmd;
-        }
+        String url = getHostname() + "/counter/" + cmd;
 
         String res = restTemplate.getForObject(url, String.class);
 
@@ -139,13 +133,7 @@ public class RestfulController {
 
         count--;
 
-        String url;
-
-        if ("default".equals(profile)) {
-            url = "http://localhost:8080/loop/" + count;
-        } else {
-            url = "http://sample-spring:8080/loop/" + count;
-        }
+        String url = "http://sample-node:3000/loop/" + count;
 
         String json = restTemplate.getForObject(url, String.class);
 
@@ -241,6 +229,14 @@ public class RestfulController {
         map.put("version", version);
 
         return map;
+    }
+
+    private String getHostname() {
+        if ("default".equals(profile)) {
+            return "http://sample-node:3000";
+        } else {
+            return protocol + "://sample-node." + hostname;
+        }
     }
 
 }
