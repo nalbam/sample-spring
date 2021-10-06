@@ -133,7 +133,7 @@ public class RestfulController {
 
         count--;
 
-        String url = "http://sample-node/loop/" + count;
+        String url = getHostname() + "/loop/" + count;
 
         String json = restTemplate.getForObject(url, String.class);
 
