@@ -74,41 +74,41 @@ jobs:
           BUILDX: "true"
           # LATEST: "true"
 
-      - name: Build & Push to AWS ECR Public
-        uses: opspresso/action-builder@master
-        with:
-          args: --ecr
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "ap-northeast-2"
-          REGISTRY: "public.ecr.aws/nalbam"
-          # TAG_NAME: ${{ github.ref }}
-          # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
-          BUILDX: "true"
-          # LATEST: "true"
+      # - name: Build & Push to AWS ECR Public
+      #   uses: opspresso/action-builder@master
+      #   with:
+      #     args: --ecr
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: "ap-northeast-2"
+      #     REGISTRY: "public.ecr.aws/nalbam"
+      #     # TAG_NAME: ${{ github.ref }}
+      #     # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
+      #     BUILDX: "true"
+      #     # LATEST: "true"
 
-      - name: Build & Push to Quay.io
-        uses: opspresso/action-builder@master
-        with:
-          args: --docker
-        env:
-          USERNAME: ${{ secrets.QUAY_USERNAME }}
-          PASSWORD: ${{ secrets.QUAY_PASSWORD }}
-          REGISTRY: "quay.io"
-          # TAG_NAME: ${{ github.ref }}
-          # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
-          BUILDX: "true"
-          # LATEST: "true"
+      # - name: Build & Push to Quay.io
+      #   uses: opspresso/action-builder@master
+      #   with:
+      #     args: --docker
+      #   env:
+      #     USERNAME: ${{ secrets.QUAY_USERNAME }}
+      #     PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+      #     REGISTRY: "quay.io"
+      #     # TAG_NAME: ${{ github.ref }}
+      #     # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
+      #     BUILDX: "true"
+      #     # LATEST: "true"
 
-      - name: Build & Push to GitHub Package
-        uses: opspresso/action-builder@master
-        with:
-          args: --docker
-        env:
-          PASSWORD: ${{ secrets.GHP_TOKEN }}
-          REGISTRY: "docker.pkg.github.com"
-          # TAG_NAME: ${{ github.ref }}
-          # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
-          # BUILDX: "true"
-          # LATEST: "true"
+      # - name: Build & Push to GitHub Package
+      #   uses: opspresso/action-builder@master
+      #   with:
+      #     args: --docker
+      #   env:
+      #     PASSWORD: ${{ secrets.GHP_TOKEN }}
+      #     REGISTRY: "docker.pkg.github.com"
+      #     # TAG_NAME: ${{ github.ref }}
+      #     # PLATFORM: "linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6"
+      #     # BUILDX: "true"
+      #     # LATEST: "true"
