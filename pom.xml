@@ -4,7 +4,7 @@
 
     <groupId>com.nalbam</groupId>
     <artifactId>sample-spring</artifactId>
-    <version>${this.version}</version>
+    <version>v0.8.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -12,8 +12,6 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <this.version>v0.6.0</this.version>
     </properties>
 
     <parent>
