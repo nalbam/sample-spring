@@ -1,6 +1,6 @@
 # Dockerfile
 
-FROM docker.io/library/openjdk:8-jre-alpine
+FROM openjdk:8-jre-alpine
 
 # RUN apk add --no-cache bash curl
 
