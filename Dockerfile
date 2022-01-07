@@ -2,6 +2,12 @@
 
 FROM openjdk:8-jre-alpine
 
+LABEL maintainer="me@nalbam.com" \
+      org.opencontainers.image.description="A Sample Docker image for Spring App" \
+      org.opencontainers.image.authors="Jungyoul Yu, me@nalbam.com, https://www.nalbam.com/" \
+      org.opencontainers.image.source="https://github.com/nalbam/sample-spring" \
+      org.opencontainers.image.title="sample-spring"
+
 # RUN apk add --no-cache bash curl
 
 EXPOSE 8080
