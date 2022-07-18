@@ -43,7 +43,7 @@ public class RestfulController {
 
     @GetMapping("/live")
     public Map<String, Object> live() {
-        log.debug("live");
+        log.info("get /live");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -54,7 +54,7 @@ public class RestfulController {
 
     @GetMapping("/read")
     public Map<String, Object> read() {
-        log.debug("read");
+        log.info("get /read");
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -65,7 +65,7 @@ public class RestfulController {
 
     @GetMapping("/health")
     public Map<String, Object> health() {
-        log.debug("health");
+        log.info("get /health");
 
         Map<String, Object> map = PackageUtil.getData(this.getClass());
         map.put("result", "OK");
@@ -77,7 +77,7 @@ public class RestfulController {
 
     @GetMapping("/stress")
     public Map<String, Object> stress() {
-        log.debug("stress");
+        log.info("get /stress");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -99,7 +99,7 @@ public class RestfulController {
 
     @GetMapping("/node")
     public String node() {
-        log.debug("node");
+        log.info("get /node");
 
         String url = getHostname() + "/health";
 
@@ -110,7 +110,7 @@ public class RestfulController {
 
     @GetMapping("/counter/{cmd}")
     public String counter(@PathVariable String cmd) {
-        log.debug("counter");
+        log.info("get /counter/{}", cmd);
 
         String url = getHostname() + "/counter/" + cmd;
 
@@ -121,7 +121,7 @@ public class RestfulController {
 
     @GetMapping("/loop/{count}")
     public Map<String, Object> loop(@PathVariable Integer count) {
-        log.debug("loop {}", count);
+        log.info("get /loop/{}", count);
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", "OK");
@@ -144,7 +144,7 @@ public class RestfulController {
             res = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
             });
         } catch (Exception e) {
-            log.info("Exception converting {} to map", json, e);
+            log.info("Exception converting/{} to map", json, e);
         }
 
         map.put("data", res);
@@ -154,7 +154,7 @@ public class RestfulController {
 
     @GetMapping("/delay/{sec}")
     public Map<String, Object> delay(@PathVariable Integer sec) {
-        log.debug("delay {}", sec);
+        log.info("get /delay/{}", sec);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -179,7 +179,7 @@ public class RestfulController {
 
     @GetMapping("/timeout/{sec}")
     public Map<String, Object> timeout(@PathVariable Integer sec) throws TimeoutException {
-        log.debug("timeout {}", sec);
+        log.info("get /timeout/{}", sec);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -195,7 +195,7 @@ public class RestfulController {
 
     @GetMapping("/success/{rate}")
     public Map<String, Object> success(@PathVariable Integer rate) throws RuntimeException {
-        log.debug("success {}", rate);
+        log.info("get /success/{}", rate);
 
         Integer random = (new Random()).nextInt(100);
 
@@ -214,7 +214,7 @@ public class RestfulController {
 
     @GetMapping("/fault/{rate}")
     public Map<String, Object> fault(@PathVariable Integer rate) throws RuntimeException {
-        log.debug("fault {}", rate);
+        log.info("get /fault/{}", rate);
 
         Integer random = (new Random()).nextInt(100);
 
