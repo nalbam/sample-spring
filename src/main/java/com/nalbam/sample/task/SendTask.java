@@ -41,7 +41,7 @@ public class SendTask {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    @Scheduled(fixedRate = 32)
+    @Scheduled(fixedRate = 320)
     public void stress() {
         if (!scheduled) {
             return;
@@ -49,7 +49,7 @@ public class SendTask {
         req(getHostname() + "/stress");
     }
 
-    @Scheduled(fixedRate = 33)
+    @Scheduled(fixedRate = 330)
     public void loop() {
         if (!scheduled) {
             return;
@@ -67,7 +67,7 @@ public class SendTask {
         req(getHostname() + commands.get((new Random()).nextInt(commands.size())));
     }
 
-    @Scheduled(fixedRate = 35)
+    @Scheduled(fixedRate = 350)
     public void fault() {
         if (!scheduled) {
             return;
@@ -75,7 +75,7 @@ public class SendTask {
         req(getHostname() + "/fault/" + faultRate);
     }
 
-    // @Scheduled(fixedRate = 36)
+    // @Scheduled(fixedRate = 360)
     public void delay() {
         if (!scheduled) {
             return;
@@ -84,7 +84,7 @@ public class SendTask {
         req(getHostname() + "/delay/" + delay);
     }
 
-    // @Scheduled(fixedRate = 37)
+    // @Scheduled(fixedRate = 370)
     public void bookinfo() {
         if (!scheduled) {
             return;
