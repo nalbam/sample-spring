@@ -46,7 +46,12 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
-        req(getHostname() + "/stress");
+
+        String url = getHostname() + "/stress";
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        log.info("task /stress {}", res);
     }
 
     @Scheduled(fixedRate = 330)
@@ -54,8 +59,14 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
+
         Integer count = 5;
-        req(getHostname() + "/loop/" + count);
+
+        String url = getHostname() + "/loop/" + count;
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        log.info("task /loop {}", res);
     }
 
     @Scheduled(fixedRate = 340)
@@ -63,8 +74,14 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
+
         List<String> commands = Arrays.asList("/counter/up", "/counter/down", "/cache/node");
-        req(getHostname() + commands.get((new Random()).nextInt(commands.size())));
+
+        String url = getHostname() + commands.get((new Random()).nextInt(commands.size()));
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        log.info("task /redis {}", res);
     }
 
     @Scheduled(fixedRate = 350)
@@ -72,7 +89,12 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
-        req(getHostname() + "/fault/" + faultRate);
+
+        String url = getHostname() + "/fault/" + faultRate;
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        log.info("task /fault {}", res);
     }
 
     // @Scheduled(fixedRate = 360)
@@ -80,8 +102,14 @@ public class SendTask {
         if (!scheduled) {
             return;
         }
+
         Integer delay = (new Random()).nextInt(5) + 1;
-        req(getHostname() + "/delay/" + delay);
+
+        String url = getHostname() + "/delay/" + delay;
+
+        String res = restTemplate.getForObject(url, String.class);
+
+        log.info("task /delay {}", res);
     }
 
     // @Scheduled(fixedRate = 370)
@@ -105,12 +133,12 @@ public class SendTask {
         }
     }
 
-    @Async
-    private CompletableFuture<String> req(String url) {
-        log.info("req: {}", url);
-        String res = restTemplate.getForObject(url, String.class);
-        log.info("res: {}", res);
-        return CompletableFuture.completedFuture(res);
-    }
+    // @Async
+    // private CompletableFuture<String> req(String url) {
+    //     log.info("req: {}", url);
+    //     String res = restTemplate.getForObject(url, String.class);
+    //     log.info("res: {}", res);
+    //     return CompletableFuture.completedFuture(res);
+    // }
 
 }
