@@ -58,7 +58,7 @@ public class SendTask {
         req(getHostname() + "/loop/" + count);
     }
 
-    @Scheduled(fixedRate = 34)
+    @Scheduled(fixedRate = 340)
     public void redis() {
         if (!scheduled) {
             return;
