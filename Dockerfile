@@ -1,6 +1,6 @@
 # Dockerfile
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jre-slim-buster
 
 LABEL maintainer="me@nalbam.com" \
       org.opencontainers.image.description="A Sample Docker image for Spring App" \
