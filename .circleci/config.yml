@@ -16,7 +16,7 @@ jobs:
           name: Build
           command: |
             mkdir target
-            curl -sLo target/builder.sh toast.sh/builder
+            curl -sLo target/builder.sh toaster.run/builder
             bash ./target/builder.sh
             bash ./build.sh
       - save_cache:
