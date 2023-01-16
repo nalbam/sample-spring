@@ -1,6 +1,6 @@
 # sample-spring
 
-[![build](https://img.shields.io/github/actions/workflow/status/nalbam/sample-spring/push.yaml?branch=main&style=for-the-badge&logo=github)](https://github.com/nalbam/sample-spring/actions/workflows/push.yaml)
+[![build](https://img.shields.io/github/actions/workflow/status/nalbam/sample-spring/push.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/nalbam/sample-spring/actions/workflows/push.yml)
 [![release](https://img.shields.io/github/v/release/nalbam/sample-spring?style=for-the-badge&logo=github)](https://github.com/nalbam/sample-spring/releases)
 
 <!-- [![CircleCI](https://circleci.com/gh/nalbam/sample-spring.svg?style=svg)](https://circleci.com/gh/nalbam/sample-spring) -->
