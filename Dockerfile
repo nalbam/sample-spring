@@ -1,6 +1,7 @@
 # Dockerfile
 
-FROM openjdk:8-jre-slim-buster
+# FROM openjdk:8-jre-slim-buster
+FROM nalbam/sample-spring:v0.9.12
 
 LABEL maintainer="me@nalbam.com" \
       org.opencontainers.image.description="A Sample Docker image for Spring App" \
@@ -15,7 +16,7 @@ EXPOSE 8081
 
 WORKDIR /data
 
-COPY target/*.jar /data/ROOT.jar
+# COPY target/*.jar /data/ROOT.jar
 
 COPY ./entrypoint.sh /data/entrypoint.sh
 
