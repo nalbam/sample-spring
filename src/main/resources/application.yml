@@ -4,8 +4,9 @@ server:
 spring:
   application:
     name: sample-spring
-  profiles:
-    active: ${PROFILE:default}
+  config:
+    activate:
+      on-profile: ${PROFILE:default}
   jackson:
     time-zone: Asia/Seoul
     serialization:
@@ -52,7 +53,9 @@ task:
 
 ---
 spring:
-  profiles: default
+  config:
+    activate:
+      on-profile: default
   jpa:
     show-sql: true
 
@@ -60,7 +63,9 @@ message: ":tada: Local Server UP"
 
 ---
 spring:
-  profiles: dev
+  config:
+    activate:
+      on-profile: alpha
   jpa:
     show-sql: true
 
@@ -68,12 +73,16 @@ message: ":tada: Development Server UP"
 
 ---
 spring:
-  profiles: stage
+  config:
+    activate:
+      on-profile: stage
 
 message: ":tada: Staging Server UP"
 
 ---
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
 
 message: ":tada: Production Server UP"
