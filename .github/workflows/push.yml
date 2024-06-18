@@ -30,15 +30,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NAME: ${{ steps.bump.outputs.version }}
 
-      # - name: Setup Java
-      #   uses: actions/setup-java@v3
-      #   with:
-      #     distribution: 'corretto'
-      #     java-version: '17'
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
 
-      # - name: Run Build
-      #   run: |
-      #     ./build.sh
+      - name: Run Build
+        run: |
+          ./build.sh
 
       - name: Trigger for GitOps
         uses: opspresso/action-builder@master
