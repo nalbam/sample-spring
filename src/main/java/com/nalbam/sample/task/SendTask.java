@@ -122,7 +122,7 @@ public class SendTask {
         // } else {
         //     req(protocol + "://bookinfo." + hostname + "/productpage");
         // }
-        req("http://productpage.default.svc.cluster.local:9080/productpage");
+        // req("http://productpage.default.svc.cluster.local:9080/productpage");
     }
 
     private String getHostname() {
