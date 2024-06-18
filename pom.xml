@@ -4,7 +4,7 @@
 
   <groupId>com.nalbam</groupId>
   <artifactId>sample-spring</artifactId>
-  <version>v0.9.0</version>
+  <version>v0.10.0</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -44,11 +44,11 @@
     </dependency>
 
     <!-- jaeger -->
-    <dependency>
+    <!-- <dependency>
       <groupId>io.opentracing.contrib</groupId>
       <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
       <version>3.3.1</version>
-    </dependency>
+    </dependency> -->
 
     <!-- zipkin -->
     <!-- <dependency>
@@ -164,7 +164,7 @@
     </extensions> -->
   </build>
 
-  <distributionManagement>
+  <!-- <distributionManagement>
     <repository>
       <id>releases</id>
       <url>https://archiva.demo.nalbam.com/repository/internal</url>
@@ -174,6 +174,6 @@
       <url>https://archiva.demo.nalbam.com/repository/snapshots</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
-  </distributionManagement>
+  </distributionManagement> -->
 
 </project>
