@@ -16,16 +16,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '17'
-
-      - name: Run Build
-        run: |
-          ./build.sh
-
       - name: Bump Version
         id: bump
         uses: opspresso/action-builder@master
@@ -39,6 +29,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NAME: ${{ steps.bump.outputs.version }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Run Build
+        run: |
+          ./build.sh
 
       - name: Trigger for GitOps
         uses: opspresso/action-builder@master
@@ -70,17 +70,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_BRUCE }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BRUCE }}
-          aws-region: ap-northeast-2
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -88,7 +77,6 @@ jobs:
           images: |
             nalbam/${{ github.event.repository.name }}
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
-            ${{ steps.login-ecr.outputs.registry }}/nalbam/${{ github.event.repository.name }}
           tags: |
             type=semver,pattern={{raw}},value=${{ steps.bump.outputs.version }}
 
