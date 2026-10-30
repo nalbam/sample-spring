@@ -1,7 +1,6 @@
 # Dockerfile
 
-# FROM openjdk:8-jre-slim-buster
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 LABEL maintainer="me@nalbam.com" \
       org.opencontainers.image.description="A Sample Docker image for Spring App" \

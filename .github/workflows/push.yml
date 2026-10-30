@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - master
+  pull_request:
+    branches:
+      - main
+      - master
 
 jobs:
   build:
@@ -12,17 +16,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Bump Version
         id: bump
+        if: github.event_name == 'push'
         uses: opspresso/action-builder@master
         with:
           args: --version
 
       - name: Release to GitHub
+        if: github.event_name == 'push'
         uses: opspresso/action-builder@master
         with:
           args: --release
@@ -31,16 +37,18 @@ jobs:
           TAG_NAME: ${{ steps.bump.outputs.version }}
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v6
         with:
           distribution: 'corretto'
-          java-version: '17'
+          java-version: '25'
+          cache: maven
 
       - name: Run Build
         run: |
           ./build.sh
 
       - name: Trigger for GitOps
+        if: github.event_name == 'push'
         uses: opspresso/action-builder@master
         with:
           args: --dispatch
@@ -51,20 +59,23 @@ jobs:
           VERSION: ${{ steps.bump.outputs.version }}
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        if: github.event_name == 'push'
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        if: github.event_name == 'push'
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Login to Github Container Registry
-        uses: docker/login-action@v2
+        if: github.event_name == 'push'
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -72,7 +83,8 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        if: github.event_name == 'push'
+        uses: docker/metadata-action@v6
         with:
           images: |
             nalbam/${{ github.event.repository.name }}
@@ -80,8 +92,19 @@ jobs:
           tags: |
             type=semver,pattern={{raw}},value=${{ steps.bump.outputs.version }}
 
+      # pull request: build the image for linux/amd64 only and do not push it
+      - name: Build image (pull request)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v7
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          platforms: linux/amd64
+          push: false
+
       - name: Build and push
-        uses: docker/build-push-action@v3
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v7
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .

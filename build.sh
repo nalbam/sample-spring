@@ -9,7 +9,7 @@ elif [ -f ./VERSION ]; then
 fi
 
 if [ "${VERSION}" == "" ]; then
-  mvn package
+  mvn -B verify
 else
-  mvn package -Dthis.version=${VERSION}
+  mvn -B verify -Dthis.version=${VERSION}
 fi

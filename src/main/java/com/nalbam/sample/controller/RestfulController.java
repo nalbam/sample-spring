@@ -1,11 +1,11 @@
 package com.nalbam.sample.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 import com.nalbam.sample.util.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -137,7 +137,7 @@ public class RestfulController {
 
         String json = restTemplate.getForObject(url, String.class);
 
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = new JsonMapper();
         Map<String, Object> res = null;
 
         try {
