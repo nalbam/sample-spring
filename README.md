@@ -16,3 +16,30 @@
 ```bash
 docker pull nalbam/sample-spring
 ```
+
+## Build and run
+
+Requirements: JDK 25 and Maven 3.9 or later (CI uses Corretto 25).
+
+```bash
+# build and test (mvn verify), jar is created in target/
+./build.sh
+
+# run; spring.profiles.active is required
+SPRING_PROFILES_ACTIVE=default java -jar target/sample-spring-*.jar
+
+curl localhost:8080/health
+```
+
+Docker image (build the jar first; the Dockerfile copies `target/*.jar`):
+
+```bash
+docker build -t sample-spring .
+docker run --rm -p 8080:8080 -e SPRING_PROFILES_ACTIVE=default sample-spring
+```
+
+## CI
+
+`.github/workflows/push.yml` runs on pull requests and on pushes to `main`/`master`.
+Both run `./build.sh` (`mvn verify` with tests) and build the Docker image.
+Version bump, GitHub release, GitOps dispatch and image push run only on push.
