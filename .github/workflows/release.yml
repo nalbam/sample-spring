@@ -1,0 +1,191 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+# Releases share the latest image tag and deployment targets.
+concurrency:
+  group: release-${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  IMAGES: |
+    nalbam/sample-spring
+    ghcr.io/nalbam/sample-spring
+  PLATFORM: linux/amd64,linux/arm64
+
+jobs:
+  tag:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Validate release tag
+        shell: bash
+        run: |
+          number='(0|[1-9][0-9]*)'
+          identifier='(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)'
+          pattern="^v${number}\.${number}\.${number}(-${identifier}(\.${identifier})*)?$"
+          if [[ ! "$GITHUB_REF_NAME" =~ $pattern || ${#GITHUB_REF_NAME} -gt 128 ]]; then
+            echo '::error::Expected vMAJOR.MINOR.PATCH with an optional prerelease suffix and no build metadata (128 characters maximum).'
+            exit 1
+          fi
+
+  verify:
+    needs: tag
+    uses: ./.github/workflows/push.yml
+
+  image:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The jar tested by the verify job; Dockerfile copies target/*.jar.
+      - name: Download jar
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: jar-${{ github.sha }}
+          path: target
+
+      - name: Check jar
+        run: |
+          shopt -s nullglob
+          jars=(target/*.jar)
+          if [[ ${#jars[@]} -ne 1 ]]; then
+            echo "::error::Expected exactly one jar in target/, found ${#jars[@]}."
+            exit 1
+          fi
+          ls -l "${jars[0]}"
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGES }}
+          tags: |
+            type=semver,pattern={{raw}}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: ${{ env.PLATFORM }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  github-release:
+    needs: image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          range="$tag"
+          if previous_tag="$(git describe --tags --abbrev=0 --match 'v[0-9]*' "${tag}^" 2>/dev/null)"; then
+            range="${previous_tag}..${tag}"
+          fi
+          git log --no-merges --pretty='- %s' "$range" -- \
+            | sed '/^- chore: release/d' > "${RUNNER_TEMP}/release-notes.md"
+
+          prerelease=false
+          if [[ "$tag" == *-* ]]; then
+            prerelease=true
+          fi
+
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+            --jq '.[].tag_name' > "${RUNNER_TEMP}/release-tags.txt"
+          if grep -Fxq -- "$tag" "${RUNNER_TEMP}/release-tags.txt"; then
+            gh release edit "$tag" --title "$tag" \
+              --notes-file "${RUNNER_TEMP}/release-notes.md" --prerelease="$prerelease"
+          else
+            gh release create "$tag" --verify-tag --title "$tag" \
+              --notes-file "${RUNNER_TEMP}/release-notes.md" --prerelease="$prerelease"
+          fi
+
+  alpha:
+    name: Deploy ${{ github.ref_name }} to alpha
+    needs: github-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Trigger alpha GitOps
+        env:
+          GH_TOKEN: ${{ secrets.GHP_TOKEN }}
+          PROJECT: ${{ github.event.repository.name }}
+        run: |
+          gh api repos/opspresso/argocd-env-demo/dispatches \
+            -f event_type=gitops \
+            -f 'client_payload[username]=nalbam' \
+            -f "client_payload[project]=${PROJECT}" \
+            -f "client_payload[version]=${GITHUB_REF_NAME}" \
+            -f 'client_payload[container]=app' \
+            -f 'client_payload[phase]=alpha' \
+            -f 'client_payload[type]=helm'
+
+  prod:
+    name: Deploy ${{ github.ref_name }} to prod
+    needs: alpha
+    if: ${{ !contains(github.ref_name, '-') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment:
+      name: prod
+    steps:
+      - name: Trigger prod GitOps
+        env:
+          GH_TOKEN: ${{ secrets.GHP_TOKEN }}
+          PROJECT: ${{ github.event.repository.name }}
+        run: |
+          gh api repos/opspresso/argocd-env-demo/dispatches \
+            -f event_type=gitops \
+            -f 'client_payload[username]=nalbam' \
+            -f "client_payload[project]=${PROJECT}" \
+            -f "client_payload[version]=${GITHUB_REF_NAME}" \
+            -f 'client_payload[container]=app' \
+            -f 'client_payload[phase]=prod' \
+            -f 'client_payload[type]=helm' \
+            -f 'client_payload[auto_merge]=true'
