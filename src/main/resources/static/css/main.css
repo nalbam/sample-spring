@@ -1,3 +1,15 @@
+/* Bootstrap 5 dropped .jumbotron; keep its v4 spacing for the page header. */
+.hero {
+    padding: 4rem 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 575.98px) {
+    .hero {
+        padding: 2rem 1rem;
+    }
+}
+
 .hello-title {
     color: darkgreen;
 }

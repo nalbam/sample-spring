@@ -89,6 +89,58 @@ answer when the JMX agent is off), and the Datadog and CodeGuru startup logs. It
 not configure a Datadog Agent or AWS credentials, so it does not check that data
 reaches Datadog or CodeGuru.
 
+## Web pages
+
+`/` shows the host, date, cluster, profile, message and version, and two thumbs
+buttons. `/drop/{rate}` (and `/drop` with a random rate) calls `/success/{rate}`
+every 100 ms. It draws one canvas drop per response, with one color per version and
+crimson for errors. A stacked progress bar shows the share of each version or error.
+
+The templates load these CDN assets with Subresource Integrity (SRI) hashes:
+
+| Asset | Version | Migration notes |
+|---|---|---|
+| Bootstrap CSS (jsDelivr) | 5.3.8 | [Bootstrap 5.3 migration](https://getbootstrap.com/docs/5.3/migration/) |
+| jQuery (code.jquery.com) | 4.0.0 | [jQuery 4.0 upgrade guide](https://jquery.com/upgrade-guide/4.0/) |
+| Font Awesome Free CSS (jsDelivr) | 7.3.1 | [Font Awesome upgrade](https://docs.fontawesome.com/upgrade/upgrade-on-web) |
+
+The pages use no Bootstrap JavaScript components, so they do not load Bootstrap JS.
+
+### Counter buttons need an external API
+
+`static/js/counter.js` sends `GET` (every second), `POST` (thumbs up) and `DELETE`
+(thumbs down) to `/counter/{up|down}` on the sample-node host. It finds that host by
+replacing `sample-<name>` in the page host with `sample-node`. **The current
+sample-node does not provide `/counter`.** The counts therefore stay at `0` and the
+browser logs failed requests. This repository does not include a counter backend.
+
+### Browser check
+
+`src/test/browser/check.mjs` checks the templates and scripts in headless Chrome at
+1280x800 and 375x812. It needs Node.js 22 or later, Chrome or Chromium, and network
+access to the CDNs. It has no npm dependencies and is not part of `mvn verify` or CI.
+
+```bash
+CHROME_BIN=/path/to/chrome node src/test/browser/check.mjs
+```
+
+A local fixture server serves the real templates and `static/` files. It fakes
+`/counter/{name}` and `/success/{rate}` (`100` returns version `v-fixture`; other rates
+return HTTP 500), so the check never calls sample-node. Every line must print `ok`,
+and the exit code is non-zero on failure. The check covers:
+
+- jQuery 4.0.0, Bootstrap 5 button colors, Font Awesome 7 icons, header padding and
+  no horizontal overflow.
+- Counters: the initial `GET` fills both counts, one click sends exactly one `POST` or
+  `DELETE`, the response updates the count, and only one 1-second poll runs.
+- `/drop/100` and `/drop/0`: the canvas fills the viewport, and the stacked progress
+  bar adds up to 100% with version colors or crimson for errors.
+
+The fixture shows that the page code works with controlled responses. It does not
+show that a real counter API exists or works. `EndpointTests` (`mvn verify`) checks
+that `/` and `/drop/{rate}` render as HTML. To see the Thymeleaf values, open `/` on
+the running jar.
+
 ## CI
 
 `.github/workflows/push.yml` (check name `build`) runs on pull requests and pushes to

@@ -208,16 +208,27 @@ class Dropper {
     progress() {
         var e = document.getElementById("drop-rate");
         if (e) {
-            var version;
-            var width;
-            var t = '<div class="progress">';
+            // Bootstrap 5.3 stacked progress: one .progress (role, width) per segment.
+            var stacked = document.createElement("div");
+            stacked.className = "progress-stacked";
             for (var i = 0; i < this.versions.length; i++) {
-                version = this.versions[i];
-                width = version.x * 100 / this.particles.length;
-                t += `<div class="progress-bar" role="progressbar" style="width:${width}%; background-color: ${version.c};"></div>`;
+                var version = this.versions[i];
+                var width = version.x * 100 / this.particles.length;
+                var segment = document.createElement("div");
+                segment.className = "progress";
+                segment.setAttribute("role", "progressbar");
+                segment.setAttribute("aria-label", version.v ? `version ${version.v}` : "error");
+                segment.setAttribute("aria-valuenow", Math.round(width));
+                segment.setAttribute("aria-valuemin", "0");
+                segment.setAttribute("aria-valuemax", "100");
+                segment.style.width = `${width}%`;
+                var bar = document.createElement("div");
+                bar.className = "progress-bar";
+                bar.style.backgroundColor = version.c;
+                segment.appendChild(bar);
+                stacked.appendChild(segment);
             }
-            t += '</div>';
-            e.innerHTML = t;
+            e.replaceChildren(stacked);
         }
     }
 }
@@ -231,7 +242,7 @@ function health() {
     var url = `${location.protocol}//${location.host}/success/${rate}?q=${ms}`;
     $.ajax({
         url: url,
-        type: 'get',
+        method: 'GET',
         success: function (res, status) {
             // console.log(`health : ${status}`);
             if (res) {
