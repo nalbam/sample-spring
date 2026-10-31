@@ -7,10 +7,13 @@ on:
 permissions:
   contents: read
 
-# Releases share the latest image tag and deployment targets.
+# Releases share the latest image tag and deployment targets. The default
+# queue (single) cancels an older pending run when a new one arrives; queue: max
+# keeps up to 100 pending runs.
 concurrency:
   group: release-${{ github.workflow }}
   cancel-in-progress: false
+  queue: max
 
 env:
   IMAGES: |

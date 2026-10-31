@@ -76,9 +76,11 @@ The [release workflow](.github/workflows/release.yml) runs the CI workflow above
    Prereleases stop at alpha.
 
 Each stage requires the previous stage to succeed. Release runs are serialized across
-tags because they share `latest` and the deployment targets; a queued release waits
-and is not cancelled. GitOps dispatches only request a deployment: their success, and
-the prod job starting after alpha, do not confirm that any rollout has completed.
+tags because they share `latest` and the deployment targets. With `queue: max`, up to
+100 releases wait in the queue without being cancelled; GitHub cancels any release
+that arrives while 100 are already waiting. GitOps dispatches only request a
+deployment: their success, and the prod job starting after alpha, do not confirm that
+any rollout has completed.
 Check Argo CD for the actual rollout.
 
 ### Artifacts
