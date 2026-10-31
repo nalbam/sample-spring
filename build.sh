@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Builds with the Maven version pinned in .mvn/wrapper/maven-wrapper.properties.
+
 mkdir -p target
 
 if [ -f ./target/VERSION ]; then
@@ -9,7 +11,7 @@ elif [ -f ./VERSION ]; then
 fi
 
 if [ "${VERSION}" == "" ]; then
-  mvn -B verify
+  ./mvnw -B verify
 else
-  mvn -B verify -Dthis.version=${VERSION}
+  ./mvnw -B verify -Dthis.version=${VERSION}
 fi

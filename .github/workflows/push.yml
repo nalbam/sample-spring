@@ -32,13 +32,35 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
-          distribution: 'corretto'
-          java-version: '25'
+          distribution: 'temurin'
+          java-version: '27'
           cache: maven
 
+      # build.sh runs ./mvnw, which uses the Maven version pinned in .mvn/wrapper.
       - name: Run Build
         run: |
           ./build.sh
+
+      - name: Check jar responds
+        run: |
+          java -jar target/*.jar --spring.profiles.active=default > "${RUNNER_TEMP}/jar.log" 2>&1 &
+          pid=$!
+          for i in $(seq 1 60); do
+            if curl -fs -o /dev/null http://localhost:8080/health; then
+              break
+            fi
+            sleep 1
+          done
+          status=0
+          for path in / /health /live /actuator/health /actuator/prometheus; do
+            curl -fsS -o /dev/null "http://localhost:8080${path}" || { echo "::error::GET ${path} failed"; status=1; }
+          done
+          kill "$pid" 2>/dev/null || true
+          wait "$pid" || true
+          if [ "$status" -ne 0 ]; then
+            cat "${RUNNER_TEMP}/jar.log"
+          fi
+          exit "$status"
 
       # Tag runs (release.yml) hand the tested jar to the image job of the same run.
       - name: Upload jar
@@ -65,3 +87,8 @@ jobs:
           done
           docker logs sample-spring-ci
           exit 1
+
+      - name: Check Java agents
+        run: |
+          docker rm -f sample-spring-ci
+          ./scripts/smoke-agents.sh sample-spring:ci

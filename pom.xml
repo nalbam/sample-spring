@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <java.version>25</java.version>
+    <java.version>27</java.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -141,6 +141,29 @@
 
   <build>
     <plugins>
+      <!-- Fail fast when not built with ./mvnw (Maven 3.10.0) on JDK ${java.version} -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-build-tools</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.10.0,)</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[${java.version},)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- JDK 23+ no longer runs annotation processors found on the classpath -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

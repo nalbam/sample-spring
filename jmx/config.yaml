@@ -1,14 +1,11 @@
-# https://github.com/prometheus/jmx_exporter
+# JMX Exporter 1.7.0 Java agent configuration.
+# entrypoint.sh starts the agent as -javaagent:jmx_javaagent.jar=8081:config.yaml,
+# which serves http://<host>:8081/metrics.
+# https://github.com/prometheus/jmx_exporter/blob/1.7.0/website/docs/reference/configuration.md
 ---
-# startDelaySeconds: 0
-# hostPort: 127.0.0.1:8080
-username:
-password:
-# jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:8080/jmxrmi
-ssl: false
 lowercaseOutputName: true
 lowercaseOutputLabelNames: true
-# whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
-# blacklistObjectNames: ["org.apache.cassandra.metrics:type=ColumnFamily,*"]
+# includeObjectNames: ["java.lang:*"]
+# excludeObjectNames: ["java.lang:type=MemoryPool,*"]
 rules:
   - pattern: ".*"
