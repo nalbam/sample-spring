@@ -9,35 +9,28 @@ on:
     branches:
       - main
       - master
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-
-      - name: Bump Version
-        id: bump
-        if: github.event_name == 'push'
-        uses: opspresso/action-builder@master
-        with:
-          args: --version
-
-      - name: Release to GitHub
-        if: github.event_name == 'push'
-        uses: opspresso/action-builder@master
-        with:
-          args: --release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME: ${{ steps.bump.outputs.version }}
+          persist-credentials: false
 
       - name: Setup Java
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: 'corretto'
           java-version: '25'
@@ -47,68 +40,28 @@ jobs:
         run: |
           ./build.sh
 
-      - name: Trigger for GitOps
-        if: github.event_name == 'push'
-        uses: opspresso/action-builder@master
+      # Tag runs (release.yml) hand the tested jar to the image job of the same run.
+      - name: Upload jar
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          args: --dispatch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHP_TOKEN }}
-          GITOPS_REPO: "opspresso/argocd-env-demo"
-          PROJECT: ${{ github.event.repository.name }}
-          VERSION: ${{ steps.bump.outputs.version }}
+          name: jar-${{ github.sha }}
+          path: target/*.jar
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 7
 
-      - name: Set up QEMU
-        if: github.event_name == 'push'
-        uses: docker/setup-qemu-action@v4
+      - name: Build image
+        run: docker build -t sample-spring:ci .
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Login to DockerHub
-        if: github.event_name == 'push'
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Login to Github Container Registry
-        if: github.event_name == 'push'
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Docker meta
-        id: meta
-        if: github.event_name == 'push'
-        uses: docker/metadata-action@v6
-        with:
-          images: |
-            nalbam/${{ github.event.repository.name }}
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
-          tags: |
-            type=semver,pattern={{raw}},value=${{ steps.bump.outputs.version }}
-
-      # pull request: build the image for linux/amd64 only and do not push it
-      - name: Build image (pull request)
-        if: github.event_name == 'pull_request'
-        uses: docker/build-push-action@v7
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          platforms: linux/amd64
-          push: false
-
-      - name: Build and push
-        if: github.event_name == 'push'
-        uses: docker/build-push-action@v7
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Check container responds on /health
+        run: |
+          docker run -d --name sample-spring-ci -e SPRING_PROFILES_ACTIVE=default -p 8080:8080 sample-spring:ci
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8080/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs sample-spring-ci
+          exit 1
