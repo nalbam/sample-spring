@@ -16,7 +16,7 @@ properties([
 ])
 podTemplate(label: label, containers: [
   containerTemplate(name: "builder", image: "opspresso/builder:v0.8.7-kube", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "maven", image: "maven:3.5.4-jdk-8-alpine", command: "cat", ttyEnabled: true)
+  containerTemplate(name: "maven", image: "maven:3.10.0-eclipse-temurin-27-alpine", command: "cat", ttyEnabled: true)
 ], volumes: [
   hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
   hostPathVolume(mountPath: "/home/jenkins/.m2", hostPath: "/home/jenkins/.m2")
