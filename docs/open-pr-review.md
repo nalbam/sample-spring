@@ -159,4 +159,8 @@ with `EndpointTests`), checks the jar endpoints, builds the Docker image, checks
 | --- | --- |
 | Reviewed `main` `58184e3` | `build` [run 41205120572](https://github.com/nalbam/sample-spring/actions/runs/41205120572): success (all steps passed; *Upload jar* is skipped on non-tag runs) |
 | Reviewed `main` `58184e3`, local | `./mvnw -B verify` with JDK 27.0.1 and Maven 3.10.0: `BUILD SUCCESS`, 14 tests, 0 failures. Jar, Docker and agent checks were not run locally. |
-| Work PR for this document | Runs on the work PR after rovr pushes it. The result is not known when this document was written. See that PR's checks. |
+| Work PR [#255](https://github.com/nalbam/sample-spring/pull/255) `d368721` (`d36872132f9fc3d49b75e9b9397db9906d9fd672`) | `build` [run 41286236556](https://github.com/nalbam/sample-spring/actions/runs/41286236556): success. *Run Build*, *Check jar responds*, *Build image*, *Check container responds on /health* and *Check Java agents* passed; *Upload jar* is skipped on non-tag runs. |
+
+Commit `d368721` changes only `README.md` and this document on top of `58184e3`. Later
+commits on the work PR that update this document get their own `build` run in the
+PR checks.
