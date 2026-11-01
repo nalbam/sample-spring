@@ -152,6 +152,31 @@ image from `target/*.jar`, checks that the container answers `/health` with
 repository: it does not bump versions, create releases, push images or dispatch
 deployments.
 
+## Dependency review
+
+[docs/open-pr-review.md](docs/open-pr-review.md) records the open dependency PRs
+(#246, #249, #250), the reviewed `main` commit, and why each PR can be closed.
+
+To check again, list the open PRs. `gh` must be authenticated (`gh auth status`). If
+the command fails, the list is unknown; do not read the failure as "no open PRs".
+
+```bash
+gh api --paginate 'repos/nalbam/sample-spring/pulls?state=open&per_page=100' \
+  --jq '.[] | [.number, .user.login, .head.ref, .title] | @tsv'
+```
+
+Spring Boot manages the Logback and Jackson versions; `pom.xml` does not pin them. To
+see the managed versions and the resolved coordinates (JDK 27, `./mvnw`):
+
+```bash
+./mvnw -B help:effective-pom -Doutput=target/effective-pom.xml
+grep -nE '<(logback|jackson-bom|jackson-2-bom)\.version>' target/effective-pom.xml
+./mvnw -B dependency:tree -Dincludes='ch.qos.logback,tools.jackson.core,com.fasterxml.jackson.core'
+```
+
+Jackson 3 uses the group `tools.jackson.core`; Jackson 2 uses
+`com.fasterxml.jackson.core`. They are different artifacts.
+
 ## Release
 
 Branch pushes only run CI. To release, push a `v*` SemVer tag such as `v0.10.1` or
