@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeoutException;
 import java.util.Date;
@@ -68,9 +69,11 @@ public class RestfulController {
         log.info("get /health");
 
         Map<String, Object> map = PackageUtil.getData(this.getClass());
-        map.put("result", "OK");
+        map.put("result", "ok");
         map.put("type", "health");
         map.put("version", version);
+        // seconds since JVM start, not since the request or controller creation
+        map.put("uptime", ManagementFactory.getRuntimeMXBean().getUptime() / 1000);
 
         return map;
     }

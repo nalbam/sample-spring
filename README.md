@@ -41,6 +41,30 @@ for path in / /health /live /actuator/health /actuator/prometheus; do
 done
 ```
 
+## Health response
+
+`GET /health` follows the health contract shared by sample-node, sample-spring and
+sample-tomcat. sample-node's `/spring` and `/tomcat` paths pass this body through
+unchanged, so callers can rely on the same fields.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `result` | string | lowercase `ok` or `error`. This app returns `ok` while it can answer. |
+| `version` | string | the `version` property (`VERSION` env, default `v0.0.0`) |
+| `uptime` | integer | whole seconds since the JVM process started (JVM uptime in ms / 1000), `0` or more. It does not count from the request or from controller creation. |
+| `type` | string | kept from the existing response: always `health` |
+
+Other fields, such as `artifactId` from the jar manifest, may also appear. Example:
+
+```bash
+$ curl -s localhost:8080/health
+{"result":"ok","artifactId":"sample-spring","type":"health","version":"v0.0.0","uptime":4}
+```
+
+Only `/health` uses this contract. `/live`, `/read`, `/loop/{count}` and the other
+endpoints still return `"result":"OK"`, and `/actuator/health` returns Spring Boot
+Actuator's `{"status":"UP"}`.
+
 The app does not need a database. The JPA and PostgreSQL dependencies in `pom.xml` are
 commented out, and the repository has no Docker Compose file for them.
 
