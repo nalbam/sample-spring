@@ -10,11 +10,11 @@ permissions:
   contents: read
 
 # Releases share the latest image tag and the deploy targets, so they run one at
-# a time. GitHub keeps one pending run per group: a newer tag cancels an older
-# waiting run, which must then be re-run.
+# a time. queue: max keeps up to 100 waiting runs instead of only the newest one.
 concurrency:
   group: release-${{ github.repository }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   tag:

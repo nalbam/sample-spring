@@ -39,7 +39,7 @@ Runtime contract of every image:
 
 ## Build and test locally
 
-Prerequisites: Docker with Buildx, and `jq`.
+Prerequisites: Docker with Buildx, `jq`, and for the artifact `tar`, `gzip` and `sha256sum`.
 
 ```bash
 docker buildx build --load -t app:dev --build-arg VERSION=v0.0.0-dev .   # build and test
@@ -87,8 +87,9 @@ GitHub Actions -> GitHub Packages (GHCR) -> GitHub Release -> deploy.
 | `alpha` | Sends the GitOps event for phase `alpha`. Runs only when the variable `GITOPS_REPO` is set. |
 | `prod` | Stable tags only. Uses the environment `prod`; add required reviewers there to approve each deploy. Sends phase `prod` with `auto_merge: true`. |
 
-Releases run one at a time per repository. A running release is not cancelled.
-GitHub keeps one waiting run per concurrency group, so a newer tag cancels an older waiting run. Re-run that run from the **Actions** tab.
+Releases run one at a time per repository. A running release is not cancelled, and up to 100 later tags wait
+(`queue: max`). A run that waits for the `prod` approval is still running, so later tags wait until the approval
+or its rejection.
 
 Repository settings:
 

@@ -44,7 +44,8 @@ ready() { http -f -o /dev/null "http://localhost:$PORT/health" 2> /dev/null; }
 start() {
   cleanup
   docker run -d --name "$NAME" -e VERSION="$VERSION" "$@" "$IMAGE" > /dev/null
-  for _ in $(seq "$TIMEOUT"); do
+  local deadline=$((SECONDS + TIMEOUT))
+  while [ "$SECONDS" -lt "$deadline" ]; do
     [ "$(docker inspect -f '{{.State.Running}}' "$NAME")" = true ] || fail "container exited"
     ready && return 0
     sleep 1
