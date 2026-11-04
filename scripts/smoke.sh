@@ -25,6 +25,9 @@ NAME="smoke-$$-$RANDOM"
 cleanup() { docker rm -f "$NAME" > /dev/null 2>&1 || true; }
 trap cleanup EXIT
 
+# Pull once, so a pull error shows here instead of as a failed health check.
+docker pull -q "$CURL_IMAGE" > /dev/null
+
 fail() {
   echo "FAIL: $*" >&2
   docker logs "$NAME" >&2 || true
