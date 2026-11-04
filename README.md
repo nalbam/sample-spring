@@ -9,7 +9,7 @@ A sample Spring Boot app for Kubernetes demos, with optional Java agents.
 
 ```bash
 docker run -d --name sample-spring -p 8080:8080 ghcr.io/nalbam/sample-spring
-curl http://localhost:8080/health
+until curl -fs http://localhost:8080/health; do sleep 1; done   # the JVM starts in a few seconds
 docker rm -f sample-spring
 ```
 
@@ -19,7 +19,7 @@ The image uses `eclipse-temurin:27-jre-alpine` and runs as the non-root uid `100
 | Environment variable | Default | Description |
 | --- | --- | --- |
 | `PORT` | `8080` | HTTP listen port. |
-| `VERSION` | image tag | Version that `/health` and `/` report. |
+| `VERSION` | `v0.0.0-dev` | Version that `/health` and `/` report. Release images set it to their tag; a local build sets it with `--build-arg VERSION=...`. |
 | `SPRING_PROFILES_ACTIVE` | `default` | Spring profile. |
 | `JAVA_OPTS` | - | Options passed to `java`. |
 

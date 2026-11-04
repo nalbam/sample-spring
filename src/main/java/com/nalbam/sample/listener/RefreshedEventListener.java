@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 public class RefreshedEventListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Value("${spring.profiles.active:default}")
+    @Value("${spring.profiles.active:${spring.profiles.default:default}}")
     private String profile;
 
     @Value("${message}")

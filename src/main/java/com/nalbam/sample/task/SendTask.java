@@ -17,7 +17,7 @@ import java.util.Random;
 @Component
 public class SendTask {
 
-    @Value("${spring.profiles.active:default}")
+    @Value("${spring.profiles.active:${spring.profiles.default:default}}")
     private String profile;
 
     // @Value("${spring.application.name}")
