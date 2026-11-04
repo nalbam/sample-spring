@@ -1,176 +1,128 @@
-def SERVICE_GROUP = "sample"
-def SERVICE_NAME = "spring"
-def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
-def REPOSITORY_URL = "https://github.com/nalbam/sample-spring"
-def REPOSITORY_SECRET = ""
-def SLACK_TOKEN_DEV = ""
-def SLACK_TOKEN_DQA = ""
+// The same file is used in every sample-* repository. See docs/pipeline.md.
+//
+// GitHub -> Jenkins -> (Nexus) -> Harbor or Amazon ECR -> GitOps deploy.
+// Branch and pull request builds run build, test and smoke test. Tag builds
+// (v*) also publish the artifact, push the image and deploy.
+//
+// Jenkins environment variables (global or folder properties):
+//   REGISTRY          Image registry and path, for example harbor.example.com/sample
+//                     or 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com. Required for tags.
+//   NEXUS_URL         Nexus base URL. When empty, the Nexus stage is skipped.
+//   NEXUS_REPOSITORY  Nexus raw hosted repository. Default raw-releases.
+//   GITOPS_REPO       owner/repo that receives the deploy event. When empty, deploy stages are skipped.
+// Jenkins credentials:
+//   nexus             Username with password, for NEXUS_URL.
+//   registry          Username with password, for a Harbor REGISTRY. ECR uses the agent's AWS credentials.
+//   gitops-token      Secret text, a GitHub token that can dispatch events to GITOPS_REPO.
 
-def label = "worker-${UUID.randomUUID().toString()}"
+pipeline {
+  agent any
 
-@Library("github.com/nalbam/jenkinsfiles")
-def builder = new com.opspresso.Builder()
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '30'))
+    disableConcurrentBuilds()
+    timeout(time: 60, unit: 'MINUTES')
+  }
 
-properties([
-  buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
-])
-podTemplate(label: label, containers: [
-  containerTemplate(name: "builder", image: "opspresso/builder:v0.8.7-kube", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "maven", image: "maven:3.10.0-eclipse-temurin-27-alpine", command: "cat", ttyEnabled: true)
-], volumes: [
-  hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
-  hostPathVolume(mountPath: "/home/jenkins/.m2", hostPath: "/home/jenkins/.m2")
-]) {
-  node(label) {
-    stage("Prepare") {
-      container("builder") {
-        builder.prepare(IMAGE_NAME)
+  stages {
+    stage('Prepare') {
+      steps {
+        script {
+          env.APP_NAME = sh(returnStdout: true, script: 'basename -s .git "$(git config --get remote.origin.url)"').trim()
+          env.VERSION = env.TAG_NAME ?: "v0.0.0-ci.${env.GIT_COMMIT}"
+          env.PRERELEASE = ''
+          if (env.TAG_NAME) {
+            env.PRERELEASE = sh(returnStdout: true, script: 'scripts/release.sh tag "$TAG_NAME"').trim() - 'prerelease='
+          }
+          currentBuild.displayName = "#${env.BUILD_NUMBER} ${env.VERSION}"
+        }
       }
     }
-    stage("Checkout") {
-      container("builder") {
-        try {
-          if (REPOSITORY_SECRET) {
-            git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
+
+    // The Dockerfile build stage runs the tests.
+    stage('Build and test') {
+      steps {
+        sh 'docker buildx build --pull --load --build-arg VERSION="$VERSION" --tag "$APP_NAME:ci-$BUILD_NUMBER" .'
+      }
+    }
+
+    stage('Smoke test') {
+      steps {
+        sh 'scripts/smoke.sh "$APP_NAME:ci-$BUILD_NUMBER" "$VERSION"'
+      }
+    }
+
+    stage('Artifact') {
+      steps {
+        sh 'scripts/release.sh artifact "$APP_NAME" "$VERSION" dist'
+        archiveArtifacts artifacts: 'dist/*', fingerprint: true
+      }
+    }
+
+    stage('Nexus') {
+      when {
+        buildingTag()
+        expression { env.NEXUS_URL }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
+          sh 'scripts/release.sh nexus "$APP_NAME" "$VERSION" dist'
+        }
+      }
+    }
+
+    stage('Image') {
+      when { buildingTag() }
+      steps {
+        script {
+          if (!env.REGISTRY) {
+            error('REGISTRY is not set. Set it to a Harbor project or an Amazon ECR registry.')
+          }
+          if (env.REGISTRY ==~ /^[0-9]{12}\.dkr\.ecr\.[a-z0-9-]+\.amazonaws\.com(\/.*)?$/) {
+            sh 'scripts/release.sh image "$REGISTRY" "$APP_NAME" "$VERSION"'
           } else {
-            git(url: REPOSITORY_URL, branch: BRANCH_NAME)
+            withCredentials([usernamePassword(credentialsId: 'registry', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
+              sh 'scripts/release.sh image "$REGISTRY" "$APP_NAME" "$VERSION"'
+            }
           }
-        } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Checkout")
-          throw e
         }
+      }
+    }
 
-        builder.scan("java")
+    stage('Deploy alpha') {
+      when {
+        buildingTag()
+        expression { env.GITOPS_REPO }
       }
-    }
-    stage("Build") {
-      container("maven") {
-        try {
-          builder.mvn_build()
-          builder.success(SLACK_TOKEN_DEV, "Build")
-        } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Build")
-          throw e
+      steps {
+        withCredentials([string(credentialsId: 'gitops-token', variable: 'GITOPS_TOKEN')]) {
+          sh 'scripts/release.sh deploy alpha'
         }
       }
     }
-    stage("Tests") {
-      container("maven") {
-        try {
-          builder.mvn_test()
-        } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Tests")
-          throw e
+
+    // Stable tags only, after a person approves.
+    stage('Deploy prod') {
+      when {
+        beforeInput true
+        buildingTag()
+        expression { env.GITOPS_REPO && env.PRERELEASE == 'false' }
+      }
+      input {
+        message 'Deploy to prod?'
+        ok 'Deploy'
+      }
+      steps {
+        withCredentials([string(credentialsId: 'gitops-token', variable: 'GITOPS_TOKEN')]) {
+          sh 'AUTO_MERGE=true scripts/release.sh deploy prod'
         }
       }
     }
-    stage("Code Analysis") {
-      container("maven") {
-        try {
-          builder.mvn_sonar()
-        } catch (e) {
-          builder.failure(SLACK_TOKEN_DEV, "Code Analysis")
-          throw e
-        }
-      }
-    }
-    if (BRANCH_NAME == "master") {
-      stage("Build Image") {
-        parallel(
-          "Build Docker": {
-            container("builder") {
-              try {
-                builder.build_image()
-              } catch (e) {
-                builder.failure(SLACK_TOKEN_DEV, "Build Docker")
-                throw e
-              }
-            }
-          },
-          "Build Charts": {
-            container("builder") {
-              try {
-                builder.build_chart()
-              } catch (e) {
-                builder.failure(SLACK_TOKEN_DEV, "Build Charts")
-                throw e
-              }
-            }
-          }
-        )
-      }
-      stage("Deploy Local") {
-        container("builder") {
-          try {
-            // deploy(cluster, namespace, sub_domain, profile, values_path)
-            builder.deploy("local", "${SERVICE_GROUP}", "${IMAGE_NAME}-sample", "dev")
-            builder.success(SLACK_TOKEN_DEV, "Deploy LOCAL")
-          } catch (e) {
-            builder.failure(SLACK_TOKEN_DEV, "Deploy LOCAL")
-            throw e
-          }
-        }
-      }
-      // stage("Deploy Dev") {
-      //   container("builder") {
-      //     try {
-      //       // deploy(cluster, namespace, sub_domain, profile, values_path)
-      //       builder.deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
-      //       builder.success(SLACK_TOKEN_DEV, "Deploy DEV")
-      //     } catch (e) {
-      //       builder.failure(SLACK_TOKEN_DEV, "Deploy DEV")
-      //       throw e
-      //     }
-      //   }
-      // }
-      // stage("Request Stage") {
-      //   container("builder") {
-      //     builder.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
-      //     timeout(time: 60, unit: "MINUTES") {
-      //       input(message: "${builder.name} ${builder.version} to stage")
-      //     }
-      //   }
-      // }
-      // stage("Proceed Stage") {
-      //   container("builder") {
-      //     builder.proceed(SLACK_TOKEN_DQA, "Deploy STAGE", "stage")
-      //     timeout(time: 60, unit: "MINUTES") {
-      //       input(message: "${builder.name} ${builder.version} to stage")
-      //     }
-      //   }
-      // }
-      // stage("Deploy Stage") {
-      //   container("builder") {
-      //     try {
-      //       // deploy(cluster, namespace, sub_domain, profile, values_path)
-      //       builder.deploy("stage", "${SERVICE_GROUP}-stage", "${IMAGE_NAME}-stage", "stage")
-      //       builder.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
-      //     } catch (e) {
-      //       builder.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
-      //       throw e
-      //     }
-      //   }
-      // }
-      // stage("Proceed Prod") {
-      //   container("builder") {
-      //     builder.proceed(SLACK_TOKEN_DQA, "Deploy PROD", "prod")
-      //     timeout(time: 60, unit: "MINUTES") {
-      //       input(message: "${builder.name} ${builder.version} to prod")
-      //     }
-      //   }
-      // }
-      // stage("Deploy Prod") {
-      //   container("builder") {
-      //     try {
-      //       // deploy(cluster, namespace, sub_domain, profile, values_path)
-      //       builder.deploy("prod", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
-      //       builder.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
-      //     } catch (e) {
-      //       builder.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
-      //       throw e
-      //     }
-      //   }
-      // }
+  }
+
+  post {
+    always {
+      sh 'docker image rm "$APP_NAME:ci-$BUILD_NUMBER" > /dev/null 2>&1 || true'
     }
   }
 }
