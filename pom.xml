@@ -141,7 +141,7 @@
 
   <build>
     <plugins>
-      <!-- Fail fast when not built with ./mvnw (Maven 3.10.0) on JDK ${java.version} -->
+      <!-- Fail fast when not built with Maven 3.10.0 or later on JDK ${java.version} -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

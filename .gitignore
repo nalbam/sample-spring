@@ -1,49 +1,6 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows shortcuts
-*.lnk
-
-# Mac
 .DS_Store
-
-# Java
-.project
-.classpath
-.factorypath
-
-# Java
-*.class
-*.jar
-*.war
-*.ear
-
-# Maven
-target/
-build/
-bin/
-
-# Nodejs
-node_modules/
-package-lock.json
-dist/
-
-# JetBrains
 .idea/
 *.iml
-
-# Eclipse
-.settings/
-.metadata/
-
-# Temp
-*.pid
-*.log
-*.tmp
+.vscode/
+dist/
+target/

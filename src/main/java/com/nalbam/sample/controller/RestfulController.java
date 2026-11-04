@@ -24,7 +24,7 @@ import java.util.TimeZone;
 @RestController
 public class RestfulController {
 
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:default}")
     private String profile;
 
     @Value("${version}")
