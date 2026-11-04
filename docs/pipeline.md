@@ -6,14 +6,14 @@ The repositories differ only in the `Dockerfile` and in `scripts/smoke.sh`.
 | Trigger | GitHub Actions | Jenkins |
 | --- | --- | --- |
 | Pull request or push to `main` | `ci.yml`: build, test, smoke test, artifact | Build, test, smoke test, artifact |
-| Tag `v*` | `release.yml`: CI, then GHCR image, GitHub Release, deploy | CI, then Nexus artifact, Harbor or ECR image, deploy |
+| Tag `v*` | `release.yml`: CI, then GHCR image, GitHub Release, deploy | CI, then SonarQube, Nexus artifact, Harbor or ECR image, deploy |
 
 ```mermaid
 flowchart LR
   tag["git tag v1.2.3"] --> gha["GitHub Actions"]
   tag --> jenkins["Jenkins"]
   gha --> ghcr["GitHub Packages<br/>ghcr.io"] --> ghrel["GitHub Release<br/>artifact"] --> gitops["GitOps<br/>repository_dispatch"]
-  jenkins --> nexus["Nexus<br/>artifact"] --> registry["Harbor or ECR"] --> gitops
+  jenkins --> sonar["SonarQube<br/>quality gate"] --> nexus["Nexus<br/>artifact"] --> registry["Harbor or ECR"] --> gitops
   gitops --> argocd["Argo CD"]
 ```
 
@@ -25,8 +25,9 @@ Use one release path for a repository. When both paths deploy, each tag is deplo
 | --- | --- |
 | `Dockerfile` | Stage `build` runs the tests on the build platform. Stage `artifact` holds the release artifact only. The last stage is the runtime image. A failed test fails every image build. |
 | `scripts/smoke.sh IMAGE [VERSION]` | Starts the image and checks the runtime contract. Needs only `docker` and `jq` on the host. |
-| `scripts/release.sh` | Release steps that GitHub Actions and Jenkins share: `tag`, `artifact`, `nexus`, `image`, `deploy`. |
-| `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `Jenkinsfile`, `docs/pipeline.md` | The same in every repository. |
+| `scripts/release.sh` | Release steps that GitHub Actions and Jenkins share: `tag`, `artifact`, `deploy`. |
+| `Jenkinsfile` | Calls `samplePipeline()` from the Jenkins shared library [nalbam/jenkinsfiles](https://github.com/nalbam/jenkinsfiles). |
+| `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `Jenkinsfile`, `scripts/release.sh`, `docs/pipeline.md` | The same in every repository. |
 
 Runtime contract of every image:
 
@@ -79,10 +80,10 @@ GitHub Actions -> GitHub Packages (GHCR) -> GitHub Release -> deploy.
 
 | Job | Result |
 | --- | --- |
-| `tag` | Checks the tag. |
+| `tag` | Checks the tag. Only the highest stable tag (`vX.Y.Z`) moves `latest`. |
 | `ci` | Runs `ci.yml` on the tagged commit. |
-| `package` | Pushes `ghcr.io/<owner>/<repo>:<tag>` for `linux/amd64` and `linux/arm64`. A stable tag also moves `latest`. |
-| `release` | Creates the GitHub Release with generated notes, the image digest and the CI artifact (`<repo>-<tag>.tar.gz` and `.sha256`). A prerelease tag creates a prerelease. A re-run updates the release. |
+| `package` | Pushes `ghcr.io/<owner>/<repo>:<tag>` for `linux/amd64` and `linux/arm64`, and `latest` for the highest stable tag. A re-run of an older tag does not move `latest` back. |
+| `release` | Creates the GitHub Release with the image digest, generated notes and the CI artifact (`<repo>-<tag>.tar.gz` and `.sha256`). A prerelease tag creates a prerelease. A re-run updates the notes and the assets. |
 | `alpha` | Sends the GitOps event for phase `alpha`. Runs only when the variable `GITOPS_REPO` is set. |
 | `prod` | Stable tags only. Uses the environment `prod`; add required reviewers there to approve each deploy. Sends phase `prod` with `auto_merge: true`. |
 
@@ -112,48 +113,25 @@ scripts/smoke.sh "ghcr.io/nalbam/<repo>:$tag" "$tag"
 
 ## Release with Jenkins
 
-GitHub -> Jenkins -> Nexus (optional) -> Harbor or Amazon ECR -> deploy.
+GitHub -> Jenkins -> SonarQube -> Nexus -> Harbor or Amazon ECR -> deploy.
 
-Create a **Multibranch Pipeline** job for the repository with the GitHub branch source.
-Enable **Discover tags** and a build strategy that builds tags (for example the *Basic Branch Build Strategies* plugin),
-because Jenkins does not build discovered tags by default.
+`Jenkinsfile` calls `samplePipeline()` from the shared library
+[nalbam/jenkinsfiles](https://github.com/nalbam/jenkinsfiles). Its README lists the Jenkins setup:
+the library registration, plugins, agent prerequisites, environment variables and credentials.
 
-Agent prerequisites: `docker` with Buildx, `git`, `curl`, `jq`, and `gzip`.
-Multi-platform pushes need a Buildx builder that supports `linux/amd64` and `linux/arm64`, for example:
-
-```bash
-docker run --privileged --rm tonistiigi/binfmt --install arm64,amd64
-docker buildx create --name multiarch --driver docker-container --use
-```
-
-An ECR registry also needs the `aws` CLI and AWS credentials on the agent that allow
-`ecr:GetAuthorizationToken`, `ecr:DescribeRepositories`, `ecr:CreateRepository` and the image push actions.
-
-Stages:
-
-| Stage | Runs on | Result |
+| Stage | Runs when | Result |
 | --- | --- | --- |
-| Prepare | all builds | `APP_NAME` from the Git remote, `VERSION` from the tag or `v0.0.0-ci.<commit>`. Checks the tag. |
-| Build and test | all builds | `docker buildx build`; the `build` stage runs the tests. |
-| Smoke test | all builds | `scripts/smoke.sh`. |
-| Artifact | all builds | `dist/<repo>-<version>.tar.gz` and `.sha256`, archived in Jenkins. |
-| Nexus | tags, when `NEXUS_URL` is set | Uploads the artifact to `<NEXUS_URL>/repository/<NEXUS_REPOSITORY>/<repo>/<version>/`. |
-| Image | tags | Pushes `<REGISTRY>/<repo>:<version>` for `PLATFORMS`. A stable tag also moves `latest`. An ECR repository is created when it does not exist. |
-| Deploy alpha | tags, when `GITOPS_REPO` is set | Sends the GitOps event for phase `alpha`. |
-| Deploy prod | stable tags, when `GITOPS_REPO` is set | Waits for a person to approve, then sends phase `prod` with `auto_merge: true`. |
+| Prepare | always | `APP_NAME` from the Git remote, `VERSION` from the tag or `v0.0.0-ci.<commit>`. Checks the tag. |
+| Build and test | always | `docker buildx build`; the `build` stage runs the tests. |
+| Smoke test | always | `scripts/smoke.sh`. |
+| Artifact | always | `dist/<repo>-<version>.tar.gz` and `.sha256`, archived in Jenkins. |
+| SonarQube | `SONAR_HOST_URL` is set, on `main` and tags | Analysis of project `<repo>`; a failed quality gate fails the build. |
+| Nexus | `NEXUS_URL` is set, on tags | Uploads the artifact to `<NEXUS_URL>/repository/<NEXUS_REPOSITORY>/<repo>/<version>/`. |
+| Image | `REGISTRY` is set, on tags | Pushes `<REGISTRY>/<repo>:<version>`, and `latest` for the highest stable tag. |
+| Deploy alpha | `REGISTRY` and `GITOPS_REPO` are set, on tags | Sends the GitOps event for phase `alpha`. |
+| Approve prod, Deploy prod | as Deploy alpha, stable tags only | Waits up to 7 days for an approval without holding an executor, then sends phase `prod` with `auto_merge: true`. |
 
-Jenkins settings:
-
-| Kind | Name | Value |
-| --- | --- | --- |
-| Environment variable | `REGISTRY` | Harbor `harbor.example.com/<project>` or ECR `<account>.dkr.ecr.<region>.amazonaws.com`. Required for tags. |
-| Environment variable | `PLATFORMS` | Optional. Default `linux/amd64,linux/arm64`. |
-| Environment variable | `NEXUS_URL` | Optional. Nexus base URL, for example `https://nexus.example.com`. |
-| Environment variable | `NEXUS_REPOSITORY` | Optional. Raw hosted repository. Default `raw-releases`. |
-| Environment variable | `GITOPS_REPO` | Optional. Same as in GitHub Actions. |
-| Credential (username with password) | `registry` | Harbor robot account. Not used for ECR. |
-| Credential (username with password) | `nexus` | Nexus user with upload permission. |
-| Credential (secret text) | `gitops-token` | Same token as `GITOPS_TOKEN`. |
+An address that is not set skips its stage, and the build still succeeds.
 
 ## Deploy
 
