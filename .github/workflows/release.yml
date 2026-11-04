@@ -1,3 +1,5 @@
+# The same file is used in every sample-* repository.
+# tag -> ci -> package (GHCR image) -> release (GitHub Release) -> deploy
 name: release
 
 on:
@@ -7,188 +9,162 @@ on:
 permissions:
   contents: read
 
-# Releases share the latest image tag and deployment targets. The default
-# queue (single) cancels an older pending run when a new one arrives; queue: max
-# keeps up to 100 pending runs.
+# Releases share the latest image tag and the deploy targets, so they run one at
+# a time. queue: max keeps up to 100 waiting runs instead of only the newest one.
 concurrency:
-  group: release-${{ github.workflow }}
+  group: release-${{ github.repository }}
   cancel-in-progress: false
   queue: max
-
-env:
-  IMAGES: |
-    nalbam/sample-spring
-    ghcr.io/nalbam/sample-spring
-  PLATFORM: linux/amd64,linux/arm64
 
 jobs:
   tag:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    outputs:
+      prerelease: ${{ steps.tag.outputs.prerelease }}
+      latest: ${{ steps.tag.outputs.latest }}
     steps:
-      - name: Validate release tag
-        shell: bash
-        run: |
-          number='(0|[1-9][0-9]*)'
-          identifier='(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)'
-          pattern="^v${number}\.${number}\.${number}(-${identifier}(\.${identifier})*)?$"
-          if [[ ! "$GITHUB_REF_NAME" =~ $pattern || ${#GITHUB_REF_NAME} -gt 128 ]]; then
-            echo '::error::Expected vMAJOR.MINOR.PATCH with an optional prerelease suffix and no build metadata (128 characters maximum).'
-            exit 1
-          fi
+      # All tags, so the tag check can tell whether this is the highest stable tag.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check release tag
+        id: tag
+        run: scripts/release.sh tag "$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
 
-  verify:
+  ci:
     needs: tag
-    uses: ./.github/workflows/push.yml
+    uses: ./.github/workflows/ci.yml
 
-  image:
-    needs: verify
+  package:
+    needs: [tag, ci]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
       packages: write
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      digest: ${{ steps.push.outputs.digest }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      # The jar tested by the verify job; Dockerfile copies target/*.jar.
-      - name: Download jar
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: jar-${{ github.sha }}
-          path: target
+      - name: Image name
+        id: image
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
-      - name: Check jar
-        run: |
-          shopt -s nullglob
-          jars=(target/*.jar)
-          if [[ ${#jars[@]} -ne 1 ]]; then
-            echo "::error::Expected exactly one jar in target/, found ${#jars[@]}."
-            exit 1
-          fi
-          ls -l "${jars[0]}"
-
-      - name: Docker metadata
+      # The raw tag keeps the "v" prefix. Only the highest stable tag moves latest,
+      # so re-running an older release does not move latest back.
+      - uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         id: meta
-        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
-          images: ${{ env.IMAGES }}
+          images: ${{ steps.image.outputs.image }}
+          flavor: latest=false
           tags: |
             type=semver,pattern={{raw}}
+            type=raw,value=latest,enable=${{ needs.tag.outputs.latest }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Same context and build arguments as the ci job, so the layers come from
+      # the cache that the tested build wrote.
       - name: Build and push
+        id: push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
-          platforms: ${{ env.PLATFORM }}
+          platforms: linux/amd64,linux/arm64
           push: true
+          build-args: VERSION=${{ github.ref_name }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
-  github-release:
-    needs: image
+  release:
+    needs: [tag, package]
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The artifact that the ci job built and smoke-tested for this tag.
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          fetch-depth: 0
-          persist-credentials: false
+          name: artifact
+          path: dist
 
-      - name: Create or update GitHub Release
+      - name: Create or update the GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
-        shell: bash
+          IMAGE: ${{ needs.package.outputs.image }}
+          DIGEST: ${{ needs.package.outputs.digest }}
+          PRERELEASE: ${{ needs.tag.outputs.prerelease }}
         run: |
-          tag="${GITHUB_REF_NAME}"
-          range="$tag"
-          if previous_tag="$(git describe --tags --abbrev=0 --match 'v[0-9]*' "${tag}^" 2>/dev/null)"; then
-            range="${previous_tag}..${tag}"
-          fi
-          git log --no-merges --pretty='- %s' "$range" -- \
-            | sed '/^- chore: release/d' > "${RUNNER_TEMP}/release-notes.md"
-
-          prerelease=false
-          if [[ "$tag" == *-* ]]; then
-            prerelease=true
-          fi
-
-          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
-            --jq '.[].tag_name' > "${RUNNER_TEMP}/release-tags.txt"
-          if grep -Fxq -- "$tag" "${RUNNER_TEMP}/release-tags.txt"; then
-            gh release edit "$tag" --title "$tag" \
-              --notes-file "${RUNNER_TEMP}/release-notes.md" --prerelease="$prerelease"
+          tag="$GITHUB_REF_NAME"
+          notes="$RUNNER_TEMP/notes.md"
+          {
+            printf 'Image: `%s:%s`\n\nDigest: `%s`\n\n' "$IMAGE" "$tag" "$DIGEST"
+            gh api "repos/$GH_REPO/releases/generate-notes" -f tag_name="$tag" --jq .body
+          } > "$notes"
+          # A re-run updates the notes and assets of the existing release.
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+            gh release edit "$tag" --notes-file "$notes" --prerelease="$PRERELEASE"
           else
-            gh release create "$tag" --verify-tag --title "$tag" \
-              --notes-file "${RUNNER_TEMP}/release-notes.md" --prerelease="$prerelease"
+            gh release create "$tag" dist/* --verify-tag --title "$tag" \
+              --notes-file "$notes" --prerelease="$PRERELEASE"
           fi
+          gh release view "$tag" --json url,assets --jq '.url, .assets[].name'
 
+  # Deploys only when the repository variable GITOPS_REPO is set.
   alpha:
-    name: Deploy ${{ github.ref_name }} to alpha
-    needs: github-release
+    needs: release
+    if: vars.GITOPS_REPO != ''
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    environment: alpha
     steps:
-      - name: Trigger alpha GitOps
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Deploy ${{ github.ref_name }} to alpha
         env:
-          GH_TOKEN: ${{ secrets.GHP_TOKEN }}
-          PROJECT: ${{ github.event.repository.name }}
-        run: |
-          gh api repos/opspresso/argocd-env-demo/dispatches \
-            -f event_type=gitops \
-            -f 'client_payload[username]=nalbam' \
-            -f "client_payload[project]=${PROJECT}" \
-            -f "client_payload[version]=${GITHUB_REF_NAME}" \
-            -f 'client_payload[container]=app' \
-            -f 'client_payload[phase]=alpha' \
-            -f 'client_payload[type]=helm'
+          GITOPS_REPO: ${{ vars.GITOPS_REPO }}
+          GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+          APP_NAME: ${{ github.event.repository.name }}
+          VERSION: ${{ github.ref_name }}
+          IMAGE_OWNER: ${{ github.repository_owner }}
+        run: scripts/release.sh deploy alpha
 
+  # Stable tags only. Protect the "prod" environment to require an approval.
   prod:
-    name: Deploy ${{ github.ref_name }} to prod
-    needs: alpha
-    if: ${{ !contains(github.ref_name, '-') }}
+    needs: [tag, alpha]
+    if: needs.tag.outputs.prerelease == 'false'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    environment:
-      name: prod
+    environment: prod
     steps:
-      - name: Trigger prod GitOps
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Deploy ${{ github.ref_name }} to prod
         env:
-          GH_TOKEN: ${{ secrets.GHP_TOKEN }}
-          PROJECT: ${{ github.event.repository.name }}
-        run: |
-          gh api repos/opspresso/argocd-env-demo/dispatches \
-            -f event_type=gitops \
-            -f 'client_payload[username]=nalbam' \
-            -f "client_payload[project]=${PROJECT}" \
-            -f "client_payload[version]=${GITHUB_REF_NAME}" \
-            -f 'client_payload[container]=app' \
-            -f 'client_payload[phase]=prod' \
-            -f 'client_payload[type]=helm' \
-            -f 'client_payload[auto_merge]=true'
+          GITOPS_REPO: ${{ vars.GITOPS_REPO }}
+          GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+          APP_NAME: ${{ github.event.repository.name }}
+          VERSION: ${{ github.ref_name }}
+          IMAGE_OWNER: ${{ github.repository_owner }}
+          AUTO_MERGE: "true"
+        run: scripts/release.sh deploy prod

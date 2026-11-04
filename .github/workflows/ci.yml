@@ -1,0 +1,77 @@
+# The same file is used in every sample-* repository. Repository-specific build
+# and test steps live in the Dockerfile; runtime checks live in scripts/smoke.sh.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+# release.yml calls this workflow. There github.workflow is "release", so a
+# release run and a branch run never cancel each other.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      APP_NAME: ${{ github.event.repository.name }}
+      # A tag run builds with the release version, so the release job reuses
+      # this run's build cache and artifact.
+      VERSION: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v0.0.0-ci.{0}', github.sha) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint scripts
+        run: shellcheck scripts/*.sh
+
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # The Dockerfile build stage runs the tests once on the runner platform.
+      # A test failure fails this step.
+      - name: Build and test linux/amd64 and linux/arm64
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          pull: true
+          push: false
+          build-args: VERSION=${{ env.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Load linux/amd64 image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: ${{ env.APP_NAME }}:ci
+          build-args: VERSION=${{ env.VERSION }}
+
+      - name: Smoke test
+        run: scripts/smoke.sh "$APP_NAME:ci" "$VERSION"
+
+      - name: Export artifact
+        run: scripts/release.sh artifact "$APP_NAME" "$VERSION" dist
+
+      - name: Upload artifact for the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact
+          path: dist/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 7

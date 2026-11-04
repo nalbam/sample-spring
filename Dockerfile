@@ -1,17 +1,22 @@
-# Dockerfile
+# syntax=docker/dockerfile:1
+
+# build: compiles, tests and packages the jar on the build platform.
+FROM --platform=$BUILDPLATFORM maven:3.10.0-eclipse-temurin-27 AS build
+WORKDIR /src
+COPY pom.xml ./
+RUN mvn -B -q dependency:go-offline
+COPY src src
+RUN mvn -B verify && mkdir /out && cp target/sample-spring-*.jar /out/sample-spring.jar
+
+# artifact: the release artifact, exported by scripts/release.sh artifact.
+FROM scratch AS artifact
+COPY --from=build /out /
 
 FROM eclipse-temurin:27-jre-alpine
 
-LABEL maintainer="me@nalbam.com" \
-      org.opencontainers.image.description="A Sample Docker image for Spring App" \
-      org.opencontainers.image.authors="Jungyoul Yu, me@nalbam.com, https://www.nalbam.com/" \
-      org.opencontainers.image.source="https://github.com/nalbam/sample-spring" \
-      org.opencontainers.image.title="sample-spring"
-
-# RUN apk add --no-cache bash curl
-
-EXPOSE 8080
-EXPOSE 8081
+LABEL org.opencontainers.image.title="sample-spring" \
+      org.opencontainers.image.description="A sample Spring Boot app for Kubernetes demos" \
+      org.opencontainers.image.source="https://github.com/nalbam/sample-spring"
 
 WORKDIR /data
 
@@ -30,10 +35,18 @@ ADD --chmod=644 --checksum=sha256:0ad843261c567d1924a017d542e14c40f2afff523d940c
     https://github.com/prometheus/jmx_exporter/releases/download/1.7.0/jmx_prometheus_javaagent-1.7.0.jar \
     /data/jmx_javaagent.jar
 
-COPY ./jmx/config.yaml /data/config.yaml
+COPY jmx/config.yaml /data/config.yaml
+COPY entrypoint.sh /data/entrypoint.sh
+COPY --from=artifact /sample-spring.jar /data/ROOT.jar
+RUN adduser -D -H -u 10001 app
 
-COPY ./entrypoint.sh /data/entrypoint.sh
+USER 10001
 
-COPY target/*.jar /data/ROOT.jar
+ARG VERSION=v0.0.0-dev
+ENV PORT=8080 \
+    VERSION=${VERSION}
 
-ENTRYPOINT ["/bin/sh", "entrypoint.sh"]
+# 8080: HTTP. 8081: JMX exporter when JAVA_AGENT_ENABLED=true.
+EXPOSE 8080 8081
+
+ENTRYPOINT ["/bin/sh", "/data/entrypoint.sh"]

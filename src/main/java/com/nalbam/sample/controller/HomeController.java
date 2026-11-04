@@ -22,7 +22,7 @@ public class HomeController {
     @Value("${cluster}")
     private String cluster;
 
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:${spring.profiles.default:default}}")
     private String profile;
 
     @Value("${message}")
