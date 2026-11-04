@@ -22,9 +22,12 @@ jobs:
     timeout-minutes: 5
     outputs:
       prerelease: ${{ steps.tag.outputs.prerelease }}
+      latest: ${{ steps.tag.outputs.latest }}
     steps:
+      # All tags, so the tag check can tell whether this is the highest stable tag.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Check release tag
         id: tag
@@ -35,7 +38,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   package:
-    needs: ci
+    needs: [tag, ci]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -53,12 +56,16 @@ jobs:
         id: image
         run: echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
-      # The raw tag keeps the "v" prefix. latest is added for stable tags only.
+      # The raw tag keeps the "v" prefix. Only the highest stable tag moves latest,
+      # so re-running an older release does not move latest back.
       - uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         id: meta
         with:
           images: ${{ steps.image.outputs.image }}
-          tags: type=semver,pattern={{raw}}
+          flavor: latest=false
+          tags: |
+            type=semver,pattern={{raw}}
+            type=raw,value=latest,enable=${{ needs.tag.outputs.latest }}
 
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
 
@@ -106,13 +113,18 @@ jobs:
           PRERELEASE: ${{ needs.tag.outputs.prerelease }}
         run: |
           tag="$GITHUB_REF_NAME"
-          printf 'Image: `%s:%s`\n\nDigest: `%s`\n' "$IMAGE" "$tag" "$DIGEST" > "$RUNNER_TEMP/notes.md"
+          notes="$RUNNER_TEMP/notes.md"
+          {
+            printf 'Image: `%s:%s`\n\nDigest: `%s`\n\n' "$IMAGE" "$tag" "$DIGEST"
+            gh api "repos/$GH_REPO/releases/generate-notes" -f tag_name="$tag" --jq .body
+          } > "$notes"
+          # A re-run updates the notes and assets of the existing release.
           if gh release view "$tag" > /dev/null 2>&1; then
             gh release upload "$tag" dist/* --clobber
-            gh release edit "$tag" --prerelease="$PRERELEASE"
+            gh release edit "$tag" --notes-file "$notes" --prerelease="$PRERELEASE"
           else
             gh release create "$tag" dist/* --verify-tag --title "$tag" \
-              --notes-file "$RUNNER_TEMP/notes.md" --generate-notes --prerelease="$PRERELEASE"
+              --notes-file "$notes" --prerelease="$PRERELEASE"
           fi
           gh release view "$tag" --json url,assets --jq '.url, .assets[].name'
 

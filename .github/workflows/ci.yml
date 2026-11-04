@@ -73,4 +73,5 @@ jobs:
           name: artifact
           path: dist/
           if-no-files-found: error
+          overwrite: true
           retention-days: 7
