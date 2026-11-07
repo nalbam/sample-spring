@@ -100,6 +100,15 @@ check_port() {
 
 # --- sample-spring checks ----------------------------------------------------------
 
+# check_json PATH JQ_FILTER [JQ_ARGS...] checks HTTP 200 and that the JSON body passes JQ_FILTER.
+check_json() {
+  local path="$1" filter="$2" body
+  shift 2
+  body="$(http -f "http://localhost:$PORT$path")" || fail "GET $path"
+  jq -e "$@" "$filter" <<< "$body" > /dev/null || fail "GET $path returned $body, expected $filter"
+  echo "ok: GET $path $body"
+}
+
 # check_stop checks that docker stop ends Java with SIGTERM (exit code 143), not SIGKILL (137).
 check_stop() {
   docker stop --time 30 "$NAME" > /dev/null
@@ -158,7 +167,13 @@ CG_ENV=(
 start
 check_health
 check_get / "<p>$VERSION</p>"
-for path in /live /read /actuator/health; do
+# Probe contract shared with sample-node and sample-tomcat. The 503 from /ready after
+# SIGTERM is checked by the unit tests: a stopping container refuses new connections.
+check_json /live '.live == true'
+check_json /ready '.ready == true'
+# shellcheck disable=SC2016 # $version is a jq variable, not a shell one
+check_json /version '.version == $version' --arg version "$VERSION"
+for path in /read /actuator/health; do
   check_get "$path"
 done
 check_get /actuator/prometheus 'jvm_'

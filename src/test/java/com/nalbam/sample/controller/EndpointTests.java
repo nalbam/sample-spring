@@ -33,6 +33,30 @@ class EndpointTests {
 		mockMvc.perform(get("/live"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith("application/json"))
+				.andExpect(jsonPath("$.live").value(true));
+	}
+
+	@Test
+	void ready() throws Exception {
+		mockMvc.perform(get("/ready"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith("application/json"))
+				.andExpect(jsonPath("$.ready").value(true));
+	}
+
+	@Test
+	void versionEndpoint() throws Exception {
+		mockMvc.perform(get("/version"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith("application/json"))
+				.andExpect(jsonPath("$.version").value(version))
+				.andExpect(jsonPath("$.java").value(System.getProperty("java.version")));
+	}
+
+	@Test
+	void read() throws Exception {
+		mockMvc.perform(get("/read"))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.result").value("OK"))
 				.andExpect(jsonPath("$.type").value("live"));
 	}
