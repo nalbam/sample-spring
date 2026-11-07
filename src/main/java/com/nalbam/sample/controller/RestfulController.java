@@ -5,7 +5,11 @@ import tools.jackson.databind.json.JsonMapper;
 import com.nalbam.sample.util.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,17 +42,46 @@ public class RestfulController {
 
     private final RestTemplate restTemplate;
 
-    public RestfulController(RestTemplateBuilder restTemplateBuilder) {
+    private final ApplicationAvailability availability;
+
+    public RestfulController(RestTemplateBuilder restTemplateBuilder, ApplicationAvailability availability) {
         this.restTemplate = restTemplateBuilder.build();
+        this.availability = availability;
     }
 
+    // /live answers while the process can serve requests, also during shutdown.
     @GetMapping("/live")
     public Map<String, Object> live() {
         log.info("get /live");
 
         Map<String, Object> map = new HashMap<>();
-        map.put("result", "OK");
-        map.put("type", "live");
+        map.put("live", true);
+
+        return map;
+    }
+
+    // /ready follows Spring Boot's readiness state. When the context closes (SIGTERM),
+    // ServletWebServerApplicationContext publishes REFUSING_TRAFFIC first, so /ready
+    // returns 503 and the load balancer stops routing here while /live keeps answering.
+    @GetMapping("/ready")
+    public ResponseEntity<Map<String, Object>> ready() {
+        log.info("get /ready");
+
+        boolean ready = availability.getReadinessState() == ReadinessState.ACCEPTING_TRAFFIC;
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("ready", ready);
+
+        return ResponseEntity.status(ready ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE).body(map);
+    }
+
+    @GetMapping("/version")
+    public Map<String, Object> version() {
+        log.info("get /version");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("version", version);
+        map.put("java", System.getProperty("java.version"));
 
         return map;
     }

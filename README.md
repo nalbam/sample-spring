@@ -66,9 +66,29 @@ $ curl -s localhost:8080/health
 {"result":"ok","artifactId":"sample-spring","type":"health","version":"v0.0.0","uptime":4}
 ```
 
-Only `/health` uses this contract. `/live`, `/read`, `/loop/{count}` and the other
-endpoints still return `"result":"OK"`, and `/actuator/health` returns Spring Boot
-Actuator's `{"status":"UP"}`.
+Only `/health` uses this contract. `/read`, `/loop/{count}` and the other endpoints
+still return `"result":"OK"`, and `/actuator/health` returns Spring Boot Actuator's
+`{"status":"UP"}`. The probe endpoints below use their own contract.
+
+## Probe endpoints
+
+`/live`, `/ready` and `/version` follow the probe contract shared by sample-node,
+sample-spring and sample-tomcat, so the same Kubernetes probes and smoke checks work
+for all three.
+
+| Endpoint | Response |
+| --- | --- |
+| `GET /live` | HTTP 200 `{"live":true}` while the process answers, also during shutdown. |
+| `GET /ready` | HTTP 200 `{"ready":true}` while Spring Boot's readiness state is `ACCEPTING_TRAFFIC`. HTTP 503 `{"ready":false}` otherwise. When shutdown starts (SIGTERM closes the context), Spring Boot sets the state to `REFUSING_TRAFFIC` before it stops the web server, so the load balancer stops routing here while in-flight requests finish. |
+| `GET /version` | HTTP 200 `{"version":"v0.0.0","java":"27.0.1"}`. `version` is the `version` property (`VERSION` env, default `v0.0.0`); `java` is the JVM's `java.version`. |
+| `GET /read` | unchanged: HTTP 200 `{"result":"OK","type":"live"}` |
+| `GET /actuator/health` | Spring Boot Actuator: HTTP 200 `{"status":"UP"}` |
+
+`scripts/smoke.sh` checks `/live`, `/ready`, `/version` and `/health` with `jq`, and
+checks `/read` and `/actuator/health` for HTTP 200. It does not check the 503 from
+`/ready` after SIGTERM, because a stopping container refuses new connections. The unit
+tests check it instead: `ReadinessRefusedTests` publishes `REFUSING_TRAFFIC`, and
+`ShutdownReadinessTests` closes a real servlet web server context.
 
 The app does not need a database. The JPA and PostgreSQL dependencies in `pom.xml` are
 commented out, and the repository has no Docker Compose file for them.
