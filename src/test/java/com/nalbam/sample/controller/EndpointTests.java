@@ -75,6 +75,7 @@ class EndpointTests {
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith("application/json"))
 				.andExpect(jsonPath("$.result").value("ok"))
+				.andExpect(jsonPath("$.service").value("sample-spring"))
 				.andExpect(jsonPath("$.type").value("health"))
 				.andExpect(jsonPath("$.version").value(version))
 				.andExpect(jsonPath("$.artifactId").isString())

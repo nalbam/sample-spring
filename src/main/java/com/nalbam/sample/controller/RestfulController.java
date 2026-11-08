@@ -103,6 +103,9 @@ public class RestfulController {
 
         Map<String, Object> map = PackageUtil.getData(this.getClass());
         map.put("result", "ok");
+        // fixed name, not artifactId: artifactId is empty without a jar manifest.
+        // sample-node's /spring checks this value to confirm which service answered.
+        map.put("service", "sample-spring");
         map.put("type", "health");
         map.put("version", version);
         // seconds since JVM start, not since the request or controller creation
