@@ -56,6 +56,7 @@ unchanged, so callers can rely on the same fields.
 | --- | --- | --- |
 | `result` | string | lowercase `ok` or `error`. This app returns `ok` while it can answer. |
 | `version` | string | the `version` property (`VERSION` env, default `v0.0.0`) |
+| `service` | string | always `sample-spring`: the name of the service that answered. sample-node's `/spring` compares this value with `sample-spring` to confirm that the right service answered. |
 | `uptime` | integer | whole seconds since the JVM process started (JVM uptime in ms / 1000), `0` or more. It does not count from the request or from controller creation. |
 | `type` | string | kept from the existing response: always `health` |
 
@@ -63,7 +64,7 @@ Other fields, such as `artifactId` from the jar manifest, may also appear. Examp
 
 ```bash
 $ curl -s localhost:8080/health
-{"result":"ok","artifactId":"sample-spring","type":"health","version":"v0.0.0","uptime":4}
+{"result":"ok","service":"sample-spring","artifactId":"sample-spring","type":"health","version":"v0.0.0","uptime":4}
 ```
 
 Only `/health` uses this contract. `/read`, `/loop/{count}` and the other endpoints
@@ -84,7 +85,8 @@ for all three.
 | `GET /read` | unchanged: HTTP 200 `{"result":"OK","type":"live"}` |
 | `GET /actuator/health` | Spring Boot Actuator: HTTP 200 `{"status":"UP"}` |
 
-`scripts/smoke.sh` checks `/live`, `/ready`, `/version` and `/health` with `jq`, and
+`scripts/smoke.sh` checks `/live`, `/ready`, `/version` and `/health` with `jq`
+(for `/health`: `result == "ok"`, `version` and `service == "sample-spring"`), and
 checks `/read` and `/actuator/health` for HTTP 200. It does not check the 503 from
 `/ready` after SIGTERM, because a stopping container refuses new connections. The unit
 tests check it instead: `ReadinessRefusedTests` publishes `REFUSING_TRAFFIC`, and

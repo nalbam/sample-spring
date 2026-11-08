@@ -166,6 +166,8 @@ CG_ENV=(
 
 start
 check_health
+# sample-node's /spring checks this field to confirm that sample-spring answered.
+check_json /health '.service == "sample-spring"'
 check_get / "<p>$VERSION</p>"
 # Probe contract shared with sample-node and sample-tomcat. The 503 from /ready after
 # SIGTERM is checked by the unit tests: a stopping container refuses new connections.
