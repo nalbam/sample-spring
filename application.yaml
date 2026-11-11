@@ -7,6 +7,7 @@ spec:
   description: Spring Boot sample app for Kubernetes demos
 runtime:
   type: k8s
+  architecture: arm64
   port: 8080
   health: /health
 pipeline:
