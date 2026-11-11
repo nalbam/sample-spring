@@ -1,4 +1,4 @@
-apiVersion: agent.opspresso.com/v1
+apiVersion: agent.opspresso.com/v3
 kind: Application
 spec:
   name: sample-spring-3
@@ -6,14 +6,21 @@ spec:
   owner: dBT43yQ7DQIIIMlYbjiXsIr8tbuIgVJA
   description: Spring Boot sample app for Kubernetes demos
 runtime:
+  type: k8s
   port: 8080
   health: /health
+pipeline:
+  trigger:
+    branch: main
   build:
     context: .
     dockerfile: Dockerfile
   test:
     image: maven:3.10.0-eclipse-temurin-27
     command: mvn -B verify
+# Promotion order: a push to main deploys to dev; prod receives a Release only by promotion.
 environments:
-  dev: {}
-  prod: {}
+  - name: dev
+    size: small
+  - name: prod
+    size: small
