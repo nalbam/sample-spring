@@ -182,3 +182,5 @@ the running jar.
 Pull requests and pushes to `main` run CI. A `v*` tag releases the image `ghcr.io/nalbam/sample-spring:<tag>`
 and a GitHub Release with the jar. Jenkins can run the same pipeline with Nexus and Harbor or ECR.
 See [docs/pipeline.md](docs/pipeline.md).
+
+.
