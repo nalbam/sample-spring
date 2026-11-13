@@ -169,6 +169,7 @@ check_health
 # sample-node's /spring checks this field to confirm that sample-spring answered.
 check_json /health '.service == "sample-spring"'
 check_get / "<p>$VERSION</p>"
+check_get / "Local Server UP"
 # Probe contract shared with sample-node and sample-tomcat. The 503 from /ready after
 # SIGTERM is checked by the unit tests: a stopping container refuses new connections.
 check_json /live '.live == true'
@@ -211,5 +212,9 @@ start -e PROFILE=prod -e NAMESPACE=two
 check_health
 check_get / "Production Server UP"
 echo "ok: PROFILE=prod starts the prod profile"
+
+start -e PROFILE=prod -e SPRING_PROFILES_ACTIVE=stage
+check_get / "Staging Server UP"
+echo "ok: SPRING_PROFILES_ACTIVE wins over PROFILE"
 
 echo "smoke test passed: $IMAGE $VERSION"
