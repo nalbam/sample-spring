@@ -1,10 +1,10 @@
 apiVersion: agent.opspresso.com/v4
 kind: Application
 spec:
-  name: sample-spring-3
+  name: sample-spring-4
   repository: github.com/nalbam/sample-spring
   owner: dBT43yQ7DQIIIMlYbjiXsIr8tbuIgVJA
-  description: Spring Boot sample app for Kubernetes demos
+  description: Spring Boot sample app
 runtime:
   port: 8080
   health: /health
@@ -13,4 +13,7 @@ build:
   dockerfile: Dockerfile
 test:
   image: maven:3.10.0-eclipse-temurin-27
-  command: mvn -B verify
+  command: mvn -B test
+env:
+  PROFILE: prod
+  NAMESPACE: two
