@@ -20,7 +20,8 @@ The image uses `eclipse-temurin:27-jre-alpine` and runs as the non-root uid `100
 | --- | --- | --- |
 | `PORT` | `8080` | HTTP listen port. |
 | `VERSION` | `v0.0.0-dev` | Version that `/health` and `/` report. Release images set it to their tag; a local build sets it with `--build-arg VERSION=...`. |
-| `SPRING_PROFILES_ACTIVE` | `default` | Spring profile. |
+| `PROFILE` | `default` | Spring profile: `default`, `alpha`, `stage` or `prod`. |
+| `SPRING_PROFILES_ACTIVE` | - | Spring profile; overrides `PROFILE` when set. |
 | `JAVA_OPTS` | - | Options passed to `java`. |
 
 ## Build and test

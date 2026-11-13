@@ -205,4 +205,11 @@ check_jmx
 
 check_port
 
+# PROFILE selects a profile document; the common settings still apply (an unresolved ${cluster} stops the app).
+PORT=8080
+start -e PROFILE=prod -e NAMESPACE=two
+check_health
+check_get / "Production Server UP"
+echo "ok: PROFILE=prod starts the prod profile"
+
 echo "smoke test passed: $IMAGE $VERSION"

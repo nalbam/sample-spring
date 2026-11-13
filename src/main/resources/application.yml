@@ -4,9 +4,10 @@ server:
 spring:
   application:
     name: sample-spring
-  config:
-    activate:
-      on-profile: ${PROFILE:default}
+  # PROFILE selects the profile documents below; SPRING_PROFILES_ACTIVE, when set, wins.
+  # This document applies in every profile, so it must not carry an on-profile condition.
+  profiles:
+    active: ${PROFILE:default}
   jackson:
     time-zone: Asia/Seoul
   thymeleaf:
